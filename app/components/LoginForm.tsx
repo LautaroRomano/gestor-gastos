@@ -44,15 +44,15 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="">
       {error && (
-        <div className="w-full p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-center">
+        <div className="">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor="email" className="">
           Email
         </label>
         <input
@@ -62,11 +62,11 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
-          className="w-full px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+          className="w-full p-4 "
         />
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="">
         <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Contraseña
         </label>
@@ -77,18 +77,18 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
-          className="w-full px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+          className=""
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full px-4 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className=""
       >
         {submitting ? (
           <>
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -102,11 +102,11 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         )}
       </button>
 
-      <div className="text-center pt-2">
+      <div className="">
         <button
           type="button"
           onClick={onSwitchToRegister}
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+          className="text-indigo-600/90 text-sm font-medium hover:underline"
         >
           ¿No tienes cuenta? Regístrate
         </button>
