@@ -22,7 +22,6 @@ export default function Home() {
         router.push('/dashboard')
       }
     } catch (error) {
-      // No autenticado
     } finally {
       setLoading(false)
     }
@@ -56,14 +55,14 @@ export default function Home() {
         </div>
       </div>
 
-       {/* Card principal */}
-       <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 w-full max-w-md">
-         {isLogin ? (
-           <LoginForm onSwitchToRegister={() => setIsLogin(false)} />
-         ) : (
-           <RegisterForm onSwitchToLogin={() => setIsLogin(true)} />
-         )}
-       </div>
+      {/* Card principal */}
+      <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 w-full max-w-md">
+        {isLogin ? (
+          <LoginForm onSwitchToRegister={() => setIsLogin(false)} />
+        ) : (
+          <RegisterForm onSwitchToLogin={() => setIsLogin(true)} />
+        )}
+      </div>
 
       {/* Footer */}
       <div className="text-center">

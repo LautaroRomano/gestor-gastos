@@ -68,8 +68,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en login:', error)
     return NextResponse.json(
-      { error: 'Error al iniciar sesión' },
+      { error: 'Error al iniciar sesión', message: errorMessage },
       { status: 500 }
     )
   }

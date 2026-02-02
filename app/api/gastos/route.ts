@@ -81,8 +81,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en crear gasto:', error)
     return NextResponse.json(
-      { error: 'Error al crear gasto' },
+      { error: 'Error al crear gasto', message: errorMessage },
       { status: 500 }
     )
   }

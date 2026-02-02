@@ -45,8 +45,10 @@ export async function GET(
 
     return NextResponse.json(mes)
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en obtener mes:', error)
     return NextResponse.json(
-      { error: 'Error al obtener mes' },
+      { error: 'Error al obtener mes', message: errorMessage },
       { status: 500 }
     )
   }

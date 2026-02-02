@@ -45,8 +45,10 @@ export async function GET(
 
     return NextResponse.json(meses)
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en obtener meses:', error)
     return NextResponse.json(
-      { error: 'Error al obtener meses' },
+      { error: 'Error al obtener meses', message: errorMessage },
       { status: 500 }
     )
   }
@@ -101,8 +103,10 @@ export async function POST(
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en crear mes:', error)
     return NextResponse.json(
-      { error: 'Error al crear mes' },
+      { error: 'Error al crear mes', message: errorMessage },
       { status: 500 }
     )
   }

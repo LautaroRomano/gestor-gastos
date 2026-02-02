@@ -62,8 +62,10 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Gasto eliminado' })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en eliminar gasto:', error)
     return NextResponse.json(
-      { error: 'Error al eliminar gasto' },
+      { error: 'Error al eliminar gasto', message: errorMessage },
       { status: 500 }
     )
   }
@@ -133,8 +135,10 @@ export async function PATCH(
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en actualizar gasto:', error)
     return NextResponse.json(
-      { error: 'Error al actualizar gasto' },
+      { error: 'Error al actualizar gasto', message: errorMessage },
       { status: 500 }
     )
   }

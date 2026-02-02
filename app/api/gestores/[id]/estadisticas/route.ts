@@ -92,8 +92,10 @@ export async function GET(
       mesesCerrados,
     })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en obtener estadísticas:', error)
     return NextResponse.json(
-      { error: 'Error al obtener estadísticas' },
+      { error: 'Error al obtener estadísticas', message: errorMessage },
       { status: 500 }
     )
   }

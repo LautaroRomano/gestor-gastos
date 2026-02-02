@@ -85,8 +85,10 @@ export async function POST(
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en cerrar mes:', error)
     return NextResponse.json(
-      { error: 'Error al cerrar mes' },
+      { error: 'Error al cerrar mes', message: errorMessage },
       { status: 500 }
     )
   }

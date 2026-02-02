@@ -61,8 +61,10 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Ingreso eliminado' })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en eliminar ingreso:', error)
     return NextResponse.json(
-      { error: 'Error al eliminar ingreso' },
+      { error: 'Error al eliminar ingreso', message: errorMessage },
       { status: 500 }
     )
   }
@@ -132,8 +134,10 @@ export async function PATCH(
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en actualizar ingreso:', error)
     return NextResponse.json(
-      { error: 'Error al actualizar ingreso' },
+      { error: 'Error al actualizar ingreso', message: errorMessage },
       { status: 500 }
     )
   }

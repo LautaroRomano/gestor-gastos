@@ -46,8 +46,10 @@ export async function GET() {
 
     return NextResponse.json(gestores)
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en obtener gestores:', error)
     return NextResponse.json(
-      { error: 'Error al obtener gestores' },
+      { error: 'Error al obtener gestores', message: errorMessage },
       { status: 500 }
     )
   }
@@ -97,8 +99,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en crear gestor:', error)
     return NextResponse.json(
-      { error: 'Error al crear gestor' },
+      { error: 'Error al crear gestor', message: errorMessage },
       { status: 500 }
     )
   }

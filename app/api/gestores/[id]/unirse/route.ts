@@ -51,8 +51,10 @@ export async function POST(
 
     return NextResponse.json({ message: 'Te has unido al gestor exitosamente' })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en unirse al gestor:', error)
     return NextResponse.json(
-      { error: 'Error al unirse al gestor' },
+      { error: 'Error al unirse al gestor', message: errorMessage },
       { status: 500 }
     )
   }

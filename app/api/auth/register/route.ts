@@ -40,8 +40,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en register:', error)
     return NextResponse.json(
-      { error: 'Error al registrar usuario' },
+      { error: 'Error al registrar usuario', message: errorMessage },
       { status: 500 }
     )
   }

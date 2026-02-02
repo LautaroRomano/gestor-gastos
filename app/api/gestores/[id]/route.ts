@@ -53,8 +53,10 @@ export async function GET(
 
     return NextResponse.json(gestor)
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en obtener gestor:', error)
     return NextResponse.json(
-      { error: 'Error al obtener gestor' },
+      { error: 'Error al obtener gestor', message: errorMessage },
       { status: 500 }
     )
   }
