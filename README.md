@@ -1,36 +1,182 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gestor de Gastos
 
-## Getting Started
+Aplicación de gestión de ingresos y gastos con usuarios compartidos, diseñada para dispositivos móviles.
 
-First, run the development server:
+## Características
 
+- ✅ Sistema de autenticación y registro de usuarios
+- ✅ Gestión de múltiples gestores de ingresos y gastos
+- ✅ Usuarios compartidos en gestores
+- ✅ Registro de ingresos y gastos por mes
+- ✅ Cierre de mes con fecha variable (basada en tu próximo cobro)
+- ✅ Estadísticas de gastos e ingresos
+- ✅ Interfaz mobile-first con HeroUI
+- ✅ Base de datos PostgreSQL con Prisma
+
+## Tecnologías
+
+- **Next.js 16** - Framework React
+- **HeroUI v2** - Componentes UI (versión más reciente disponible)
+- **Prisma** - ORM para PostgreSQL
+- **PostgreSQL** - Base de datos
+- **TypeScript** - Tipado estático
+- **Tailwind CSS** - Estilos
+
+## Requisitos Previos
+
+- Node.js 18+ 
+- PostgreSQL instalado y ejecutándose
+- npm o yarn
+
+## Instalación
+
+1. Clona el repositorio o navega al directorio del proyecto
+
+2. Instala las dependencias:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Configura las variables de entorno:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Database
+DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/gestor_gastos?schema=public"
 
-## Learn More
+# JWT Secret (cambiar en producción)
+JWT_SECRET="tu-secret-key-super-segura-cambiar-en-produccion"
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Importante:** 
+- Reemplaza `usuario`, `contraseña` y `gestor_gastos` con tus credenciales de PostgreSQL
+- Cambia `JWT_SECRET` por una clave secreta segura en producción
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Crea la base de datos en PostgreSQL:
+```bash
+# Conecta a PostgreSQL y crea la base de datos
+createdb gestor_gastos
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Ejecuta las migraciones de Prisma:
+```bash
+npx prisma migrate dev --name init
+```
 
-## Deploy on Vercel
+6. (Opcional) Genera el cliente de Prisma:
+```bash
+npx prisma generate
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Uso
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Inicia el servidor de desarrollo:
+```bash
+npm run dev
+```
+
+2. Abre tu navegador en [http://localhost:3000](http://localhost:3000)
+
+3. Registra un nuevo usuario o inicia sesión
+
+4. Crea un gestor de ingresos y gastos
+
+5. Agrega meses, ingresos y gastos
+
+6. Cierra el mes cuando lo necesites con la fecha de tu próximo cobro
+
+## Estructura del Proyecto
+
+```
+gestor-gastos/
+├── app/                    # Páginas y rutas de Next.js
+│   ├── api/               # API routes
+│   ├── dashboard/         # Dashboard principal
+│   ├── gestores/          # Gestión de gestores
+│   ├── meses/             # Gestión de meses
+│   └── unirse/            # Unirse a un gestor
+├── lib/                   # Utilidades
+│   ├── prisma.ts         # Cliente de Prisma
+│   ├── auth.ts           # Funciones de autenticación
+│   └── get-user.ts       # Obtener usuario actual
+├── prisma/               # Esquema de Prisma
+│   └── schema.prisma     # Modelos de base de datos
+└── public/               # Archivos estáticos
+```
+
+## Modelos de Base de Datos
+
+- **Usuario**: Usuarios del sistema
+- **Gestor**: Gestores de ingresos y gastos
+- **UsuarioGestor**: Relación muchos a muchos entre usuarios y gestores
+- **Mes**: Períodos de facturación con fecha de cierre variable
+- **Ingreso**: Registro de ingresos
+- **Gasto**: Registro de gastos con categorías opcionales
+
+## API Endpoints
+
+### Autenticación
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/logout` - Cerrar sesión
+- `GET /api/auth/me` - Obtener usuario actual
+
+### Gestores
+- `GET /api/gestores` - Listar gestores del usuario
+- `POST /api/gestores` - Crear nuevo gestor
+- `GET /api/gestores/[id]` - Obtener gestor específico
+- `POST /api/gestores/[id]/unirse` - Unirse a un gestor
+- `GET /api/gestores/[id]/estadisticas` - Estadísticas del gestor
+
+### Meses
+- `GET /api/gestores/[id]/meses` - Listar meses de un gestor
+- `POST /api/gestores/[id]/meses` - Crear nuevo mes
+- `GET /api/meses/[id]` - Obtener mes específico
+- `POST /api/meses/[id]/cerrar` - Cerrar un mes
+
+### Ingresos
+- `POST /api/ingresos` - Crear ingreso
+- `DELETE /api/ingresos/[id]` - Eliminar ingreso
+- `PATCH /api/ingresos/[id]` - Actualizar ingreso
+
+### Gastos
+- `POST /api/gastos` - Crear gasto
+- `DELETE /api/gastos/[id]` - Eliminar gasto
+- `PATCH /api/gastos/[id]` - Actualizar gasto
+
+## Desarrollo
+
+### Ejecutar migraciones
+```bash
+npx prisma migrate dev
+```
+
+### Ver base de datos en Prisma Studio
+```bash
+npx prisma studio
+```
+
+### Generar cliente de Prisma
+```bash
+npx prisma generate
+```
+
+## Producción
+
+Antes de desplegar en producción:
+
+1. Cambia `JWT_SECRET` por una clave segura y aleatoria
+2. Configura `DATABASE_URL` con tu base de datos de producción
+3. Ejecuta las migraciones en producción:
+```bash
+npx prisma migrate deploy
+```
+4. Construye la aplicación:
+```bash
+npm run build
+```
+
+## Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.

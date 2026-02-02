@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  nombre    String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  gestores  UsuarioGestor[]
+}
+
+model Gestor {
+  id          String   @id @default(cuid())
+  nombre      String
+  descripcion String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  usuarios    UsuarioGestor[]
+  meses       Mes[]
+}
+
+model UsuarioGestor {
+  id        String   @id @default(cuid())
+  usuarioId String
+  gestorId  String
+  rol       String   @default("miembro") // "admin" o "miembro"
+  createdAt DateTime @default(now())
+  
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  gestor    Gestor  @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  
+  @@unique([usuarioId, gestorId])
+}
+
+model Mes {
+  id          String   @id @default(cuid())
+  gestorId    String
+  fechaInicio DateTime
+  fechaCierre DateTime? // null si el mes está abierto
+  cerrado     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  gestor      Gestor   @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  ingresos    Ingreso[]
+  gastos      Gasto[]
+}
+
+model Ingreso {
+  id          String   @id @default(cuid())
+  mesId       String
+  monto       Float
+  descripcion String
+  fecha       DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  mes         Mes      @relation(fields: [mesId], references: [id], onDelete: Cascade)
+}
+
+model Gasto {
+  id          String   @id @default(cuid())
+  mesId       String
+  monto       Float
+  descripcion String
+  categoria   String?
+  fecha       DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  mes         Mes      @relation(fields: [mesId], references: [id], onDelete: Cascade)
+}
