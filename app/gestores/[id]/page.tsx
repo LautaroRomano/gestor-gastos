@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeftIcon, PlusIcon, CalendarIcon, LockClosedIcon, LockOpenIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/Modal'
+import { Button } from '@/components/ui/button'
+import { ArrowRightIcon } from 'lucide-react'
 
 interface Mes {
   id: string
@@ -30,7 +32,7 @@ export default function GestorPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [nuevoMes, setNuevoMes] = useState({ fechaInicio: '' })
   const [copied, setCopied] = useState(false)
-  
+
   const onOpen = () => setIsOpen(true)
   const onClose = () => setIsOpen(false)
 
@@ -134,129 +136,123 @@ export default function GestorPage() {
   const estadisticas = calcularEstadisticasGestor()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      <div className="max-w-2xl mx-auto space-y-6" style={{ padding: '10px 15px' }}>
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <button
+        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
+          <Button
             onClick={() => router.push('/dashboard')}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+            variant="ghost"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
+            size="lg"
+            style={{ padding: '10px' }}
           >
-            <ArrowLeftIcon className="w-4 h-4" />
-            <span>Volver</span>
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <WalletIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <ArrowLeftIcon className="w-4 h-4 text-primary font-bold" />
+          </Button>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {gestor.nombre}
           </h1>
-          <div className="w-24"></div>
         </div>
 
         {/* Card del Gestor */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-start justify-between mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
+
+          <div className="flex items-start justify-between" style={{ marginBottom: '5px' }}>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{gestor.nombre}</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100" style={{ marginBottom: '5px' }} >{gestor.nombre}</h2>
               {gestor.descripcion && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400" style={{ marginBottom: '5px' }}>
                   {gestor.descripcion}
                 </p>
               )}
             </div>
-            <button
-              onClick={copiarIdGestor}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="Copiar ID del gestor"
-            >
-              {copied ? (
-                <CheckIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
-              ) : (
-                <ClipboardIcon className="w-5 h-5 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
-              )}
-            </button>
           </div>
+
           <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400">ID del Gestor:</span>
             <code className="text-xs font-mono text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 flex-1">
               {id}
             </code>
-            <button
+            <Button
+              variant="ghost"
+              className="text-gray-700 dark:text-gray-300 font-extrabold transition-colors"
+              size="lg"
+              style={{ padding: '10px' }}
               onClick={copiarIdGestor}
-              className="px-3 py-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded transition-colors flex items-center gap-1"
             >
               {copied ? (
-                <>
-                  <CheckIcon className="w-4 h-4" />
-                  <span>¡Copiado!</span>
-                </>
+                <CheckIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
               ) : (
-                <>
-                  <ClipboardIcon className="w-4 h-4" />
-                  <span>Copiar</span>
-                </>
+                <ClipboardIcon className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Estadísticas Resumidas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Total Ingresos</span>
-            </div>
-            <p className="text-2xl font-bold">${estadisticas.ingresos.toFixed(2)}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2" style={{ padding: '10px 0' }}>
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.ingresos.toFixed(2)}</p>
           </div>
-          <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Total Gastos</span>
-            </div>
-            <p className="text-2xl font-bold">${estadisticas.gastos.toFixed(2)}</p>
+
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.gastos.toFixed(2)}</p>
           </div>
-          <div className={`bg-gradient-to-br ${estadisticas.balance >= 0 ? 'from-indigo-500 to-blue-600' : 'from-orange-500 to-red-600'} rounded-2xl shadow-xl p-5 text-white`}>
-            <div className="flex items-center gap-2 mb-2">
-              <ChartBarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Balance</span>
-            </div>
-            <p className="text-2xl font-bold">${estadisticas.balance.toFixed(2)}</p>
+
+          <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
+            style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
+            <ChartBarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.balance.toFixed(2)}</p>
           </div>
         </div>
 
         {/* Botones de Acción */}
-        <div className="flex gap-3">
-          <button
+        <div className="flex gap-3" style={{ padding: '0 15px' }}>
+          <Button
             onClick={onOpen}
-            className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg"
+            variant="default"
+            className="text-white font-semibold transition-colors flex-1"
+            size="lg"
+            style={{ padding: '10px 20px' }}
           >
             <PlusIcon className="w-5 h-5" />
             <span>Nuevo Mes</span>
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => router.push(`/gestores/${id}/estadisticas`)}
-            className="flex-1 px-4 py-3 bg-white dark:bg-gray-800 border-2 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors flex items-center justify-center gap-2 shadow-lg"
+            variant="outline"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
+            size="lg"
+            style={{ padding: '10px 20px' }}
           >
             <ChartBarIcon className="w-5 h-5" />
             <span>Estadísticas</span>
-          </button>
+          </Button>
         </div>
 
         {/* Lista de Meses */}
-        <div className="space-y-3">
+        <div className="space-y-3 gap-4" style={{ padding: '10px 15px', marginTop: '15px' }}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
             Meses ({gestor.meses.length})
           </h2>
           {gestor.meses.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+              style={{ padding: '15px' }}>
               <CalendarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
               <p className="text-gray-500 dark:text-gray-400 mb-4">No hay meses registrados</p>
-              <button
+              <Button
                 onClick={onOpen}
-                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
+                variant="default"
+                className="text-white font-semibold transition-colors"
+                size="lg"
+                style={{ padding: '10px 20px' }}
               >
                 Crear primer mes
-              </button>
+              </Button>
             </div>
           ) : (
             gestor.meses.map((mes) => {
@@ -268,51 +264,30 @@ export default function GestorPage() {
                 <div
                   key={mes.id}
                   onClick={() => router.push(`/meses/${mes.id}`)}
-                  className="cursor-pointer bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 border border-gray-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600"
+                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl transition-all border border-gray-300 dark:border-gray-700'
+                  style={{ margin: '10px 0' }}
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div
+                    className="flex items-center justify-between"
+                    style={{ padding: '10px' }}
+                  >
                     <div className="flex items-center gap-3 flex-1">
-                      <div className={`p-3 rounded-xl ${mes.cerrado ? 'bg-gray-100 dark:bg-gray-700' : 'bg-indigo-100 dark:bg-indigo-900/30'}`}>
-                        <CalendarIcon className={`w-6 h-6 ${mes.cerrado ? 'text-gray-600 dark:text-gray-400' : 'text-indigo-600 dark:text-indigo-400'}`} />
+                      <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+                        <CalendarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                            {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
-                              month: 'long',
-                              year: 'numeric',
-                            })}
-                          </h3>
-                          {mes.cerrado ? (
-                            <span className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full flex items-center gap-1">
-                              <LockClosedIcon className="w-3 h-3" />
-                              Cerrado
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center gap-1">
-                              <LockOpenIcon className="w-3 h-3" />
-                              Abierto
-                            </span>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-3 gap-3 mt-3">
-                          <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Ingresos</p>
-                            <p className="font-bold text-green-600 dark:text-green-400">${ingresos.toFixed(2)}</p>
-                          </div>
-                          <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gastos</p>
-                            <p className="font-bold text-red-600 dark:text-red-400">${gastos.toFixed(2)}</p>
-                          </div>
-                          <div className={`p-2 rounded-lg ${balance >= 0 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Balance</p>
-                            <p className={`font-bold ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                              ${balance.toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                          {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          {mes.cerrado ? 'Cerrado' : 'Abierto'}
+                        </p>
                       </div>
                     </div>
+                    <ArrowRightIcon className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
               )
@@ -328,20 +303,22 @@ export default function GestorPage() {
             <>
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
               >
                 Cancelar
               </button>
               <button
                 onClick={crearMes}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
               >
                 Crear
               </button>
             </>
           }
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col" style={{ gap: '8px' }}>
             <label htmlFor="fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Fecha de Inicio
             </label>
@@ -350,10 +327,12 @@ export default function GestorPage() {
               type="datetime-local"
               value={nuevoMes.fechaInicio}
               onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
             />
           </div>
         </Modal>
+
       </div>
     </div>
   )

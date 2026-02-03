@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { Loader2 } from 'lucide-react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface LoginFormProps {
   onSwitchToRegister: () => void
@@ -36,7 +41,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         const data = await res.json()
         setError(data.error || 'Error al procesar la solicitud')
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión. Por favor, intenta de nuevo.')
     } finally {
       setSubmitting(false)
@@ -44,72 +49,72 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="">
+    <form onSubmit={handleSubmit} className="space-y-5 flex flex-col gap-2">
       {error && (
-        <div className="">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="">
-          Email
-        </label>
-        <input
+      <div className="grid gap-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
           id="email"
           type="email"
           placeholder="ejemplo@correo.com"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
-          className="w-full p-4 "
+          className="h-11"
+          autoComplete="email"
         />
       </div>
 
-      <div className="">
-        <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Contraseña
-        </label>
-        <input
+      <div className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Contraseña</Label>
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => {
+              // si más adelante agregás reset password, podés navegar acá
+            }}
+          >
+            ¿Olvidaste?
+          </button>
+        </div>
+        <Input
           id="password"
           type="password"
           placeholder="Ingresa tu contraseña"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
-          className=""
+          className="h-11"
+          autoComplete="current-password"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className=""
-      >
+      <Button type="submit" disabled={submitting} className="h-11 w-full">
         {submitting ? (
           <>
-            <svg className="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Iniciando sesión...</span>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Iniciando sesión...
           </>
         ) : (
-          <>
-            <span>Iniciar Sesión</span>
-            <ArrowRightIcon className="w-5 h-5" />
-          </>
+          'Iniciar sesión'
         )}
-      </button>
+      </Button>
 
-      <div className="">
-        <button
+      <div className="text-center">
+        <Button
           type="button"
+          variant="link"
+          className="px-0 text-sm"
           onClick={onSwitchToRegister}
-          className="text-indigo-600/90 text-sm font-medium hover:underline"
         >
           ¿No tienes cuenta? Regístrate
-        </button>
+        </Button>
       </div>
     </form>
   )

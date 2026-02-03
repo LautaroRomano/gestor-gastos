@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeftIcon, PlusIcon, TrashIcon, PencilIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/Modal'
+import { Button } from '@/components/ui/button'
 
 interface Ingreso {
   id: string
@@ -39,10 +40,10 @@ export default function MesPage() {
   const id = params.id as string
   const [mes, setMes] = useState<Mes | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('ingresos')
+  const [activeTab, setActiveTab] = useState('gastos')
   const [isOpen, setIsOpen] = useState(false)
   const [isCerrarOpen, setIsCerrarOpen] = useState(false)
-  
+
   const onOpen = () => setIsOpen(true)
   const onClose = () => setIsOpen(false)
   const [formData, setFormData] = useState({
@@ -236,7 +237,7 @@ export default function MesPage() {
   }
 
   const gastosPorCategoria = calcularGastosPorCategoria()
-  const maxGastoCategoria = gastosPorCategoria.length > 0 
+  const maxGastoCategoria = gastosPorCategoria.length > 0
     ? Math.max(...gastosPorCategoria.map(g => g.total))
     : 0
 
@@ -248,33 +249,33 @@ export default function MesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      <div className="max-w-2xl mx-auto space-y-6" style={{ padding: '10px 15px' }}>
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <button
+        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
+          <Button
             onClick={() => router.push(`/gestores/${mes.gestor.id}`)}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+            variant="ghost"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
+            size="lg"
+            style={{ padding: '10px' }}
           >
-            <ArrowLeftIcon className="w-4 h-4" />
-            <span>Volver</span>
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <CalendarIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <ArrowLeftIcon className="w-4 h-4 text-primary font-bold" />
+          </Button>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
               month: 'long',
               year: 'numeric',
             })}
           </h1>
-          <div className="w-24"></div>
         </div>
 
         {/* Card de Resumen */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{mes.gestor.nombre}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: '5px' }}>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100" style={{ marginBottom: '5px' }}>{mes.gestor.nombre}</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400" style={{ marginBottom: '5px' }}>
                 {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
                   month: 'long',
                   year: 'numeric',
@@ -288,81 +289,89 @@ export default function MesPage() {
               </span>
             )}
           </div>
-          
+
           {/* Cards de estadísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <CurrencyDollarIcon className="w-5 h-5 opacity-90" />
-                <span className="text-sm opacity-90">Ingresos</span>
-              </div>
-              <p className="text-2xl font-bold">${calcularTotalIngresos().toFixed(2)}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2" style={{ padding: '10px 0' }}>
+            <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+              style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
+              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+              <p className="text-lg font-bold">${calcularTotalIngresos().toFixed(2)}</p>
             </div>
-            <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl shadow-lg p-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <CurrencyDollarIcon className="w-5 h-5 opacity-90" />
-                <span className="text-sm opacity-90">Gastos</span>
-              </div>
-              <p className="text-2xl font-bold">${calcularTotalGastos().toFixed(2)}</p>
+            <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+              style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
+              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+              <p className="text-lg font-bold">${calcularTotalGastos().toFixed(2)}</p>
             </div>
-            <div className={`bg-gradient-to-br ${calcularBalance() >= 0 ? 'from-indigo-500 to-blue-600' : 'from-orange-500 to-red-600'} rounded-xl shadow-lg p-4 text-white`}>
-              <div className="flex items-center gap-2 mb-2">
-                <ChartBarIcon className="w-5 h-5 opacity-90" />
-                <span className="text-sm opacity-90">Balance</span>
-              </div>
-              <p className="text-2xl font-bold">${calcularBalance().toFixed(2)}</p>
+            <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
+              style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
+              <ChartBarIcon className="w-6 h-6 opacity-90" />
+              <p className="text-lg font-bold">${calcularBalance().toFixed(2)}</p>
             </div>
           </div>
         </div>
 
         {/* Botones de Acción */}
         {!mes.cerrado && (
-          <div className="flex gap-3">
-            <button
+          <div className="flex gap-3" style={{ padding: '0 15px', marginTop: '10px' }}>
+            <Button
               onClick={onOpen}
-              className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg"
+              variant="default"
+              className="text-white font-semibold transition-colors flex-1"
+              size="lg"
+              style={{ padding: '10px 20px' }}
             >
               <PlusIcon className="w-5 h-5" />
               <span>Agregar</span>
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsCerrarOpen(true)}
-              className="flex-1 px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg"
+              variant="outline"
+              className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
+              size="lg"
+              style={{ padding: '10px 20px' }}
             >
               Cerrar Mes
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 border border-gray-100 dark:border-gray-700"
+          style={{ padding: '10px 15px', marginTop: '10px' }}>
           <div className="flex gap-2">
             <button
+              onClick={() => setActiveTab('gastos')}
+              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'gastos'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+            >
+              Gastos ({mes.gastos.length})
+            </button>
+            <button
               onClick={() => setActiveTab('ingresos')}
-              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${
-                activeTab === 'ingresos'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
+              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'ingresos'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
             >
               Ingresos ({mes.ingresos.length})
             </button>
             <button
-              onClick={() => setActiveTab('gastos')}
-              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${
-                activeTab === 'gastos'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
+              onClick={() => setActiveTab('estadisticas')}
+              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'estadisticas'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
             >
-              Gastos ({mes.gastos.length})
+              Estadísticas
             </button>
           </div>
         </div>
 
         {/* Contenido de Tabs */}
         {activeTab === 'ingresos' && (
-          <div className="space-y-3">
+          <div className="space-y-3" style={{ marginTop: '15px' }}>
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
               Ingresos ({mes.ingresos.length})
             </h2>
@@ -373,11 +382,18 @@ export default function MesPage() {
               </div>
             ) : (
               mes.ingresos.map((ingreso) => (
-                <div key={ingreso.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all">
-                  <div className="flex items-center justify-between">
+                <div
+                  key={ingreso.id}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all"
+                  style={{ padding: '10px 15px', marginBottom: '5px' }}
+                >
+                  <div className="flex items-center justify-between" >
                     <div className="flex-1">
-                      <p className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">{ingreso.descripcion}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{ingreso.descripcion}</p>
+                      <div className="">
+                        <p className="text-lg font-bold text-green-600 dark:text-green-400">${ingreso.monto.toFixed(2)}</p>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {new Date(ingreso.fecha).toLocaleDateString('es-ES', {
                           day: 'numeric',
                           month: 'long',
@@ -388,9 +404,6 @@ export default function MesPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">${ingreso.monto.toFixed(2)}</p>
-                      </div>
                       {!mes.cerrado && (
                         <button
                           onClick={(e) => {
@@ -412,68 +425,74 @@ export default function MesPage() {
         )}
 
         {activeTab === 'gastos' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2 mb-3">
-                Gastos ({mes.gastos.length})
-              </h2>
-              {mes.gastos.length === 0 ? (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
-                  <CurrencyDollarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">No hay gastos registrados</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {mes.gastos.map((gasto) => (
-                    <div key={gasto.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">{gasto.descripcion}</p>
-                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <p>{new Date(gasto.fecha).toLocaleDateString('es-ES', {
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}</p>
-                            {gasto.categoria && (
-                              <>
-                                <span>•</span>
-                                <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-medium">
-                                  {gasto.categoria}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-red-600 dark:text-red-400">${gasto.monto.toFixed(2)}</p>
-                          </div>
-                          {!mes.cerrado && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                eliminarGasto(gasto.id)
-                              }}
-                              className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                              title="Eliminar gasto"
-                            >
-                              <TrashIcon className="w-5 h-5 text-red-500" />
-                            </button>
-                          )}
-                        </div>
+          <div className="space-y-3" style={{ marginTop: '15px' }}>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
+              Gastos ({mes.gastos.length})
+            </h2>
+            {mes.gastos.length === 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
+                <CurrencyDollarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">No hay gastos registrados</p>
+              </div>
+            ) : (
+              mes.gastos.map((gasto) => (
+                <div
+                  key={gasto.id}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all"
+                  style={{ padding: '10px 15px', marginBottom: '5px' }}
+                >
+                  <div className="flex items-center justify-between" >
+                    <div className="flex-1">
+                      <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{gasto.descripcion}</p>
+                      <div className="">
+                        <p className="text-lg font-bold text-red-600 dark:text-red-400">${gasto.monto.toFixed(2)}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(gasto.fecha).toLocaleDateString('es-ES', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                        {gasto.categoria && (
+                          <>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
+                            <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-medium">
+                              {gasto.categoria}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-3">
+                      {!mes.cerrado && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            eliminarGasto(gasto.id)
+                          }}
+                          className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Eliminar gasto"
+                        >
+                          <TrashIcon className="w-5 h-5 text-red-500" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              ))
+            )}
+          </div>
+        )}
 
+        {activeTab === 'estadisticas' && (
+          <div className="space-y-3" style={{ marginTop: '15px' }}>
             {/* Gastos por Categoría */}
-            {gastosPorCategoria.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+            {gastosPorCategoria.length > 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
                 <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <ChartBarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                   Gastos por Categoría
@@ -482,7 +501,7 @@ export default function MesPage() {
                   {gastosPorCategoria.map((item, index) => {
                     const porcentaje = maxGastoCategoria > 0 ? (item.total / maxGastoCategoria) * 100 : 0
                     const color = colores[index % colores.length]
-                    
+
                     return (
                       <div key={index} className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -507,6 +526,11 @@ export default function MesPage() {
                   })}
                 </div>
               </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
+                <ChartBarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">No hay estadísticas disponibles</p>
+              </div>
             )}
           </div>
         )}
@@ -519,21 +543,23 @@ export default function MesPage() {
             <>
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
               >
                 Cancelar
               </button>
               <button
                 onClick={activeTab === 'ingresos' ? crearIngreso : crearGasto}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
               >
                 Agregar
               </button>
             </>
           }
         >
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
               <label htmlFor="monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Monto
               </label>
@@ -544,10 +570,11 @@ export default function MesPage() {
                 min="0"
                 value={formData.monto}
                 onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col" style={{ gap: '8px' }}>
               <label htmlFor="descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Descripción
               </label>
@@ -556,11 +583,12 @@ export default function MesPage() {
                 type="text"
                 value={formData.descripcion}
                 onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
               />
             </div>
             {activeTab === 'gastos' && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col" style={{ gap: '8px' }}>
                 <label htmlFor="categoria" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Categoría (opcional)
                 </label>
@@ -569,11 +597,12 @@ export default function MesPage() {
                   type="text"
                   value={formData.categoria}
                   onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                  className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                  style={{ padding: '10px 15px' }}
                 />
               </div>
             )}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col" style={{ gap: '8px' }}>
               <label htmlFor="fecha" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Fecha
               </label>
@@ -582,7 +611,8 @@ export default function MesPage() {
                 type="datetime-local"
                 value={formData.fecha}
                 onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
               />
             </div>
           </div>
@@ -596,24 +626,26 @@ export default function MesPage() {
             <>
               <button
                 onClick={() => setIsCerrarOpen(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
               >
                 Cancelar
               </button>
               <button
                 onClick={cerrarMes}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
               >
                 Cerrar Mes
               </button>
             </>
           }
         >
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Selecciona la fecha de cierre del mes (fecha de tu próximo cobro)
             </p>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col" style={{ gap: '8px' }}>
               <label htmlFor="fechaCierre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Fecha de Cierre
               </label>
@@ -622,7 +654,8 @@ export default function MesPage() {
                 type="datetime-local"
                 value={fechaCierre}
                 onChange={(e) => setFechaCierre(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
               />
             </div>
           </div>

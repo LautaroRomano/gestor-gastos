@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PlusIcon, WalletIcon, ArrowRightIcon, ChartBarIcon, CurrencyDollarIcon, UserIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 import Modal from '../components/Modal'
+import { LogOut } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface Gestor {
   id: string
@@ -30,7 +32,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [nuevoGestor, setNuevoGestor] = useState({ nombre: '', descripcion: '' })
-  
+
   const onOpen = () => setIsOpen(true)
   const onClose = () => setIsOpen(false)
 
@@ -62,10 +64,10 @@ export default function Dashboard() {
 
   function calcularTotalGestor(gestor: Gestor) {
     if (!gestor.meses) return { ingresos: 0, gastos: 0, balance: 0 }
-    const ingresos = gestor.meses.reduce((sum, mes) => 
+    const ingresos = gestor.meses.reduce((sum, mes) =>
       sum + mes.ingresos.reduce((s, ing) => s + ing.monto, 0), 0
     )
-    const gastos = gestor.meses.reduce((sum, mes) => 
+    const gastos = gestor.meses.reduce((sum, mes) =>
       sum + mes.gastos.reduce((s, gas) => s + gas.monto, 0), 0
     )
     return { ingresos, gastos, balance: ingresos - gastos }
@@ -115,10 +117,10 @@ export default function Dashboard() {
   const balanceTotal = totalIngresos - totalGastos
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <WalletIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
@@ -135,62 +137,65 @@ export default function Dashboard() {
             onClick={handleLogout}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
           >
-            <ArrowLeftIcon className="w-4 h-4" />
-            Salir
+            <LogOut className="w-6 h-6 text-primary" />
           </button>
         </div>
 
         {/* Resumen General */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Total Ingresos</span>
-            </div>
-            <p className="text-2xl font-bold">${totalIngresos.toFixed(2)}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${totalIngresos.toFixed(2)}</p>
           </div>
-          <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Total Gastos</span>
-            </div>
-            <p className="text-2xl font-bold">${totalGastos.toFixed(2)}</p>
+
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${totalGastos.toFixed(2)}</p>
           </div>
-          <div className={`bg-gradient-to-br ${balanceTotal >= 0 ? 'from-indigo-500 to-blue-600' : 'from-orange-500 to-red-600'} rounded-2xl shadow-xl p-5 text-white`}>
-            <div className="flex items-center gap-2 mb-2">
-              <ChartBarIcon className="w-6 h-6 opacity-90" />
-              <span className="text-sm opacity-90">Balance</span>
-            </div>
-            <p className="text-2xl font-bold">${balanceTotal.toFixed(2)}</p>
+
+          <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
+            style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
+            <ChartBarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${balanceTotal.toFixed(2)}</p>
           </div>
         </div>
 
         {/* Lista de Gestores */}
-        <div className="space-y-3">
+        <div className="space-y-3 gap-4" style={{ padding: '15px', marginTop: '15px' }}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
-            Gestores ({gestores.length})
+            Gestores
           </h2>
           {gestores.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+              style={{ padding: '15px' }}>
               <WalletIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
               <p className="text-gray-500 dark:text-gray-400 mb-4">No tienes gestores aún</p>
-              <button
+              <Button
                 onClick={onOpen}
-                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors"
+                variant="default"
+                className="text-white font-semibold transition-colors"
+                size="lg"
+                style={{ padding: '10px 20px' }}
               >
                 Crear tu primer gestor
-              </button>
+              </Button>
             </div>
           ) : (
             gestores.map((gestor) => {
-              const { ingresos, gastos, balance } = calcularTotalGestor(gestor)
               return (
                 <div
                   key={gestor.id}
                   onClick={() => router.push(`/gestores/${gestor.id}`)}
-                  className="cursor-pointer bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all p-5 border border-gray-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600"
+                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl transition-all border border-gray-300 dark:border-gray-700'
+                  style={{ margin: '10px 0' }}
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div
+                    className="flex items-center justify-between"
+                    style={{ padding: '10px' }}
+                  >
                     <div className="flex items-center gap-3 flex-1">
                       <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
                         <WalletIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
@@ -200,20 +205,9 @@ export default function Dashboard() {
                         {gestor.descripcion && (
                           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{gestor.descripcion}</p>
                         )}
-                        <div className="flex items-center gap-4 mt-2 text-xs">
-                          <span className="text-green-600 dark:text-green-400 font-semibold">
-                            +${ingresos.toFixed(2)}
-                          </span>
-                          <span className="text-red-600 dark:text-red-400 font-semibold">
-                            -${gastos.toFixed(2)}
-                          </span>
-                          <span className={`font-bold ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            ${balance.toFixed(2)}
-                          </span>
-                        </div>
                       </div>
                     </div>
-                    <ArrowRightIcon className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <ArrowRightIcon className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
               )
@@ -221,20 +215,28 @@ export default function Dashboard() {
           )}
         </div>
 
-        <button
-          onClick={onOpen}
-          className="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-        >
-          <PlusIcon className="w-5 h-5" />
-          <span>Crear Nuevo Gestor</span>
-        </button>
+        <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-2 justify-center" style={{ padding: '0 15px' }}>
+          <Button
+            onClick={onOpen}
+            variant="default"
+            className="text-white font-semibold transition-colors"
+            size="lg"
+            style={{ padding: '10px 20px', width: '100%' }}
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Crear Nuevo Gestor</span>
+          </Button>
 
-        <button
-          onClick={() => router.push('/unirse')}
-          className="w-full mt-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-        >
-          Unirse a un Gestor
-        </button>
+          <Button
+            onClick={() => router.push('/unirse')}
+            variant="outline"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
+            size="lg"
+            style={{ padding: '10px 20px', width: '100%' }}
+          >
+            Unirse a un Gestor
+          </Button>
+        </div>
 
         <Modal
           isOpen={isOpen}

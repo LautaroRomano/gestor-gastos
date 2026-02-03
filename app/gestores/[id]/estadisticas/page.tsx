@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeftIcon, ChartBarIcon, CurrencyDollarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
+import { Button } from '@/components/ui/button'
 
 interface Estadisticas {
   totalIngresos: number
@@ -55,7 +56,7 @@ export default function EstadisticasPage() {
     return null
   }
 
-  const maxGasto = estadisticas.gastosPorCategoria.length > 0 
+  const maxGasto = estadisticas.gastosPorCategoria.length > 0
     ? Math.max(...estadisticas.gastosPorCategoria.map(g => g.total))
     : 0
 
@@ -67,64 +68,50 @@ export default function EstadisticasPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      <div className="max-w-2xl mx-auto space-y-6" style={{ padding: '10px 15px' }}>
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <button
+        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
+          <Button
             onClick={() => router.push(`/gestores/${id}`)}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+            variant="ghost"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
+            size="lg"
+            style={{ padding: '10px' }}
           >
-            <ArrowLeftIcon className="w-4 h-4" />
-            <span>Volver</span>
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <ChartBarIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <ArrowLeftIcon className="w-4 h-4 text-primary font-bold" />
+          </Button>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             Estadísticas
           </h1>
-          <div className="w-24"></div>
         </div>
 
         {/* Cards de resumen principal */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Total Ingresos */}
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <CurrencyDollarIcon className="w-8 h-8 opacity-90" />
-              <ArrowTrendingUpIcon className="w-6 h-6 opacity-75" />
-            </div>
-            <p className="text-sm opacity-90 mb-1">Total Ingresos</p>
-            <p className="text-3xl font-bold">${estadisticas.totalIngresos.toFixed(2)}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2" style={{ padding: '10px 0' }}>
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.totalIngresos.toFixed(2)}</p>
           </div>
 
-          {/* Total Gastos */}
-          <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-xl p-6 text-white">
-            <div className="flex items-center justify-between mb-2">
-              <CurrencyDollarIcon className="w-8 h-8 opacity-90" />
-              <ArrowTrendingDownIcon className="w-6 h-6 opacity-75" />
-            </div>
-            <p className="text-sm opacity-90 mb-1">Total Gastos</p>
-            <p className="text-3xl font-bold">${estadisticas.totalGastos.toFixed(2)}</p>
+          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
+            style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
+            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.totalGastos.toFixed(2)}</p>
           </div>
 
-          {/* Balance */}
-          <div className={`bg-gradient-to-br ${estadisticas.balance >= 0 ? 'from-indigo-500 to-blue-600' : 'from-orange-500 to-red-600'} rounded-2xl shadow-xl p-6 text-white`}>
-            <div className="flex items-center justify-between mb-2">
-              <ChartBarIcon className="w-8 h-8 opacity-90" />
-              {estadisticas.balance >= 0 ? (
-                <ArrowTrendingUpIcon className="w-6 h-6 opacity-75" />
-              ) : (
-                <ArrowTrendingDownIcon className="w-6 h-6 opacity-75" />
-              )}
-            </div>
-            <p className="text-sm opacity-90 mb-1">Balance Total</p>
-            <p className="text-3xl font-bold">${estadisticas.balance.toFixed(2)}</p>
+          <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
+            style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
+            <ChartBarIcon className="w-6 h-6 opacity-90" />
+            <p className="text-lg font-bold">${estadisticas.balance.toFixed(2)}</p>
           </div>
         </div>
 
         {/* Promedios y Meses */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700"
+            style={{ padding: '15px' }}
+          >
             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <ChartBarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               Promedios
@@ -144,32 +131,11 @@ export default function EstadisticasPage() {
               </div>
             </div>
           </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <ChartBarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-              Meses
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <span className="text-gray-700 dark:text-gray-300 font-medium">Meses Abiertos</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {estadisticas.mesesAbiertos}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <span className="text-gray-700 dark:text-gray-300 font-medium">Meses Cerrados</span>
-                <span className="text-2xl font-bold text-gray-600 dark:text-gray-400">
-                  {estadisticas.mesesCerrados}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Gastos por Categoría */}
         {estadisticas.gastosPorCategoria.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700" style={{ padding: '15px', marginTop: '15px' }}>
             <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <ChartBarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               Gastos por Categoría
@@ -178,7 +144,7 @@ export default function EstadisticasPage() {
               {estadisticas.gastosPorCategoria.map((item, index) => {
                 const porcentaje = maxGasto > 0 ? (item.total / maxGasto) * 100 : 0
                 const color = colores[index % colores.length]
-                
+
                 return (
                   <div key={index} className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -206,7 +172,8 @@ export default function EstadisticasPage() {
         )}
 
         {estadisticas.gastosPorCategoria.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
+            style={{ padding: '15px', marginTop: '15px' }}>
             <ChartBarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400">No hay gastos por categoría registrados</p>
           </div>

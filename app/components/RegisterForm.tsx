@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+import { Loader2 } from 'lucide-react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void
@@ -22,7 +27,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     e.preventDefault()
     setError('')
     setSubmitting(true)
-    
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -37,7 +42,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         const data = await res.json()
         setError(data.error || 'Error al procesar la solicitud')
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión. Por favor, intenta de nuevo.')
     } finally {
       setSubmitting(false)
@@ -45,87 +50,78 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="space-y-5 flex flex-col gap-2">
       {error && (
-        <div className="w-full p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-      
-      <div className="flex flex-col gap-2">
-        <label htmlFor="nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Nombre completo
-        </label>
-        <input
+
+      <div className="grid gap-2">
+        <Label htmlFor="nombre">Nombre completo</Label>
+        <Input
           id="nombre"
           type="text"
           placeholder="Juan Pérez"
           value={formData.nombre}
           onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
           required
-          className="w-full px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+          className="h-11"
+          autoComplete="name"
         />
       </div>
-      
-      <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Email
-        </label>
-        <input
+
+      <div className="grid gap-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
           id="email"
           type="email"
           placeholder="ejemplo@correo.com"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
-          className="w-full px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+          className="h-11"
+          autoComplete="email"
         />
       </div>
-      
-      <div className="flex flex-col gap-2">
-        <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Contraseña
-        </label>
-        <input
+
+      <div className="grid gap-2">
+        <Label htmlFor="password">Contraseña</Label>
+        <Input
           id="password"
           type="password"
           placeholder="Crea una contraseña segura"
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
-          className="w-full px-4 py-3 text-base rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+          className="h-11"
+          autoComplete="new-password"
         />
+        <p className="text-xs text-muted-foreground">
+          Mínimo 8 caracteres recomendado.
+        </p>
       </div>
-      
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full px-4 py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
+
+      <Button type="submit" disabled={submitting} className="h-11 w-full">
         {submitting ? (
           <>
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Creando cuenta...</span>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creando cuenta...
           </>
         ) : (
-          <>
-            <span>Crear Cuenta</span>
-            <ArrowRightIcon className="w-5 h-5" />
-          </>
+          'Crear cuenta'
         )}
-      </button>
+      </Button>
 
-      <div className="text-center pt-2">
-        <button
+      <div className="text-center">
+        <Button
           type="button"
+          variant="link"
+          className="px-0 text-sm"
           onClick={onSwitchToLogin}
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
         >
           ¿Ya tienes cuenta? Inicia sesión
-        </button>
+        </Button>
       </div>
     </form>
   )
