@@ -1,6 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+
+const updateGestorSchema = z.object({
+  nombre: z.string().min(1).optional(),
+  descripcion: z.string().optional(),
+})
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    const { id } = await params
+    const body = await request.json()
+    const data = updateGestorSchema.parse(body)
+
+    const gestor = await prisma.gestor.findFirst({
+      where: {
+        id,
+        usuarios: {
+          some: {
+            usuarioId: user.id,
+          },
+        },
+      },
+    })
+
+    if (!gestor) {
+      return NextResponse.json({ error: 'Gestor no encontrado' }, { status: 404 })
+    }
+
+    const gestorActualizado = await prisma.gestor.update({
+      where: { id },
+      data,
+    })
+
+    return NextResponse.json(gestorActualizado)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', details: error.issues },
+        { status: 400 }
+      )
+    }
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    console.error('Error en actualizar gestor:', error)
+    return NextResponse.json(
+      { error: 'Error al actualizar gestor', message: errorMessage },
+      { status: 500 }
+    )
+  }
+}
 
 export async function GET(
   request: NextRequest,

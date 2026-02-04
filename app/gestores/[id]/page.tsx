@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeftIcon, PlusIcon, CalendarIcon, LockClosedIcon, LockOpenIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, PlusIcon, CalendarIcon, LockClosedIcon, LockOpenIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon, PencilIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
 import { ArrowRightIcon } from 'lucide-react'
@@ -30,11 +30,24 @@ export default function GestorPage() {
   const [gestor, setGestor] = useState<Gestor | null>(null)
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
+  const [isEditGestorOpen, setIsEditGestorOpen] = useState(false)
+  const [isEditMesOpen, setIsEditMesOpen] = useState(false)
+  const [editingMes, setEditingMes] = useState<Mes | null>(null)
   const [nuevoMes, setNuevoMes] = useState({ fechaInicio: '' })
+  const [editGestorData, setEditGestorData] = useState({ nombre: '', descripcion: '' })
   const [copied, setCopied] = useState(false)
 
   const onOpen = () => setIsOpen(true)
   const onClose = () => setIsOpen(false)
+  const onEditGestorClose = () => {
+    setIsEditGestorOpen(false)
+    setEditGestorData({ nombre: '', descripcion: '' })
+  }
+  const onEditMesClose = () => {
+    setIsEditMesOpen(false)
+    setEditingMes(null)
+    setNuevoMes({ fechaInicio: '' })
+  }
 
   useEffect(() => {
     loadGestor()
@@ -118,6 +131,65 @@ export default function GestorPage() {
     }
   }
 
+  function abrirEditarGestor() {
+    if (!gestor) return
+    setEditGestorData({
+      nombre: gestor.nombre,
+      descripcion: gestor.descripcion || '',
+    })
+    setIsEditGestorOpen(true)
+  }
+
+  async function actualizarGestor() {
+    try {
+      const res = await fetch(`/api/gestores/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editGestorData),
+      })
+
+      if (res.ok) {
+        await loadGestor()
+        onEditGestorClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar gestor')
+      }
+    } catch (error) {
+      alert('Error al actualizar gestor')
+    }
+  }
+
+  function abrirEditarMes(mes: Mes) {
+    setEditingMes(mes)
+    setNuevoMes({ fechaInicio: new Date(mes.fechaInicio).toISOString().slice(0, 16) })
+    setIsEditMesOpen(true)
+  }
+
+  async function actualizarMes() {
+    if (!editingMes) return
+
+    try {
+      const res = await fetch(`/api/meses/${editingMes.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fechaInicio: new Date(nuevoMes.fechaInicio).toISOString(),
+        }),
+      })
+
+      if (res.ok) {
+        await loadGestor()
+        onEditMesClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar mes')
+      }
+    } catch (error) {
+      alert('Error al actualizar mes')
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -166,6 +238,13 @@ export default function GestorPage() {
                 </p>
               )}
             </div>
+            <button
+              onClick={abrirEditarGestor}
+              className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+              title="Editar gestor"
+            >
+              <PencilIcon className="w-5 h-5 text-blue-500" />
+            </button>
           </div>
 
           <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
@@ -324,6 +403,188 @@ export default function GestorPage() {
             </label>
             <input
               id="fechaInicio"
+              type="datetime-local"
+              value={nuevoMes.fechaInicio}
+              onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditGestorOpen}
+          onClose={onEditGestorClose}
+          title="Editar Gestor"
+          footer={
+            <>
+              <button
+                onClick={onEditGestorClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarGestor}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Nombre
+              </label>
+              <input
+                id="edit-nombre"
+                type="text"
+                value={editGestorData.nombre}
+                onChange={(e) => setEditGestorData({ ...editGestorData, nombre: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Descripción
+              </label>
+              <input
+                id="edit-descripcion"
+                type="text"
+                value={editGestorData.descripcion}
+                onChange={(e) => setEditGestorData({ ...editGestorData, descripcion: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditMesOpen}
+          onClose={onEditMesClose}
+          title="Editar Mes"
+          footer={
+            <>
+              <button
+                onClick={onEditMesClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarMes}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div className="flex flex-col" style={{ gap: '8px' }}>
+            <label htmlFor="edit-fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha de Inicio
+            </label>
+            <input
+              id="edit-fechaInicio"
+              type="datetime-local"
+              value={nuevoMes.fechaInicio}
+              onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditGestorOpen}
+          onClose={onEditGestorClose}
+          title="Editar Gestor"
+          footer={
+            <>
+              <button
+                onClick={onEditGestorClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarGestor}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Nombre
+              </label>
+              <input
+                id="edit-nombre"
+                type="text"
+                value={editGestorData.nombre}
+                onChange={(e) => setEditGestorData({ ...editGestorData, nombre: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Descripción
+              </label>
+              <input
+                id="edit-descripcion"
+                type="text"
+                value={editGestorData.descripcion}
+                onChange={(e) => setEditGestorData({ ...editGestorData, descripcion: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditMesOpen}
+          onClose={onEditMesClose}
+          title="Editar Mes"
+          footer={
+            <>
+              <button
+                onClick={onEditMesClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarMes}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div className="flex flex-col" style={{ gap: '8px' }}>
+            <label htmlFor="edit-fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fecha de Inicio
+            </label>
+            <input
+              id="edit-fechaInicio"
               type="datetime-local"
               value={nuevoMes.fechaInicio}
               onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}

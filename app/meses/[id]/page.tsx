@@ -43,9 +43,18 @@ export default function MesPage() {
   const [activeTab, setActiveTab] = useState('gastos')
   const [isOpen, setIsOpen] = useState(false)
   const [isCerrarOpen, setIsCerrarOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState<Ingreso | Gasto | null>(null)
+  const [editingType, setEditingType] = useState<'ingreso' | 'gasto' | null>(null)
 
   const onOpen = () => setIsOpen(true)
   const onClose = () => setIsOpen(false)
+  const onEditClose = () => {
+    setIsEditOpen(false)
+    setEditingItem(null)
+    setEditingType(null)
+    setFormData({ monto: '', descripcion: '', categoria: '', fecha: '' })
+  }
   const [formData, setFormData] = useState({
     monto: '',
     descripcion: '',
@@ -166,6 +175,83 @@ export default function MesPage() {
       }
     } catch (error) {
       alert('Error al eliminar gasto')
+    }
+  }
+
+  function abrirEditarIngreso(ingreso: Ingreso) {
+    setEditingItem(ingreso)
+    setEditingType('ingreso')
+    setFormData({
+      monto: ingreso.monto.toString(),
+      descripcion: ingreso.descripcion,
+      categoria: '',
+      fecha: new Date(ingreso.fecha).toISOString().slice(0, 16),
+    })
+    setIsEditOpen(true)
+  }
+
+  function abrirEditarGasto(gasto: Gasto) {
+    setEditingItem(gasto)
+    setEditingType('gasto')
+    setFormData({
+      monto: gasto.monto.toString(),
+      descripcion: gasto.descripcion,
+      categoria: gasto.categoria || '',
+      fecha: new Date(gasto.fecha).toISOString().slice(0, 16),
+    })
+    setIsEditOpen(true)
+  }
+
+  async function actualizarIngreso() {
+    if (!editingItem || editingType !== 'ingreso') return
+
+    try {
+      const res = await fetch(`/api/ingresos/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          monto: parseFloat(formData.monto),
+          descripcion: formData.descripcion,
+          fecha: formData.fecha ? new Date(formData.fecha).toISOString() : undefined,
+        }),
+      })
+
+      if (res.ok) {
+        await loadMes()
+        onEditClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar ingreso')
+      }
+    } catch (error) {
+      alert('Error al actualizar ingreso')
+    }
+  }
+
+  async function actualizarGasto() {
+    if (!editingItem || editingType !== 'gasto') return
+
+    try {
+      const res = await fetch(`/api/gastos/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          monto: parseFloat(formData.monto),
+          descripcion: formData.descripcion,
+          categoria: formData.categoria || undefined,
+          fecha: formData.fecha ? new Date(formData.fecha).toISOString() : undefined,
+        }),
+      })
+
+      if (res.ok) {
+        await loadMes()
+        onEditClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar gasto')
+      }
+    } catch (error) {
+      alert('Error al actualizar gasto')
     }
   }
 
@@ -405,16 +491,28 @@ export default function MesPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       {!mes.cerrado && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            eliminarIngreso(ingreso.id)
-                          }}
-                          className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Eliminar ingreso"
-                        >
-                          <TrashIcon className="w-5 h-5 text-red-500" />
-                        </button>
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              abrirEditarIngreso(ingreso)
+                            }}
+                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            title="Editar ingreso"
+                          >
+                            <PencilIcon className="w-5 h-5 text-blue-500" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              eliminarIngreso(ingreso.id)
+                            }}
+                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Eliminar ingreso"
+                          >
+                            <TrashIcon className="w-5 h-5 text-red-500" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -469,16 +567,28 @@ export default function MesPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       {!mes.cerrado && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            eliminarGasto(gasto.id)
-                          }}
-                          className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Eliminar gasto"
-                        >
-                          <TrashIcon className="w-5 h-5 text-red-500" />
-                        </button>
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              abrirEditarGasto(gasto)
+                            }}
+                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                            title="Editar gasto"
+                          >
+                            <PencilIcon className="w-5 h-5 text-blue-500" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              eliminarGasto(gasto.id)
+                            }}
+                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Eliminar gasto"
+                          >
+                            <TrashIcon className="w-5 h-5 text-red-500" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -654,6 +764,89 @@ export default function MesPage() {
                 type="datetime-local"
                 value={fechaCierre}
                 onChange={(e) => setFechaCierre(e.target.value)}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditOpen}
+          onClose={onEditClose}
+          title={editingType === 'ingreso' ? 'Editar Ingreso' : 'Editar Gasto'}
+          footer={
+            <>
+              <button
+                onClick={onEditClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={editingType === 'ingreso' ? actualizarIngreso : actualizarGasto}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Monto
+              </label>
+              <input
+                id="edit-monto"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.monto}
+                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Descripción
+              </label>
+              <input
+                id="edit-descripcion"
+                type="text"
+                value={formData.descripcion}
+                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            {editingType === 'gasto' && (
+              <div className="flex flex-col" style={{ gap: '8px' }}>
+                <label htmlFor="edit-categoria" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Categoría (opcional)
+                </label>
+                <input
+                  id="edit-categoria"
+                  type="text"
+                  value={formData.categoria}
+                  onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
+                  className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                  style={{ padding: '10px 15px' }}
+                />
+              </div>
+            )}
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="edit-fecha" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Fecha
+              </label>
+              <input
+                id="edit-fecha"
+                type="datetime-local"
+                value={formData.fecha}
+                onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
                 className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
                 style={{ padding: '10px 15px' }}
               />
