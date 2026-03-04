@@ -75,6 +75,15 @@ export default function MesPage() {
       if (res.ok) {
         const data = await res.json()
         setMes(data)
+        try {
+          // Guardamos el último mes y gestor visitados para futuras sesiones
+          localStorage.setItem('lastMesId', data.id)
+          if (data.gestor?.id) {
+            localStorage.setItem('lastGestorId', data.gestor.id)
+          }
+        } catch (e) {
+          console.error('Error guardando el último mes visitado', e)
+        }
       }
     } catch (error) {
       console.error(error)
@@ -296,14 +305,35 @@ export default function MesPage() {
 
   function calcularGastosPorCategoria() {
     if (!mes) return []
-    const categoriaMap = new Map<string, number>()
+
+    // Normaliza categorías para agrupar sin importar mayúsculas, tildes, espacios o caracteres especiales
+    const normalizarCategoria = (valor: string) => {
+      return valor
+        .normalize('NFD') // separa letras y tildes
+        .replace(/[\u0300-\u036f]/g, '') // quita tildes
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '') // quita espacios y caracteres especiales
+    }
+
+    const categoriaMap = new Map<string, { total: number; label: string }>()
+
     mes.gastos.forEach((gasto) => {
-      const categoria = gasto.categoria || 'Sin categoría'
-      const actual = categoriaMap.get(categoria) || 0
-      categoriaMap.set(categoria, actual + gasto.monto)
+      const categoriaOriginal = gasto.categoria && gasto.categoria.trim() !== ''
+        ? gasto.categoria
+        : 'Sin categoría'
+
+      const key = normalizarCategoria(categoriaOriginal)
+      const existente = categoriaMap.get(key) || { total: 0, label: categoriaOriginal }
+
+      categoriaMap.set(key, {
+        total: existente.total + gasto.monto,
+        // mantenemos el primer label encontrado como texto a mostrar
+        label: existente.label,
+      })
     })
-    return Array.from(categoriaMap.entries())
-      .map(([categoria, total]) => ({ categoria, total }))
+
+    return Array.from(categoriaMap.values())
+      .map(({ label, total }) => ({ categoria: label, total }))
       .sort((a, b) => b.total - a.total)
   }
 

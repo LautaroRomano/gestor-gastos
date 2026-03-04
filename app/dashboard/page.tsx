@@ -97,6 +97,13 @@ export default function Dashboard() {
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
+    try {
+      // Limpiamos el último mes/gestor guardado al cerrar sesión
+      localStorage.removeItem('lastMesId')
+      localStorage.removeItem('lastGestorId')
+    } catch {
+      // noop
+    }
     router.push('/')
     router.refresh()
   }

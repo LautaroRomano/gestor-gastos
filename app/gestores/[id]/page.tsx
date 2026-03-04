@@ -71,11 +71,15 @@ export default function GestorPage() {
 
   async function crearMes() {
     try {
+      const fechaInicioISO = nuevoMes.fechaInicio
+        ? new Date(nuevoMes.fechaInicio).toISOString()
+        : new Date().toISOString()
+
       const res = await fetch(`/api/gestores/${id}/meses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fechaInicio: nuevoMes.fechaInicio || new Date().toISOString(),
+          fechaInicio: fechaInicioISO,
         }),
       })
 

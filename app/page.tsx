@@ -29,7 +29,18 @@ export default function Home() {
   async function checkAuth() {
     try {
       const res = await fetch('/api/auth/me')
-      if (res.ok) router.push('/dashboard')
+      if (res.ok) {
+        try {
+          const lastMesId = localStorage.getItem('lastMesId')
+          if (lastMesId) {
+            router.push(`/meses/${lastMesId}`)
+          } else {
+            router.push('/dashboard')
+          }
+        } catch {
+          router.push('/dashboard')
+        }
+      }
     } catch {
       // noop
     } finally {
