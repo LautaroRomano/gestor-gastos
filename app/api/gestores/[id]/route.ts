@@ -101,6 +101,11 @@ export async function GET(
             gastos: true,
           },
         },
+        gastosFijos: {
+          orderBy: {
+            descripcion: 'asc',
+          },
+        },
       },
     })
 

@@ -3,9 +3,11 @@ import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-const mesSchema = z.object({
-  fechaInicio: z.string().datetime(),
-  fechaCierre: z.string().datetime().optional(),
+const gastoFijoSchema = z.object({
+  monto: z.number().positive(),
+  descripcion: z.string().min(1),
+  categoria: z.string().optional(),
+  activo: z.boolean().optional(),
 })
 
 export async function GET(
@@ -20,7 +22,6 @@ export async function GET(
 
     const { id } = await params
 
-    // Verificar acceso al gestor
     const acceso = await prisma.usuarioGestor.findUnique({
       where: {
         usuarioId_gestorId: {
@@ -34,21 +35,17 @@ export async function GET(
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
-    const meses = await prisma.mes.findMany({
+    const gastosFijos = await prisma.gastoFijo.findMany({
       where: { gestorId: id },
-      orderBy: { fechaInicio: 'desc' },
-      include: {
-        ingresos: true,
-        gastos: true,
-      },
+      orderBy: { descripcion: 'asc' },
     })
 
-    return NextResponse.json(meses)
+    return NextResponse.json(gastosFijos)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    console.error('Error en obtener meses:', error)
+    console.error('Error en obtener gastos fijos:', error)
     return NextResponse.json(
-      { error: 'Error al obtener meses', message: errorMessage },
+      { error: 'Error al obtener gastos fijos', message: errorMessage },
       { status: 500 }
     )
   }
@@ -65,8 +62,9 @@ export async function POST(
     }
 
     const { id } = await params
+    const body = await request.json()
+    const data = gastoFijoSchema.parse(body)
 
-    // Verificar acceso al gestor
     const acceso = await prisma.usuarioGestor.findUnique({
       where: {
         usuarioId_gestorId: {
@@ -80,49 +78,17 @@ export async function POST(
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
     }
 
-    const body = await request.json()
-    const { fechaInicio } = mesSchema.parse(body)
-
-    const fechaInicioMes = new Date(fechaInicio)
-
-    const mes = await prisma.$transaction(async (tx) => {
-      const gastosFijos = await tx.gastoFijo.findMany({
-        where: {
-          gestorId: id,
-          activo: true,
-        },
-      })
-
-      const nuevoMes = await tx.mes.create({
-        data: {
-          gestorId: id,
-          fechaInicio: fechaInicioMes,
-          cerrado: false,
-        },
-      })
-
-      if (gastosFijos.length > 0) {
-        await tx.gasto.createMany({
-          data: gastosFijos.map((gastoFijo) => ({
-            mesId: nuevoMes.id,
-            monto: gastoFijo.monto,
-            descripcion: gastoFijo.descripcion,
-            categoria: gastoFijo.categoria,
-            fecha: fechaInicioMes,
-          })),
-        })
-      }
-
-      return tx.mes.findUniqueOrThrow({
-        where: { id: nuevoMes.id },
-        include: {
-          ingresos: true,
-          gastos: true,
-        },
-      })
+    const gastoFijo = await prisma.gastoFijo.create({
+      data: {
+        gestorId: id,
+        monto: data.monto,
+        descripcion: data.descripcion,
+        categoria: data.categoria,
+        activo: data.activo ?? true,
+      },
     })
 
-    return NextResponse.json(mes, { status: 201 })
+    return NextResponse.json(gastoFijo, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -131,9 +97,9 @@ export async function POST(
       )
     }
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    console.error('Error en crear mes:', error)
+    console.error('Error en crear gasto fijo:', error)
     return NextResponse.json(
-      { error: 'Error al crear mes', message: errorMessage },
+      { error: 'Error al crear gasto fijo', message: errorMessage },
       { status: 500 }
     )
   }

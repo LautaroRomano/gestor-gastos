@@ -56,7 +56,8 @@ export const ModelName = {
   UsuarioGestor: 'UsuarioGestor',
   Mes: 'Mes',
   Ingreso: 'Ingreso',
-  Gasto: 'Gasto'
+  Gasto: 'Gasto',
+  GastoFijo: 'GastoFijo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -147,6 +148,20 @@ export const GastoScalarFieldEnum = {
 } as const
 
 export type GastoScalarFieldEnum = (typeof GastoScalarFieldEnum)[keyof typeof GastoScalarFieldEnum]
+
+
+export const GastoFijoScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  monto: 'monto',
+  descripcion: 'descripcion',
+  categoria: 'categoria',
+  activo: 'activo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GastoFijoScalarFieldEnum = (typeof GastoFijoScalarFieldEnum)[keyof typeof GastoFijoScalarFieldEnum]
 
 
 export const SortOrder = {

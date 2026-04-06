@@ -30,6 +30,7 @@ model Gestor {
   
   usuarios    UsuarioGestor[]
   meses       Mes[]
+  gastosFijos GastoFijo[]
 }
 
 model UsuarioGestor {
@@ -82,4 +83,17 @@ model Gasto {
   updatedAt   DateTime @updatedAt
   
   mes         Mes      @relation(fields: [mesId], references: [id], onDelete: Cascade)
+}
+
+model GastoFijo {
+  id          String   @id @default(cuid())
+  gestorId    String
+  monto       Float
+  descripcion String
+  categoria   String?
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  gestor      Gestor   @relation(fields: [gestorId], references: [id], onDelete: Cascade)
 }

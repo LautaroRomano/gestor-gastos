@@ -389,7 +389,8 @@ export const ModelName = {
   UsuarioGestor: 'UsuarioGestor',
   Mes: 'Mes',
   Ingreso: 'Ingreso',
-  Gasto: 'Gasto'
+  Gasto: 'Gasto',
+  GastoFijo: 'GastoFijo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "usuario" | "gestor" | "usuarioGestor" | "mes" | "ingreso" | "gasto"
+    modelProps: "usuario" | "gestor" | "usuarioGestor" | "mes" | "ingreso" | "gasto" | "gastoFijo"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GastoFijo: {
+      payload: Prisma.$GastoFijoPayload<ExtArgs>
+      fields: Prisma.GastoFijoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GastoFijoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GastoFijoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        findFirst: {
+          args: Prisma.GastoFijoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GastoFijoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        findMany: {
+          args: Prisma.GastoFijoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>[]
+        }
+        create: {
+          args: Prisma.GastoFijoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        createMany: {
+          args: Prisma.GastoFijoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GastoFijoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>[]
+        }
+        delete: {
+          args: Prisma.GastoFijoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        update: {
+          args: Prisma.GastoFijoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        deleteMany: {
+          args: Prisma.GastoFijoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GastoFijoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GastoFijoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>[]
+        }
+        upsert: {
+          args: Prisma.GastoFijoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GastoFijoPayload>
+        }
+        aggregate: {
+          args: Prisma.GastoFijoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGastoFijo>
+        }
+        groupBy: {
+          args: Prisma.GastoFijoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GastoFijoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GastoFijoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GastoFijoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -964,6 +1039,20 @@ export const GastoScalarFieldEnum = {
 } as const
 
 export type GastoScalarFieldEnum = (typeof GastoScalarFieldEnum)[keyof typeof GastoScalarFieldEnum]
+
+
+export const GastoFijoScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  monto: 'monto',
+  descripcion: 'descripcion',
+  categoria: 'categoria',
+  activo: 'activo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GastoFijoScalarFieldEnum = (typeof GastoFijoScalarFieldEnum)[keyof typeof GastoFijoScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1159,6 +1248,7 @@ export type GlobalOmitConfig = {
   mes?: Prisma.MesOmit
   ingreso?: Prisma.IngresoOmit
   gasto?: Prisma.GastoOmit
+  gastoFijo?: Prisma.GastoFijoOmit
 }
 
 /* Types for Logging */

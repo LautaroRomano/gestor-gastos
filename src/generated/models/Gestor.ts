@@ -184,6 +184,7 @@ export type GestorWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   usuarios?: Prisma.UsuarioGestorListRelationFilter
   meses?: Prisma.MesListRelationFilter
+  gastosFijos?: Prisma.GastoFijoListRelationFilter
 }
 
 export type GestorOrderByWithRelationInput = {
@@ -194,6 +195,7 @@ export type GestorOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   usuarios?: Prisma.UsuarioGestorOrderByRelationAggregateInput
   meses?: Prisma.MesOrderByRelationAggregateInput
+  gastosFijos?: Prisma.GastoFijoOrderByRelationAggregateInput
 }
 
 export type GestorWhereUniqueInput = Prisma.AtLeast<{
@@ -207,6 +209,7 @@ export type GestorWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   usuarios?: Prisma.UsuarioGestorListRelationFilter
   meses?: Prisma.MesListRelationFilter
+  gastosFijos?: Prisma.GastoFijoListRelationFilter
 }, "id">
 
 export type GestorOrderByWithAggregationInput = {
@@ -239,6 +242,7 @@ export type GestorCreateInput = {
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateInput = {
@@ -249,6 +253,7 @@ export type GestorUncheckedCreateInput = {
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorUpdateInput = {
@@ -259,6 +264,7 @@ export type GestorUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateInput = {
@@ -269,6 +275,7 @@ export type GestorUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorCreateManyInput = {
@@ -356,6 +363,20 @@ export type GestorUpdateOneRequiredWithoutMesesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutMesesInput, Prisma.GestorUpdateWithoutMesesInput>, Prisma.GestorUncheckedUpdateWithoutMesesInput>
 }
 
+export type GestorCreateNestedOneWithoutGastosFijosInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutGastosFijosInput, Prisma.GestorUncheckedCreateWithoutGastosFijosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutGastosFijosInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutGastosFijosNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutGastosFijosInput, Prisma.GestorUncheckedCreateWithoutGastosFijosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutGastosFijosInput
+  upsert?: Prisma.GestorUpsertWithoutGastosFijosInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutGastosFijosInput, Prisma.GestorUpdateWithoutGastosFijosInput>, Prisma.GestorUncheckedUpdateWithoutGastosFijosInput>
+}
+
 export type GestorCreateWithoutUsuariosInput = {
   id?: string
   nombre: string
@@ -363,6 +384,7 @@ export type GestorCreateWithoutUsuariosInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateWithoutUsuariosInput = {
@@ -372,6 +394,7 @@ export type GestorUncheckedCreateWithoutUsuariosInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorCreateOrConnectWithoutUsuariosInput = {
@@ -397,6 +420,7 @@ export type GestorUpdateWithoutUsuariosInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateWithoutUsuariosInput = {
@@ -406,6 +430,7 @@ export type GestorUncheckedUpdateWithoutUsuariosInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorCreateWithoutMesesInput = {
@@ -415,6 +440,7 @@ export type GestorCreateWithoutMesesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateWithoutMesesInput = {
@@ -424,6 +450,7 @@ export type GestorUncheckedCreateWithoutMesesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorCreateOrConnectWithoutMesesInput = {
@@ -449,6 +476,7 @@ export type GestorUpdateWithoutMesesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateWithoutMesesInput = {
@@ -458,6 +486,63 @@ export type GestorUncheckedUpdateWithoutMesesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutGastosFijosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutGastosFijosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutGastosFijosInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutGastosFijosInput, Prisma.GestorUncheckedCreateWithoutGastosFijosInput>
+}
+
+export type GestorUpsertWithoutGastosFijosInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutGastosFijosInput, Prisma.GestorUncheckedUpdateWithoutGastosFijosInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutGastosFijosInput, Prisma.GestorUncheckedCreateWithoutGastosFijosInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutGastosFijosInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutGastosFijosInput, Prisma.GestorUncheckedUpdateWithoutGastosFijosInput>
+}
+
+export type GestorUpdateWithoutGastosFijosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutGastosFijosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 
@@ -468,11 +553,13 @@ export type GestorUncheckedUpdateWithoutMesesInput = {
 export type GestorCountOutputType = {
   usuarios: number
   meses: number
+  gastosFijos: number
 }
 
 export type GestorCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | GestorCountOutputTypeCountUsuariosArgs
   meses?: boolean | GestorCountOutputTypeCountMesesArgs
+  gastosFijos?: boolean | GestorCountOutputTypeCountGastosFijosArgs
 }
 
 /**
@@ -499,6 +586,13 @@ export type GestorCountOutputTypeCountMesesArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.MesWhereInput
 }
 
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountGastosFijosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GastoFijoWhereInput
+}
+
 
 export type GestorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -508,6 +602,7 @@ export type GestorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   usuarios?: boolean | Prisma.Gestor$usuariosArgs<ExtArgs>
   meses?: boolean | Prisma.Gestor$mesesArgs<ExtArgs>
+  gastosFijos?: boolean | Prisma.Gestor$gastosFijosArgs<ExtArgs>
   _count?: boolean | Prisma.GestorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gestor"]>
 
@@ -539,6 +634,7 @@ export type GestorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type GestorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Gestor$usuariosArgs<ExtArgs>
   meses?: boolean | Prisma.Gestor$mesesArgs<ExtArgs>
+  gastosFijos?: boolean | Prisma.Gestor$gastosFijosArgs<ExtArgs>
   _count?: boolean | Prisma.GestorCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GestorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -549,6 +645,7 @@ export type $GestorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     usuarios: Prisma.$UsuarioGestorPayload<ExtArgs>[]
     meses: Prisma.$MesPayload<ExtArgs>[]
+    gastosFijos: Prisma.$GastoFijoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -952,6 +1049,7 @@ export interface Prisma__GestorClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   usuarios<T extends Prisma.Gestor$usuariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$usuariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsuarioGestorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meses<T extends Prisma.Gestor$mesesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$mesesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  gastosFijos<T extends Prisma.Gestor$gastosFijosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$gastosFijosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GastoFijoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1419,6 +1517,30 @@ export type Gestor$mesesArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.MesScalarFieldEnum | Prisma.MesScalarFieldEnum[]
+}
+
+/**
+ * Gestor.gastosFijos
+ */
+export type Gestor$gastosFijosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GastoFijo
+   */
+  select?: Prisma.GastoFijoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GastoFijo
+   */
+  omit?: Prisma.GastoFijoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GastoFijoInclude<ExtArgs> | null
+  where?: Prisma.GastoFijoWhereInput
+  orderBy?: Prisma.GastoFijoOrderByWithRelationInput | Prisma.GastoFijoOrderByWithRelationInput[]
+  cursor?: Prisma.GastoFijoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GastoFijoScalarFieldEnum | Prisma.GastoFijoScalarFieldEnum[]
 }
 
 /**

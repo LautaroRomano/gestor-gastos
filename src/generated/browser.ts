@@ -47,3 +47,8 @@ export type Ingreso = Prisma.IngresoModel
  * 
  */
 export type Gasto = Prisma.GastoModel
+/**
+ * Model GastoFijo
+ * 
+ */
+export type GastoFijo = Prisma.GastoFijoModel

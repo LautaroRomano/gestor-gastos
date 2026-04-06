@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeftIcon, PlusIcon, CalendarIcon, LockClosedIcon, LockOpenIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon, PencilIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, PlusIcon, CalendarIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
 import { ArrowRightIcon } from 'lucide-react'
@@ -21,6 +21,15 @@ interface Gestor {
   nombre: string
   descripcion?: string
   meses: Mes[]
+  gastosFijos: GastoFijo[]
+}
+
+interface GastoFijo {
+  id: string
+  monto: number
+  descripcion: string
+  categoria?: string
+  activo: boolean
 }
 
 export default function GestorPage() {
@@ -32,9 +41,18 @@ export default function GestorPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [isEditGestorOpen, setIsEditGestorOpen] = useState(false)
   const [isEditMesOpen, setIsEditMesOpen] = useState(false)
+  const [isGastoFijoOpen, setIsGastoFijoOpen] = useState(false)
+  const [isEditGastoFijoOpen, setIsEditGastoFijoOpen] = useState(false)
   const [editingMes, setEditingMes] = useState<Mes | null>(null)
+  const [editingGastoFijo, setEditingGastoFijo] = useState<GastoFijo | null>(null)
   const [nuevoMes, setNuevoMes] = useState({ fechaInicio: '' })
   const [editGestorData, setEditGestorData] = useState({ nombre: '', descripcion: '' })
+  const [gastoFijoData, setGastoFijoData] = useState({
+    monto: '',
+    descripcion: '',
+    categoria: '',
+    activo: true,
+  })
   const [copied, setCopied] = useState(false)
 
   const onOpen = () => setIsOpen(true)
@@ -47,6 +65,15 @@ export default function GestorPage() {
     setIsEditMesOpen(false)
     setEditingMes(null)
     setNuevoMes({ fechaInicio: '' })
+  }
+  const onGastoFijoClose = () => {
+    setIsGastoFijoOpen(false)
+    setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
+  }
+  const onEditGastoFijoClose = () => {
+    setIsEditGastoFijoOpen(false)
+    setEditingGastoFijo(null)
+    setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
   }
 
   useEffect(() => {
@@ -194,6 +221,88 @@ export default function GestorPage() {
     }
   }
 
+  async function crearGastoFijo() {
+    try {
+      const res = await fetch(`/api/gestores/${id}/gastos-fijos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          monto: parseFloat(gastoFijoData.monto),
+          descripcion: gastoFijoData.descripcion,
+          categoria: gastoFijoData.categoria || undefined,
+          activo: gastoFijoData.activo,
+        }),
+      })
+
+      if (res.ok) {
+        await loadGestor()
+        onGastoFijoClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al crear gasto fijo')
+      }
+    } catch (error) {
+      alert('Error al crear gasto fijo')
+    }
+  }
+
+  function abrirEditarGastoFijo(gastoFijo: GastoFijo) {
+    setEditingGastoFijo(gastoFijo)
+    setGastoFijoData({
+      monto: gastoFijo.monto.toString(),
+      descripcion: gastoFijo.descripcion,
+      categoria: gastoFijo.categoria || '',
+      activo: gastoFijo.activo,
+    })
+    setIsEditGastoFijoOpen(true)
+  }
+
+  async function actualizarGastoFijo() {
+    if (!editingGastoFijo) return
+
+    try {
+      const res = await fetch(`/api/gastos-fijos/${editingGastoFijo.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          monto: parseFloat(gastoFijoData.monto),
+          descripcion: gastoFijoData.descripcion,
+          categoria: gastoFijoData.categoria || undefined,
+          activo: gastoFijoData.activo,
+        }),
+      })
+
+      if (res.ok) {
+        await loadGestor()
+        onEditGastoFijoClose()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al actualizar gasto fijo')
+      }
+    } catch (error) {
+      alert('Error al actualizar gasto fijo')
+    }
+  }
+
+  async function eliminarGastoFijo(gastoFijoId: string) {
+    if (!confirm('¿Estás seguro de eliminar este gasto fijo?')) return
+
+    try {
+      const res = await fetch(`/api/gastos-fijos/${gastoFijoId}`, {
+        method: 'DELETE',
+      })
+
+      if (res.ok) {
+        await loadGestor()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Error al eliminar gasto fijo')
+      }
+    } catch (error) {
+      alert('Error al eliminar gasto fijo')
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -304,6 +413,16 @@ export default function GestorPage() {
           >
             <PlusIcon className="w-5 h-5" />
             <span>Nuevo Mes</span>
+          </Button>
+          <Button
+            onClick={() => setIsGastoFijoOpen(true)}
+            variant="outline"
+            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
+            size="lg"
+            style={{ padding: '10px 20px' }}
+          >
+            <WalletIcon className="w-5 h-5" />
+            <span>Gastos fijos</span>
           </Button>
           <Button
             onClick={() => router.push(`/gestores/${id}/estadisticas`)}
@@ -466,6 +585,170 @@ export default function GestorPage() {
                 style={{ padding: '10px 15px' }}
               />
             </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isGastoFijoOpen}
+          onClose={onGastoFijoClose}
+          title="Gastos Fijos"
+          footer={
+            <>
+              <button
+                onClick={onGastoFijoClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cerrar
+              </button>
+              <button
+                onClick={crearGastoFijo}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Agregar
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="gf-monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">Monto</label>
+              <input
+                id="gf-monto"
+                type="number"
+                step="0.01"
+                min="0"
+                value={gastoFijoData.monto}
+                onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="gf-desc" className="text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
+              <input
+                id="gf-desc"
+                type="text"
+                value={gastoFijoData.descripcion}
+                onChange={(e) => setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <div className="flex flex-col" style={{ gap: '8px' }}>
+              <label htmlFor="gf-cat" className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría (opcional)</label>
+              <input
+                id="gf-cat"
+                type="text"
+                value={gastoFijoData.categoria}
+                onChange={(e) => setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })}
+                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+                style={{ padding: '10px 15px' }}
+              />
+            </div>
+            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={gastoFijoData.activo}
+                onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
+              />
+              Activo
+            </label>
+
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Listado de gastos fijos</p>
+              {gestor.gastosFijos.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No hay gastos fijos cargados.</p>
+              ) : (
+                gestor.gastosFijos.map((gastoFijo) => (
+                  <div key={gastoFijo.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-600 p-3">
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">
+                        {gastoFijo.descripcion} - ${gastoFijo.monto.toFixed(2)}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {gastoFijo.categoria || 'Sin categoría'} • {gastoFijo.activo ? 'Activo' : 'Inactivo'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => abrirEditarGastoFijo(gastoFijo)}
+                        className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        title="Editar gasto fijo"
+                      >
+                        <PencilIcon className="w-5 h-5 text-blue-500" />
+                      </button>
+                      <button
+                        onClick={() => eliminarGastoFijo(gastoFijo.id)}
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        title="Eliminar gasto fijo"
+                      >
+                        <TrashIcon className="w-5 h-5 text-red-500" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={isEditGastoFijoOpen}
+          onClose={onEditGastoFijoClose}
+          title="Editar gasto fijo"
+          footer={
+            <>
+              <button
+                onClick={onEditGastoFijoClose}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={actualizarGastoFijo}
+                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
+                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
+              >
+                Guardar
+              </button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={gastoFijoData.monto}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
+            />
+            <input
+              type="text"
+              value={gastoFijoData.descripcion}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
+            />
+            <input
+              type="text"
+              value={gastoFijoData.categoria}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })}
+              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
+              style={{ padding: '10px 15px' }}
+            />
+            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={gastoFijoData.activo}
+                onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
+              />
+              Activo
+            </label>
           </div>
         </Modal>
 
