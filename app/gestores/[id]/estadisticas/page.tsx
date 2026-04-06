@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeftIcon, ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
 import { Button } from '@/components/ui/button'
+import { formatCurrency } from '@/lib/format-currency'
 
 interface Estadisticas {
   totalIngresos: number
@@ -91,19 +92,19 @@ export default function EstadisticasPage() {
           <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
             style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
             <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.totalIngresos.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.totalIngresos)}</p>
           </div>
 
           <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
             style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
             <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.totalGastos.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.totalGastos)}</p>
           </div>
 
           <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
             style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
             <ChartBarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.balance.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.balance)}</p>
           </div>
         </div>
 
@@ -120,13 +121,13 @@ export default function EstadisticasPage() {
               <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <span className="text-gray-700 dark:text-gray-300 font-medium">Promedio Ingresos</span>
                 <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                  ${estadisticas.promedioIngresos.toFixed(2)}
+                  {formatCurrency(estadisticas.promedioIngresos)}
                 </span>
               </div>
               <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <span className="text-gray-700 dark:text-gray-300 font-medium">Promedio Gastos</span>
                 <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                  ${estadisticas.promedioGastos.toFixed(2)}
+                  {formatCurrency(estadisticas.promedioGastos)}
                 </span>
               </div>
             </div>
@@ -152,7 +153,7 @@ export default function EstadisticasPage() {
                         {item.categoria || 'Sin categoría'}
                       </span>
                       <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                        ${item.total.toFixed(2)}
+                        {formatCurrency(item.total)}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">

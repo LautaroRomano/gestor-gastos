@@ -6,6 +6,7 @@ import { ArrowLeftIcon, PlusIcon, CalendarIcon, ClipboardIcon, CheckIcon, ChartB
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
 import { ArrowRightIcon } from 'lucide-react'
+import { formatCurrency } from '@/lib/format-currency'
 
 interface Mes {
   id: string
@@ -386,19 +387,19 @@ export default function GestorPage() {
           <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
             style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
             <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.ingresos.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.ingresos)}</p>
           </div>
 
           <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
             style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
             <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.gastos.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.gastos)}</p>
           </div>
 
           <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
             style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
             <ChartBarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">${estadisticas.balance.toFixed(2)}</p>
+            <p className="text-lg font-bold">{formatCurrency(estadisticas.balance)}</p>
           </div>
         </div>
 
@@ -665,7 +666,7 @@ export default function GestorPage() {
                   <div key={gastoFijo.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-600 p-3">
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">
-                        {gastoFijo.descripcion} - ${gastoFijo.monto.toFixed(2)}
+                        {gastoFijo.descripcion} - {formatCurrency(gastoFijo.monto)}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {gastoFijo.categoria || 'Sin categoría'} • {gastoFijo.activo ? 'Activo' : 'Inactivo'}

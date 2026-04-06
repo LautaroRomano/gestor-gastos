@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeftIcon, PlusIcon, TrashIcon, PencilIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
+import { formatCurrency } from '@/lib/format-currency'
 
 interface Ingreso {
   id: string
@@ -411,17 +412,17 @@ export default function MesPage() {
             <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
               style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
               <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">${calcularTotalIngresos().toFixed(2)}</p>
+              <p className="text-lg font-bold">{formatCurrency(calcularTotalIngresos())}</p>
             </div>
             <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
               style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
               <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">${calcularTotalGastos().toFixed(2)}</p>
+              <p className="text-lg font-bold">{formatCurrency(calcularTotalGastos())}</p>
             </div>
             <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
               style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
               <ChartBarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">${calcularBalance().toFixed(2)}</p>
+              <p className="text-lg font-bold">{formatCurrency(calcularBalance())}</p>
             </div>
           </div>
         </div>
@@ -507,7 +508,7 @@ export default function MesPage() {
                     <div className="flex-1">
                       <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{ingreso.descripcion}</p>
                       <div className="">
-                        <p className="text-lg font-bold text-green-600 dark:text-green-400">${ingreso.monto.toFixed(2)}</p>
+                        <p className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(ingreso.monto)}</p>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {new Date(ingreso.fecha).toLocaleDateString('es-ES', {
@@ -573,7 +574,7 @@ export default function MesPage() {
                     <div className="flex-1">
                       <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{gasto.descripcion}</p>
                       <div className="">
-                        <p className="text-lg font-bold text-red-600 dark:text-red-400">${gasto.monto.toFixed(2)}</p>
+                        <p className="text-lg font-bold text-red-600 dark:text-red-400">{formatCurrency(gasto.monto)}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -649,7 +650,7 @@ export default function MesPage() {
                             {item.categoria}
                           </span>
                           <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                            ${item.total.toFixed(2)}
+                            {formatCurrency(item.total)}
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
