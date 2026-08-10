@@ -1,89 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
+import { montoSchema, parseFecha, handleError, ApiError } from '@/lib/api'
+import { clasificarIngreso } from '@/lib/finance/classify'
 import { z } from 'zod'
 
 const ingresoSchema = z.object({
   mesId: z.string(),
-  monto: z.number().positive(),
+  monto: montoSchema,
   descripcion: z.string().min(1),
+  moneda: z.string().optional(),
+  categoria: z.string().optional(),
+  categoriaId: z.string().nullish(),
+  recurrente: z.boolean().optional(),
+  notas: z.string().nullish(),
+  source: z.string().optional(),
   fecha: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
-    }
+    if (!user) throw new ApiError(401, 'No autorizado')
 
-    const body = await request.json()
-    const { mesId, monto, descripcion, fecha } = ingresoSchema.parse(body)
-    
-    // Convertir fecha de datetime-local a ISO si existe
-    let fechaISO: Date | undefined
-    if (fecha) {
-      // Si la fecha viene de datetime-local, agregar segundos y zona horaria si no los tiene
-      const fechaStr = fecha.includes('T') ? fecha : `${fecha}T00:00:00`
-      fechaISO = new Date(fechaStr)
-      if (isNaN(fechaISO.getTime())) {
-        return NextResponse.json({ error: 'Fecha inválida' }, { status: 400 })
-      }
-    }
+    const body = ingresoSchema.parse(await request.json())
+    const fechaISO = parseFecha(body.fecha)
 
-    // Verificar acceso al mes
     const mes = await prisma.mes.findUnique({
-      where: { id: mesId },
-      include: {
-        gestor: {
-          include: {
-            usuarios: {
-              where: {
-                usuarioId: user.id,
-              },
-            },
-          },
-        },
-      },
+      where: { id: body.mesId },
+      include: { gestor: { include: { usuarios: { where: { usuarioId: user.id } } } } },
     })
 
-    if (!mes) {
-      return NextResponse.json({ error: 'Mes no encontrado' }, { status: 404 })
-    }
+    if (!mes) throw new ApiError(404, 'Mes no encontrado')
+    if (mes.gestor.usuarios.length === 0) throw new ApiError(403, 'No autorizado')
+    if (mes.cerrado) throw new ApiError(400, 'No se pueden agregar ingresos a un mes cerrado')
 
-    if (mes.gestor.usuarios.length === 0) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
-    }
-
-    if (mes.cerrado) {
-      return NextResponse.json(
-        { error: 'No se pueden agregar ingresos a un mes cerrado' },
-        { status: 400 }
-      )
-    }
+    const categoria = body.categoria || clasificarIngreso(body.descripcion).categoria
 
     const ingreso = await prisma.ingreso.create({
       data: {
-        mesId,
-        monto,
-        descripcion,
+        mesId: body.mesId,
+        monto: body.monto,
+        moneda: body.moneda || 'ARS',
+        descripcion: body.descripcion,
+        categoria,
+        categoriaId: body.categoriaId ?? undefined,
+        recurrente: body.recurrente ?? false,
+        notas: body.notas ?? undefined,
+        source: body.source || 'web',
         fecha: fechaISO || new Date(),
       },
     })
 
     return NextResponse.json(ingreso, { status: 201 })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Datos inválidos', details: error.issues },
-        { status: 400 }
-      )
-    }
-    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    console.error('Error en crear ingreso:', error)
-    return NextResponse.json(
-      { error: 'Error al crear ingreso', message: errorMessage },
-      { status: 500 }
-    )
+    return handleError(error, 'crear ingreso')
   }
 }
