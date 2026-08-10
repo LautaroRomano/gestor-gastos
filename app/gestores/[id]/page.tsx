@@ -14,6 +14,14 @@ import {
   Trash2,
   ChevronRight,
   Lock,
+  LayoutDashboard,
+  Tags,
+  Wallet,
+  PiggyBank,
+  Target,
+  Sparkles,
+  MessageCircle,
+  Settings,
 } from 'lucide-react'
 
 import Modal from '../../components/Modal'
@@ -362,15 +370,44 @@ export default function GestorPage() {
             <span className="text-sm font-semibold">Gastos fijos</span>
           </button>
           <button
-            onClick={() => router.push(`/gestores/${id}/estadisticas`)}
+            onClick={() => router.push(`/gestores/${id}/dashboard`)}
             className="tap flex flex-col items-start gap-2 rounded-2xl border border-border/70 bg-card p-3.5"
           >
             <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
-              <BarChart3 className="size-[18px]" />
+              <LayoutDashboard className="size-[18px]" />
             </span>
-            <span className="text-sm font-semibold">Estadísticas</span>
+            <span className="text-sm font-semibold">Dashboard</span>
           </button>
         </div>
+
+        {/* Secciones (spec §129) */}
+        <section className="space-y-3">
+          <h2 className="px-1 font-display text-base font-semibold">Secciones</h2>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: <Sparkles className="size-[18px]" />, label: 'Análisis IA', href: 'analisis' },
+              { icon: <PiggyBank className="size-[18px]" />, label: 'Presupuestos', href: 'presupuestos' },
+              { icon: <Tags className="size-[18px]" />, label: 'Categorías', href: 'categorias' },
+              { icon: <Wallet className="size-[18px]" />, label: 'Cuentas', href: 'cuentas' },
+              { icon: <Target className="size-[18px]" />, label: 'Objetivos', href: 'objetivos' },
+              { icon: <Repeat className="size-[18px]" />, label: 'Recurrentes', href: 'recurrentes' },
+              { icon: <MessageCircle className="size-[18px]" />, label: 'WhatsApp', href: 'whatsapp' },
+              { icon: <BarChart3 className="size-[18px]" />, label: 'Estadísticas', href: 'estadisticas' },
+              { icon: <Settings className="size-[18px]" />, label: 'Configuración', href: 'configuracion' },
+            ].map((s) => (
+              <button
+                key={s.href}
+                onClick={() => router.push(`/gestores/${id}/${s.href}`)}
+                className="tap flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-3 text-center"
+              >
+                <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
+                  {s.icon}
+                </span>
+                <span className="text-[11px] font-medium leading-tight">{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {/* Meses */}
         <section className="space-y-3">
