@@ -198,10 +198,15 @@
   --radius-3xl: calc(var(--radius) + 14px);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Reset dentro de @layer base para que NO pise las utilidades de Tailwind
+   (`px-*`, `py-*`, `m-*`, `mx-auto`…). El CSS sin capa gana sobre @layer,
+   así que un `* { margin:0; padding:0 }` suelto anularía todo el spacing. */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
 
 html {
