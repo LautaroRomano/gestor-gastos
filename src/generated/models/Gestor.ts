@@ -28,6 +28,7 @@ export type GestorMinAggregateOutputType = {
   id: string | null
   nombre: string | null
   descripcion: string | null
+  moneda: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type GestorMaxAggregateOutputType = {
   id: string | null
   nombre: string | null
   descripcion: string | null
+  moneda: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type GestorCountAggregateOutputType = {
   id: number
   nombre: number
   descripcion: number
+  moneda: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type GestorMinAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type GestorMaxAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type GestorCountAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type GestorGroupByOutputType = {
   id: string
   nombre: string
   descripcion: string | null
+  moneda: string
   createdAt: Date
   updatedAt: Date
   _count: GestorCountAggregateOutputType | null
@@ -180,22 +187,40 @@ export type GestorWhereInput = {
   id?: Prisma.StringFilter<"Gestor"> | string
   nombre?: Prisma.StringFilter<"Gestor"> | string
   descripcion?: Prisma.StringNullableFilter<"Gestor"> | string | null
+  moneda?: Prisma.StringFilter<"Gestor"> | string
   createdAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   usuarios?: Prisma.UsuarioGestorListRelationFilter
   meses?: Prisma.MesListRelationFilter
   gastosFijos?: Prisma.GastoFijoListRelationFilter
+  categorias?: Prisma.CategoriaListRelationFilter
+  cuentas?: Prisma.CuentaListRelationFilter
+  presupuestos?: Prisma.PresupuestoListRelationFilter
+  objetivos?: Prisma.ObjetivoListRelationFilter
+  recurrentes?: Prisma.RecurrenteListRelationFilter
+  reglas?: Prisma.ReglaClasificacionListRelationFilter
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppListRelationFilter
+  analisis?: Prisma.AnalisisIAListRelationFilter
 }
 
 export type GestorOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   usuarios?: Prisma.UsuarioGestorOrderByRelationAggregateInput
   meses?: Prisma.MesOrderByRelationAggregateInput
   gastosFijos?: Prisma.GastoFijoOrderByRelationAggregateInput
+  categorias?: Prisma.CategoriaOrderByRelationAggregateInput
+  cuentas?: Prisma.CuentaOrderByRelationAggregateInput
+  presupuestos?: Prisma.PresupuestoOrderByRelationAggregateInput
+  objetivos?: Prisma.ObjetivoOrderByRelationAggregateInput
+  recurrentes?: Prisma.RecurrenteOrderByRelationAggregateInput
+  reglas?: Prisma.ReglaClasificacionOrderByRelationAggregateInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppOrderByRelationAggregateInput
+  analisis?: Prisma.AnalisisIAOrderByRelationAggregateInput
 }
 
 export type GestorWhereUniqueInput = Prisma.AtLeast<{
@@ -205,17 +230,27 @@ export type GestorWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GestorWhereInput | Prisma.GestorWhereInput[]
   nombre?: Prisma.StringFilter<"Gestor"> | string
   descripcion?: Prisma.StringNullableFilter<"Gestor"> | string | null
+  moneda?: Prisma.StringFilter<"Gestor"> | string
   createdAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Gestor"> | Date | string
   usuarios?: Prisma.UsuarioGestorListRelationFilter
   meses?: Prisma.MesListRelationFilter
   gastosFijos?: Prisma.GastoFijoListRelationFilter
+  categorias?: Prisma.CategoriaListRelationFilter
+  cuentas?: Prisma.CuentaListRelationFilter
+  presupuestos?: Prisma.PresupuestoListRelationFilter
+  objetivos?: Prisma.ObjetivoListRelationFilter
+  recurrentes?: Prisma.RecurrenteListRelationFilter
+  reglas?: Prisma.ReglaClasificacionListRelationFilter
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppListRelationFilter
+  analisis?: Prisma.AnalisisIAListRelationFilter
 }, "id">
 
 export type GestorOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrderInput | Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GestorCountOrderByAggregateInput
@@ -230,6 +265,7 @@ export type GestorScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Gestor"> | string
   nombre?: Prisma.StringWithAggregatesFilter<"Gestor"> | string
   descripcion?: Prisma.StringNullableWithAggregatesFilter<"Gestor"> | string | null
+  moneda?: Prisma.StringWithAggregatesFilter<"Gestor"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Gestor"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Gestor"> | Date | string
 }
@@ -238,50 +274,87 @@ export type GestorCreateInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorCreateManyInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -290,6 +363,7 @@ export type GestorUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -298,6 +372,7 @@ export type GestorUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -306,6 +381,7 @@ export type GestorCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -314,6 +390,7 @@ export type GestorMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -322,6 +399,7 @@ export type GestorMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -377,24 +455,154 @@ export type GestorUpdateOneRequiredWithoutGastosFijosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutGastosFijosInput, Prisma.GestorUpdateWithoutGastosFijosInput>, Prisma.GestorUncheckedUpdateWithoutGastosFijosInput>
 }
 
+export type GestorCreateNestedOneWithoutCategoriasInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutCategoriasInput, Prisma.GestorUncheckedCreateWithoutCategoriasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutCategoriasInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutCategoriasNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutCategoriasInput, Prisma.GestorUncheckedCreateWithoutCategoriasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutCategoriasInput
+  upsert?: Prisma.GestorUpsertWithoutCategoriasInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutCategoriasInput, Prisma.GestorUpdateWithoutCategoriasInput>, Prisma.GestorUncheckedUpdateWithoutCategoriasInput>
+}
+
+export type GestorCreateNestedOneWithoutCuentasInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutCuentasInput, Prisma.GestorUncheckedCreateWithoutCuentasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutCuentasInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutCuentasNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutCuentasInput, Prisma.GestorUncheckedCreateWithoutCuentasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutCuentasInput
+  upsert?: Prisma.GestorUpsertWithoutCuentasInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutCuentasInput, Prisma.GestorUpdateWithoutCuentasInput>, Prisma.GestorUncheckedUpdateWithoutCuentasInput>
+}
+
+export type GestorCreateNestedOneWithoutPresupuestosInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutPresupuestosInput, Prisma.GestorUncheckedCreateWithoutPresupuestosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutPresupuestosInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutPresupuestosNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutPresupuestosInput, Prisma.GestorUncheckedCreateWithoutPresupuestosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutPresupuestosInput
+  upsert?: Prisma.GestorUpsertWithoutPresupuestosInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutPresupuestosInput, Prisma.GestorUpdateWithoutPresupuestosInput>, Prisma.GestorUncheckedUpdateWithoutPresupuestosInput>
+}
+
+export type GestorCreateNestedOneWithoutObjetivosInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutObjetivosInput, Prisma.GestorUncheckedCreateWithoutObjetivosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutObjetivosInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutObjetivosNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutObjetivosInput, Prisma.GestorUncheckedCreateWithoutObjetivosInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutObjetivosInput
+  upsert?: Prisma.GestorUpsertWithoutObjetivosInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutObjetivosInput, Prisma.GestorUpdateWithoutObjetivosInput>, Prisma.GestorUncheckedUpdateWithoutObjetivosInput>
+}
+
+export type GestorCreateNestedOneWithoutRecurrentesInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutRecurrentesInput, Prisma.GestorUncheckedCreateWithoutRecurrentesInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutRecurrentesInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutRecurrentesNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutRecurrentesInput, Prisma.GestorUncheckedCreateWithoutRecurrentesInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutRecurrentesInput
+  upsert?: Prisma.GestorUpsertWithoutRecurrentesInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutRecurrentesInput, Prisma.GestorUpdateWithoutRecurrentesInput>, Prisma.GestorUncheckedUpdateWithoutRecurrentesInput>
+}
+
+export type GestorCreateNestedOneWithoutReglasInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutReglasInput, Prisma.GestorUncheckedCreateWithoutReglasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutReglasInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutReglasNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutReglasInput, Prisma.GestorUncheckedCreateWithoutReglasInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutReglasInput
+  upsert?: Prisma.GestorUpsertWithoutReglasInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutReglasInput, Prisma.GestorUpdateWithoutReglasInput>, Prisma.GestorUncheckedUpdateWithoutReglasInput>
+}
+
+export type GestorCreateNestedOneWithoutConexionesWhatsappInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedCreateWithoutConexionesWhatsappInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutConexionesWhatsappInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutConexionesWhatsappNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedCreateWithoutConexionesWhatsappInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutConexionesWhatsappInput
+  upsert?: Prisma.GestorUpsertWithoutConexionesWhatsappInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutConexionesWhatsappInput, Prisma.GestorUpdateWithoutConexionesWhatsappInput>, Prisma.GestorUncheckedUpdateWithoutConexionesWhatsappInput>
+}
+
+export type GestorCreateNestedOneWithoutAnalisisInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutAnalisisInput, Prisma.GestorUncheckedCreateWithoutAnalisisInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutAnalisisInput
+  connect?: Prisma.GestorWhereUniqueInput
+}
+
+export type GestorUpdateOneRequiredWithoutAnalisisNestedInput = {
+  create?: Prisma.XOR<Prisma.GestorCreateWithoutAnalisisInput, Prisma.GestorUncheckedCreateWithoutAnalisisInput>
+  connectOrCreate?: Prisma.GestorCreateOrConnectWithoutAnalisisInput
+  upsert?: Prisma.GestorUpsertWithoutAnalisisInput
+  connect?: Prisma.GestorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GestorUpdateToOneWithWhereWithoutAnalisisInput, Prisma.GestorUpdateWithoutAnalisisInput>, Prisma.GestorUncheckedUpdateWithoutAnalisisInput>
+}
+
 export type GestorCreateWithoutUsuariosInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   meses?: Prisma.MesCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateWithoutUsuariosInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorCreateOrConnectWithoutUsuariosInput = {
@@ -417,40 +625,76 @@ export type GestorUpdateWithoutUsuariosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateWithoutUsuariosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorCreateWithoutMesesInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateWithoutMesesInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
   gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorCreateOrConnectWithoutMesesInput = {
@@ -473,40 +717,76 @@ export type GestorUpdateWithoutMesesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateWithoutMesesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
   gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorCreateWithoutGastosFijosInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
 }
 
 export type GestorUncheckedCreateWithoutGastosFijosInput = {
   id?: string
   nombre: string
   descripcion?: string | null
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
   meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
 }
 
 export type GestorCreateOrConnectWithoutGastosFijosInput = {
@@ -529,20 +809,774 @@ export type GestorUpdateWithoutGastosFijosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
 }
 
 export type GestorUncheckedUpdateWithoutGastosFijosInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
   meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutCategoriasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutCategoriasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutCategoriasInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutCategoriasInput, Prisma.GestorUncheckedCreateWithoutCategoriasInput>
+}
+
+export type GestorUpsertWithoutCategoriasInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutCategoriasInput, Prisma.GestorUncheckedUpdateWithoutCategoriasInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutCategoriasInput, Prisma.GestorUncheckedCreateWithoutCategoriasInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutCategoriasInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutCategoriasInput, Prisma.GestorUncheckedUpdateWithoutCategoriasInput>
+}
+
+export type GestorUpdateWithoutCategoriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutCategoriasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutCuentasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutCuentasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutCuentasInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutCuentasInput, Prisma.GestorUncheckedCreateWithoutCuentasInput>
+}
+
+export type GestorUpsertWithoutCuentasInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutCuentasInput, Prisma.GestorUncheckedUpdateWithoutCuentasInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutCuentasInput, Prisma.GestorUncheckedCreateWithoutCuentasInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutCuentasInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutCuentasInput, Prisma.GestorUncheckedUpdateWithoutCuentasInput>
+}
+
+export type GestorUpdateWithoutCuentasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutCuentasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutPresupuestosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutPresupuestosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutPresupuestosInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutPresupuestosInput, Prisma.GestorUncheckedCreateWithoutPresupuestosInput>
+}
+
+export type GestorUpsertWithoutPresupuestosInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutPresupuestosInput, Prisma.GestorUncheckedUpdateWithoutPresupuestosInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutPresupuestosInput, Prisma.GestorUncheckedCreateWithoutPresupuestosInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutPresupuestosInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutPresupuestosInput, Prisma.GestorUncheckedUpdateWithoutPresupuestosInput>
+}
+
+export type GestorUpdateWithoutPresupuestosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutPresupuestosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutObjetivosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutObjetivosInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutObjetivosInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutObjetivosInput, Prisma.GestorUncheckedCreateWithoutObjetivosInput>
+}
+
+export type GestorUpsertWithoutObjetivosInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutObjetivosInput, Prisma.GestorUncheckedUpdateWithoutObjetivosInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutObjetivosInput, Prisma.GestorUncheckedCreateWithoutObjetivosInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutObjetivosInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutObjetivosInput, Prisma.GestorUncheckedUpdateWithoutObjetivosInput>
+}
+
+export type GestorUpdateWithoutObjetivosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutObjetivosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutRecurrentesInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutRecurrentesInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutRecurrentesInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutRecurrentesInput, Prisma.GestorUncheckedCreateWithoutRecurrentesInput>
+}
+
+export type GestorUpsertWithoutRecurrentesInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutRecurrentesInput, Prisma.GestorUncheckedUpdateWithoutRecurrentesInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutRecurrentesInput, Prisma.GestorUncheckedCreateWithoutRecurrentesInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutRecurrentesInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutRecurrentesInput, Prisma.GestorUncheckedUpdateWithoutRecurrentesInput>
+}
+
+export type GestorUpdateWithoutRecurrentesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutRecurrentesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutReglasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutReglasInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutReglasInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutReglasInput, Prisma.GestorUncheckedCreateWithoutReglasInput>
+}
+
+export type GestorUpsertWithoutReglasInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutReglasInput, Prisma.GestorUncheckedUpdateWithoutReglasInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutReglasInput, Prisma.GestorUncheckedCreateWithoutReglasInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutReglasInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutReglasInput, Prisma.GestorUncheckedUpdateWithoutReglasInput>
+}
+
+export type GestorUpdateWithoutReglasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutReglasInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutConexionesWhatsappInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIACreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutConexionesWhatsappInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  analisis?: Prisma.AnalisisIAUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutConexionesWhatsappInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedCreateWithoutConexionesWhatsappInput>
+}
+
+export type GestorUpsertWithoutConexionesWhatsappInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedUpdateWithoutConexionesWhatsappInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedCreateWithoutConexionesWhatsappInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutConexionesWhatsappInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutConexionesWhatsappInput, Prisma.GestorUncheckedUpdateWithoutConexionesWhatsappInput>
+}
+
+export type GestorUpdateWithoutConexionesWhatsappInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutConexionesWhatsappInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  analisis?: Prisma.AnalisisIAUncheckedUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorCreateWithoutAnalisisInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutGestorInput
+}
+
+export type GestorUncheckedCreateWithoutAnalisisInput = {
+  id?: string
+  nombre: string
+  descripcion?: string | null
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutGestorInput
+  meses?: Prisma.MesUncheckedCreateNestedManyWithoutGestorInput
+  gastosFijos?: Prisma.GastoFijoUncheckedCreateNestedManyWithoutGestorInput
+  categorias?: Prisma.CategoriaUncheckedCreateNestedManyWithoutGestorInput
+  cuentas?: Prisma.CuentaUncheckedCreateNestedManyWithoutGestorInput
+  presupuestos?: Prisma.PresupuestoUncheckedCreateNestedManyWithoutGestorInput
+  objetivos?: Prisma.ObjetivoUncheckedCreateNestedManyWithoutGestorInput
+  recurrentes?: Prisma.RecurrenteUncheckedCreateNestedManyWithoutGestorInput
+  reglas?: Prisma.ReglaClasificacionUncheckedCreateNestedManyWithoutGestorInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutGestorInput
+}
+
+export type GestorCreateOrConnectWithoutAnalisisInput = {
+  where: Prisma.GestorWhereUniqueInput
+  create: Prisma.XOR<Prisma.GestorCreateWithoutAnalisisInput, Prisma.GestorUncheckedCreateWithoutAnalisisInput>
+}
+
+export type GestorUpsertWithoutAnalisisInput = {
+  update: Prisma.XOR<Prisma.GestorUpdateWithoutAnalisisInput, Prisma.GestorUncheckedUpdateWithoutAnalisisInput>
+  create: Prisma.XOR<Prisma.GestorCreateWithoutAnalisisInput, Prisma.GestorUncheckedCreateWithoutAnalisisInput>
+  where?: Prisma.GestorWhereInput
+}
+
+export type GestorUpdateToOneWithWhereWithoutAnalisisInput = {
+  where?: Prisma.GestorWhereInput
+  data: Prisma.XOR<Prisma.GestorUpdateWithoutAnalisisInput, Prisma.GestorUncheckedUpdateWithoutAnalisisInput>
+}
+
+export type GestorUpdateWithoutAnalisisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutGestorNestedInput
+}
+
+export type GestorUncheckedUpdateWithoutAnalisisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  usuarios?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutGestorNestedInput
+  meses?: Prisma.MesUncheckedUpdateManyWithoutGestorNestedInput
+  gastosFijos?: Prisma.GastoFijoUncheckedUpdateManyWithoutGestorNestedInput
+  categorias?: Prisma.CategoriaUncheckedUpdateManyWithoutGestorNestedInput
+  cuentas?: Prisma.CuentaUncheckedUpdateManyWithoutGestorNestedInput
+  presupuestos?: Prisma.PresupuestoUncheckedUpdateManyWithoutGestorNestedInput
+  objetivos?: Prisma.ObjetivoUncheckedUpdateManyWithoutGestorNestedInput
+  recurrentes?: Prisma.RecurrenteUncheckedUpdateManyWithoutGestorNestedInput
+  reglas?: Prisma.ReglaClasificacionUncheckedUpdateManyWithoutGestorNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutGestorNestedInput
 }
 
 
@@ -554,12 +1588,28 @@ export type GestorCountOutputType = {
   usuarios: number
   meses: number
   gastosFijos: number
+  categorias: number
+  cuentas: number
+  presupuestos: number
+  objetivos: number
+  recurrentes: number
+  reglas: number
+  conexionesWhatsapp: number
+  analisis: number
 }
 
 export type GestorCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | GestorCountOutputTypeCountUsuariosArgs
   meses?: boolean | GestorCountOutputTypeCountMesesArgs
   gastosFijos?: boolean | GestorCountOutputTypeCountGastosFijosArgs
+  categorias?: boolean | GestorCountOutputTypeCountCategoriasArgs
+  cuentas?: boolean | GestorCountOutputTypeCountCuentasArgs
+  presupuestos?: boolean | GestorCountOutputTypeCountPresupuestosArgs
+  objetivos?: boolean | GestorCountOutputTypeCountObjetivosArgs
+  recurrentes?: boolean | GestorCountOutputTypeCountRecurrentesArgs
+  reglas?: boolean | GestorCountOutputTypeCountReglasArgs
+  conexionesWhatsapp?: boolean | GestorCountOutputTypeCountConexionesWhatsappArgs
+  analisis?: boolean | GestorCountOutputTypeCountAnalisisArgs
 }
 
 /**
@@ -593,16 +1643,81 @@ export type GestorCountOutputTypeCountGastosFijosArgs<ExtArgs extends runtime.Ty
   where?: Prisma.GastoFijoWhereInput
 }
 
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountCategoriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CategoriaWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountCuentasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CuentaWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountPresupuestosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PresupuestoWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountObjetivosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ObjetivoWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountRecurrentesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurrenteWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountReglasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReglaClasificacionWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountConexionesWhatsappArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConexionWhatsAppWhereInput
+}
+
+/**
+ * GestorCountOutputType without action
+ */
+export type GestorCountOutputTypeCountAnalisisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AnalisisIAWhereInput
+}
+
 
 export type GestorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   usuarios?: boolean | Prisma.Gestor$usuariosArgs<ExtArgs>
   meses?: boolean | Prisma.Gestor$mesesArgs<ExtArgs>
   gastosFijos?: boolean | Prisma.Gestor$gastosFijosArgs<ExtArgs>
+  categorias?: boolean | Prisma.Gestor$categoriasArgs<ExtArgs>
+  cuentas?: boolean | Prisma.Gestor$cuentasArgs<ExtArgs>
+  presupuestos?: boolean | Prisma.Gestor$presupuestosArgs<ExtArgs>
+  objetivos?: boolean | Prisma.Gestor$objetivosArgs<ExtArgs>
+  recurrentes?: boolean | Prisma.Gestor$recurrentesArgs<ExtArgs>
+  reglas?: boolean | Prisma.Gestor$reglasArgs<ExtArgs>
+  conexionesWhatsapp?: boolean | Prisma.Gestor$conexionesWhatsappArgs<ExtArgs>
+  analisis?: boolean | Prisma.Gestor$analisisArgs<ExtArgs>
   _count?: boolean | Prisma.GestorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gestor"]>
 
@@ -610,6 +1725,7 @@ export type GestorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["gestor"]>
@@ -618,6 +1734,7 @@ export type GestorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["gestor"]>
@@ -626,15 +1743,24 @@ export type GestorSelectScalar = {
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GestorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "createdAt" | "updatedAt", ExtArgs["result"]["gestor"]>
+export type GestorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "moneda" | "createdAt" | "updatedAt", ExtArgs["result"]["gestor"]>
 export type GestorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   usuarios?: boolean | Prisma.Gestor$usuariosArgs<ExtArgs>
   meses?: boolean | Prisma.Gestor$mesesArgs<ExtArgs>
   gastosFijos?: boolean | Prisma.Gestor$gastosFijosArgs<ExtArgs>
+  categorias?: boolean | Prisma.Gestor$categoriasArgs<ExtArgs>
+  cuentas?: boolean | Prisma.Gestor$cuentasArgs<ExtArgs>
+  presupuestos?: boolean | Prisma.Gestor$presupuestosArgs<ExtArgs>
+  objetivos?: boolean | Prisma.Gestor$objetivosArgs<ExtArgs>
+  recurrentes?: boolean | Prisma.Gestor$recurrentesArgs<ExtArgs>
+  reglas?: boolean | Prisma.Gestor$reglasArgs<ExtArgs>
+  conexionesWhatsapp?: boolean | Prisma.Gestor$conexionesWhatsappArgs<ExtArgs>
+  analisis?: boolean | Prisma.Gestor$analisisArgs<ExtArgs>
   _count?: boolean | Prisma.GestorCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GestorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -646,11 +1772,20 @@ export type $GestorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     usuarios: Prisma.$UsuarioGestorPayload<ExtArgs>[]
     meses: Prisma.$MesPayload<ExtArgs>[]
     gastosFijos: Prisma.$GastoFijoPayload<ExtArgs>[]
+    categorias: Prisma.$CategoriaPayload<ExtArgs>[]
+    cuentas: Prisma.$CuentaPayload<ExtArgs>[]
+    presupuestos: Prisma.$PresupuestoPayload<ExtArgs>[]
+    objetivos: Prisma.$ObjetivoPayload<ExtArgs>[]
+    recurrentes: Prisma.$RecurrentePayload<ExtArgs>[]
+    reglas: Prisma.$ReglaClasificacionPayload<ExtArgs>[]
+    conexionesWhatsapp: Prisma.$ConexionWhatsAppPayload<ExtArgs>[]
+    analisis: Prisma.$AnalisisIAPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     nombre: string
     descripcion: string | null
+    moneda: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["gestor"]>
@@ -1050,6 +2185,14 @@ export interface Prisma__GestorClient<T, Null = never, ExtArgs extends runtime.T
   usuarios<T extends Prisma.Gestor$usuariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$usuariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsuarioGestorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meses<T extends Prisma.Gestor$mesesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$mesesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   gastosFijos<T extends Prisma.Gestor$gastosFijosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$gastosFijosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GastoFijoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  categorias<T extends Prisma.Gestor$categoriasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$categoriasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CategoriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cuentas<T extends Prisma.Gestor$cuentasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$cuentasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CuentaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  presupuestos<T extends Prisma.Gestor$presupuestosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$presupuestosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PresupuestoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  objetivos<T extends Prisma.Gestor$objetivosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$objetivosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ObjetivoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurrentes<T extends Prisma.Gestor$recurrentesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$recurrentesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurrentePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reglas<T extends Prisma.Gestor$reglasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$reglasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReglaClasificacionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  conexionesWhatsapp<T extends Prisma.Gestor$conexionesWhatsappArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$conexionesWhatsappArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConexionWhatsAppPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  analisis<T extends Prisma.Gestor$analisisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Gestor$analisisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnalisisIAPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1082,6 +2225,7 @@ export interface GestorFieldRefs {
   readonly id: Prisma.FieldRef<"Gestor", 'String'>
   readonly nombre: Prisma.FieldRef<"Gestor", 'String'>
   readonly descripcion: Prisma.FieldRef<"Gestor", 'String'>
+  readonly moneda: Prisma.FieldRef<"Gestor", 'String'>
   readonly createdAt: Prisma.FieldRef<"Gestor", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Gestor", 'DateTime'>
 }
@@ -1541,6 +2685,198 @@ export type Gestor$gastosFijosArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.GastoFijoScalarFieldEnum | Prisma.GastoFijoScalarFieldEnum[]
+}
+
+/**
+ * Gestor.categorias
+ */
+export type Gestor$categoriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Categoria
+   */
+  select?: Prisma.CategoriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Categoria
+   */
+  omit?: Prisma.CategoriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoriaInclude<ExtArgs> | null
+  where?: Prisma.CategoriaWhereInput
+  orderBy?: Prisma.CategoriaOrderByWithRelationInput | Prisma.CategoriaOrderByWithRelationInput[]
+  cursor?: Prisma.CategoriaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CategoriaScalarFieldEnum | Prisma.CategoriaScalarFieldEnum[]
+}
+
+/**
+ * Gestor.cuentas
+ */
+export type Gestor$cuentasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Cuenta
+   */
+  select?: Prisma.CuentaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Cuenta
+   */
+  omit?: Prisma.CuentaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CuentaInclude<ExtArgs> | null
+  where?: Prisma.CuentaWhereInput
+  orderBy?: Prisma.CuentaOrderByWithRelationInput | Prisma.CuentaOrderByWithRelationInput[]
+  cursor?: Prisma.CuentaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CuentaScalarFieldEnum | Prisma.CuentaScalarFieldEnum[]
+}
+
+/**
+ * Gestor.presupuestos
+ */
+export type Gestor$presupuestosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Presupuesto
+   */
+  select?: Prisma.PresupuestoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Presupuesto
+   */
+  omit?: Prisma.PresupuestoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PresupuestoInclude<ExtArgs> | null
+  where?: Prisma.PresupuestoWhereInput
+  orderBy?: Prisma.PresupuestoOrderByWithRelationInput | Prisma.PresupuestoOrderByWithRelationInput[]
+  cursor?: Prisma.PresupuestoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PresupuestoScalarFieldEnum | Prisma.PresupuestoScalarFieldEnum[]
+}
+
+/**
+ * Gestor.objetivos
+ */
+export type Gestor$objetivosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Objetivo
+   */
+  select?: Prisma.ObjetivoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Objetivo
+   */
+  omit?: Prisma.ObjetivoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObjetivoInclude<ExtArgs> | null
+  where?: Prisma.ObjetivoWhereInput
+  orderBy?: Prisma.ObjetivoOrderByWithRelationInput | Prisma.ObjetivoOrderByWithRelationInput[]
+  cursor?: Prisma.ObjetivoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ObjetivoScalarFieldEnum | Prisma.ObjetivoScalarFieldEnum[]
+}
+
+/**
+ * Gestor.recurrentes
+ */
+export type Gestor$recurrentesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Recurrente
+   */
+  select?: Prisma.RecurrenteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Recurrente
+   */
+  omit?: Prisma.RecurrenteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurrenteInclude<ExtArgs> | null
+  where?: Prisma.RecurrenteWhereInput
+  orderBy?: Prisma.RecurrenteOrderByWithRelationInput | Prisma.RecurrenteOrderByWithRelationInput[]
+  cursor?: Prisma.RecurrenteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurrenteScalarFieldEnum | Prisma.RecurrenteScalarFieldEnum[]
+}
+
+/**
+ * Gestor.reglas
+ */
+export type Gestor$reglasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReglaClasificacion
+   */
+  select?: Prisma.ReglaClasificacionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReglaClasificacion
+   */
+  omit?: Prisma.ReglaClasificacionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReglaClasificacionInclude<ExtArgs> | null
+  where?: Prisma.ReglaClasificacionWhereInput
+  orderBy?: Prisma.ReglaClasificacionOrderByWithRelationInput | Prisma.ReglaClasificacionOrderByWithRelationInput[]
+  cursor?: Prisma.ReglaClasificacionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReglaClasificacionScalarFieldEnum | Prisma.ReglaClasificacionScalarFieldEnum[]
+}
+
+/**
+ * Gestor.conexionesWhatsapp
+ */
+export type Gestor$conexionesWhatsappArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConexionWhatsApp
+   */
+  select?: Prisma.ConexionWhatsAppSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConexionWhatsApp
+   */
+  omit?: Prisma.ConexionWhatsAppOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConexionWhatsAppInclude<ExtArgs> | null
+  where?: Prisma.ConexionWhatsAppWhereInput
+  orderBy?: Prisma.ConexionWhatsAppOrderByWithRelationInput | Prisma.ConexionWhatsAppOrderByWithRelationInput[]
+  cursor?: Prisma.ConexionWhatsAppWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConexionWhatsAppScalarFieldEnum | Prisma.ConexionWhatsAppScalarFieldEnum[]
+}
+
+/**
+ * Gestor.analisis
+ */
+export type Gestor$analisisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AnalisisIA
+   */
+  select?: Prisma.AnalisisIASelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AnalisisIA
+   */
+  omit?: Prisma.AnalisisIAOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AnalisisIAInclude<ExtArgs> | null
+  where?: Prisma.AnalisisIAWhereInput
+  orderBy?: Prisma.AnalisisIAOrderByWithRelationInput | Prisma.AnalisisIAOrderByWithRelationInput[]
+  cursor?: Prisma.AnalisisIAWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AnalisisIAScalarFieldEnum | Prisma.AnalisisIAScalarFieldEnum[]
 }
 
 /**

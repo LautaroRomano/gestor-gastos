@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { PlusIcon, WalletIcon, ArrowRightIcon, ChartBarIcon, CurrencyDollarIcon, UserIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { motion } from 'framer-motion'
+import { Plus, Wallet, LogOut, ChevronRight, Users } from 'lucide-react'
+
 import Modal from '../components/Modal'
-import { LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { formatCurrency } from '@/lib/format-currency'
+import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
+import { BalanceHero, Money } from '@/components/mobile/money'
+import { Field, fieldClass } from '@/components/mobile/field'
 
 interface Gestor {
   id: string
   nombre: string
   descripcion?: string
   usuarios: Array<{
-    usuario: {
-      id: string
-      nombre: string
-      email: string
-    }
+    usuario: { id: string; nombre: string; email: string }
     rol: string
   }>
   meses?: Array<{
@@ -65,11 +64,13 @@ export default function Dashboard() {
 
   function calcularTotalGestor(gestor: Gestor) {
     if (!gestor.meses) return { ingresos: 0, gastos: 0, balance: 0 }
-    const ingresos = gestor.meses.reduce((sum, mes) =>
-      sum + mes.ingresos.reduce((s, ing) => s + ing.monto, 0), 0
+    const ingresos = gestor.meses.reduce(
+      (sum, mes) => sum + mes.ingresos.reduce((s, ing) => s + ing.monto, 0),
+      0,
     )
-    const gastos = gestor.meses.reduce((sum, mes) =>
-      sum + mes.gastos.reduce((s, gas) => s + gas.monto, 0), 0
+    const gastos = gestor.meses.reduce(
+      (sum, mes) => sum + mes.gastos.reduce((s, gas) => s + gas.monto, 0),
+      0,
     )
     return { ingresos, gastos, balance: ingresos - gastos }
   }
@@ -99,7 +100,6 @@ export default function Dashboard() {
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
     try {
-      // Limpiamos el último mes/gestor guardado al cerrar sesión
       localStorage.removeItem('lastMesId')
       localStorage.removeItem('lastGestorId')
     } catch {
@@ -109,193 +109,157 @@ export default function Dashboard() {
     router.refresh()
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <svg className="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-    )
-  }
+  if (loading) return <ScreenLoader />
 
   const totalIngresos = gestores.reduce((sum, g) => sum + calcularTotalGestor(g).ingresos, 0)
   const totalGastos = gestores.reduce((sum, g) => sum + calcularTotalGestor(g).gastos, 0)
   const balanceTotal = totalIngresos - totalGastos
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <WalletIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-              Mis Gestores
-            </h1>
-            {user && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-1">
-                <UserIcon className="w-4 h-4" />
-                Hola, {user.nombre}
-              </p>
-            )}
-          </div>
+    <Screen>
+      <AppBar
+        title="Mis gestores"
+        subtitle={user ? `Hola, ${user.nombre}` : undefined}
+        right={
           <button
             onClick={handleLogout}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+            aria-label="Cerrar sesión"
+            className="tap grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-accent"
           >
-            <LogOut className="w-6 h-6 text-primary" />
+            <LogOut className="size-5" />
           </button>
-        </div>
+        }
+      />
 
-        {/* Resumen General */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <Content>
+        <BalanceHero
+          label="Balance total"
+          value={balanceTotal}
+          income={totalIngresos}
+          expense={totalGastos}
+        />
 
-          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-            style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
-            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(totalIngresos)}</p>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="font-display text-base font-semibold">Gestores</h2>
+            <span className="text-xs text-muted-foreground">{gestores.length}</span>
           </div>
 
-          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-            style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
-            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(totalGastos)}</p>
-          </div>
-
-          <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
-            style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
-            <ChartBarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(balanceTotal)}</p>
-          </div>
-        </div>
-
-        {/* Lista de Gestores */}
-        <div className="space-y-3 gap-4" style={{ padding: '15px', marginTop: '15px' }}>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
-            Gestores
-          </h2>
           {gestores.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
-              style={{ padding: '15px' }}>
-              <WalletIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 mb-4">No tienes gestores aún</p>
-              <Button
-                onClick={onOpen}
-                variant="default"
-                className="text-white font-semibold transition-colors"
-                size="lg"
-                style={{ padding: '10px 20px' }}
-              >
-                Crear tu primer gestor
-              </Button>
-            </div>
+            <EmptyState
+              icon={<Wallet className="size-6" />}
+              title="Todavía no tenés gestores"
+              description="Creá tu primer gestor para empezar a registrar movimientos."
+              action={
+                <Button onClick={onOpen} className="h-11 rounded-xl px-5">
+                  Crear mi primer gestor
+                </Button>
+              }
+            />
           ) : (
-            gestores.map((gestor) => {
-              return (
-                <div
-                  key={gestor.id}
-                  onClick={() => router.push(`/gestores/${gestor.id}`)}
-                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl transition-all border border-gray-300 dark:border-gray-700'
-                  style={{ margin: '10px 0' }}
-                >
-                  <div
-                    className="flex items-center justify-between"
-                    style={{ padding: '10px' }}
+            <div className="space-y-3">
+              {gestores.map((gestor, i) => {
+                const { balance } = calcularTotalGestor(gestor)
+                const miembros = gestor.usuarios?.length ?? 0
+                return (
+                  <motion.button
+                    key={gestor.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    onClick={() => router.push(`/gestores/${gestor.id}`)}
+                    className="tap flex w-full items-center gap-3.5 rounded-2xl border border-border/70 bg-card p-3.5 text-left"
                   >
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-                        <WalletIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{gestor.nombre}</h3>
-                        {gestor.descripcion && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{gestor.descripcion}</p>
-                        )}
-                      </div>
+                    <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground">
+                      <Wallet className="size-5" />
                     </div>
-                    <ArrowRightIcon className="w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
-              )
-            })
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">{gestor.nombre}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {gestor.descripcion || (
+                          <span className="inline-flex items-center gap-1">
+                            <Users className="size-3" />
+                            {miembros} {miembros === 1 ? 'miembro' : 'miembros'}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <div className="text-right">
+                        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                          Balance
+                        </p>
+                        <Money
+                          value={balance}
+                          className={`text-sm font-bold ${
+                            balance < 0 ? 'text-expense' : 'text-foreground'
+                          }`}
+                        />
+                      </div>
+                      <ChevronRight className="size-4 text-muted-foreground" />
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
           )}
-        </div>
+        </section>
+      </Content>
 
-        <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-2 justify-center" style={{ padding: '0 15px' }}>
-          <Button
-            onClick={onOpen}
-            variant="default"
-            className="text-white font-semibold transition-colors"
-            size="lg"
-            style={{ padding: '10px 20px', width: '100%' }}
-          >
-            <PlusIcon className="w-5 h-5" />
-            <span>Crear Nuevo Gestor</span>
-          </Button>
-
-          <Button
-            onClick={() => router.push('/unirse')}
-            variant="outline"
-            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
-            size="lg"
-            style={{ padding: '10px 20px', width: '100%' }}
-          >
-            Unirse a un Gestor
-          </Button>
-        </div>
-
-        <Modal
-          isOpen={isOpen}
-          onClose={onClose}
-          title="Crear Nuevo Gestor"
-          footer={
-            <>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={crearGestor}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-              >
-                Crear
-              </button>
-            </>
-          }
+      <BottomBar>
+        <Button onClick={onOpen} className="h-12 flex-1 rounded-2xl text-[15px]">
+          <Plus className="size-5" />
+          Nuevo gestor
+        </Button>
+        <Button
+          onClick={() => router.push('/unirse')}
+          variant="outline"
+          className="h-12 flex-1 rounded-2xl text-[15px]"
         >
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nombre
-              </label>
-              <input
-                id="nombre"
-                type="text"
-                value={nuevoGestor.nombre}
-                onChange={(e) => setNuevoGestor({ ...nuevoGestor, nombre: e.target.value })}
-                autoFocus
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Descripción (opcional)
-              </label>
-              <input
-                id="descripcion"
-                type="text"
-                value={nuevoGestor.descripcion}
-                onChange={(e) => setNuevoGestor({ ...nuevoGestor, descripcion: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              />
-            </div>
-          </div>
-        </Modal>
-      </div>
-    </div>
+          <Users className="size-5" />
+          Unirse
+        </Button>
+      </BottomBar>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Nuevo gestor"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={crearGestor}>
+              Crear
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Nombre">
+            <input
+              type="text"
+              value={nuevoGestor.nombre}
+              onChange={(e) => setNuevoGestor({ ...nuevoGestor, nombre: e.target.value })}
+              autoFocus
+              placeholder="Ej. Gastos del hogar"
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Descripción" hint="Opcional">
+            <input
+              type="text"
+              value={nuevoGestor.descripcion}
+              onChange={(e) =>
+                setNuevoGestor({ ...nuevoGestor, descripcion: e.target.value })
+              }
+              placeholder="Una nota breve"
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Modal>
+    </Screen>
   )
 }

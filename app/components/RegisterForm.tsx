@@ -66,7 +66,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           value={formData.nombre}
           onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
           required
-          className="h-11"
+          className="h-12 rounded-xl"
           autoComplete="name"
         />
       </div>
@@ -80,7 +80,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
-          className="h-11"
+          className="h-12 rounded-xl"
           autoComplete="email"
         />
       </div>
@@ -94,7 +94,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           value={formData.password}
           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           required
-          className="h-11"
+          className="h-12 rounded-xl"
           autoComplete="new-password"
         />
         <p className="text-xs text-muted-foreground">
@@ -102,7 +102,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </p>
       </div>
 
-      <Button type="submit" disabled={submitting} className="h-11 w-full">
+      <Button type="submit" disabled={submitting} className="h-12 w-full rounded-xl text-[15px]">
         {submitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

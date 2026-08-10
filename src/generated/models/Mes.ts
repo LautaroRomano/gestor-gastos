@@ -20,8 +20,20 @@ export type MesModel = runtime.Types.Result.DefaultSelection<Prisma.$MesPayload>
 
 export type AggregateMes = {
   _count: MesCountAggregateOutputType | null
+  _avg: MesAvgAggregateOutputType | null
+  _sum: MesSumAggregateOutputType | null
   _min: MesMinAggregateOutputType | null
   _max: MesMaxAggregateOutputType | null
+}
+
+export type MesAvgAggregateOutputType = {
+  ingresoEsperado: number | null
+  ahorroObjetivo: number | null
+}
+
+export type MesSumAggregateOutputType = {
+  ingresoEsperado: number | null
+  ahorroObjetivo: number | null
 }
 
 export type MesMinAggregateOutputType = {
@@ -30,6 +42,8 @@ export type MesMinAggregateOutputType = {
   fechaInicio: Date | null
   fechaCierre: Date | null
   cerrado: boolean | null
+  ingresoEsperado: number | null
+  ahorroObjetivo: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -40,6 +54,8 @@ export type MesMaxAggregateOutputType = {
   fechaInicio: Date | null
   fechaCierre: Date | null
   cerrado: boolean | null
+  ingresoEsperado: number | null
+  ahorroObjetivo: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,11 +66,23 @@ export type MesCountAggregateOutputType = {
   fechaInicio: number
   fechaCierre: number
   cerrado: number
+  ingresoEsperado: number
+  ahorroObjetivo: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type MesAvgAggregateInputType = {
+  ingresoEsperado?: true
+  ahorroObjetivo?: true
+}
+
+export type MesSumAggregateInputType = {
+  ingresoEsperado?: true
+  ahorroObjetivo?: true
+}
 
 export type MesMinAggregateInputType = {
   id?: true
@@ -62,6 +90,8 @@ export type MesMinAggregateInputType = {
   fechaInicio?: true
   fechaCierre?: true
   cerrado?: true
+  ingresoEsperado?: true
+  ahorroObjetivo?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -72,6 +102,8 @@ export type MesMaxAggregateInputType = {
   fechaInicio?: true
   fechaCierre?: true
   cerrado?: true
+  ingresoEsperado?: true
+  ahorroObjetivo?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +114,8 @@ export type MesCountAggregateInputType = {
   fechaInicio?: true
   fechaCierre?: true
   cerrado?: true
+  ingresoEsperado?: true
+  ahorroObjetivo?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -125,6 +159,18 @@ export type MesAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: MesAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: MesSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: MesMinAggregateInputType
@@ -155,6 +201,8 @@ export type MesGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   _count?: MesCountAggregateInputType | true
+  _avg?: MesAvgAggregateInputType
+  _sum?: MesSumAggregateInputType
   _min?: MesMinAggregateInputType
   _max?: MesMaxAggregateInputType
 }
@@ -165,9 +213,13 @@ export type MesGroupByOutputType = {
   fechaInicio: Date
   fechaCierre: Date | null
   cerrado: boolean
+  ingresoEsperado: number | null
+  ahorroObjetivo: number | null
   createdAt: Date
   updatedAt: Date
   _count: MesCountAggregateOutputType | null
+  _avg: MesAvgAggregateOutputType | null
+  _sum: MesSumAggregateOutputType | null
   _min: MesMinAggregateOutputType | null
   _max: MesMaxAggregateOutputType | null
 }
@@ -196,6 +248,8 @@ export type MesWhereInput = {
   fechaInicio?: Prisma.DateTimeFilter<"Mes"> | Date | string
   fechaCierre?: Prisma.DateTimeNullableFilter<"Mes"> | Date | string | null
   cerrado?: Prisma.BoolFilter<"Mes"> | boolean
+  ingresoEsperado?: Prisma.FloatNullableFilter<"Mes"> | number | null
+  ahorroObjetivo?: Prisma.FloatNullableFilter<"Mes"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
   gestor?: Prisma.XOR<Prisma.GestorScalarRelationFilter, Prisma.GestorWhereInput>
@@ -209,6 +263,8 @@ export type MesOrderByWithRelationInput = {
   fechaInicio?: Prisma.SortOrder
   fechaCierre?: Prisma.SortOrderInput | Prisma.SortOrder
   cerrado?: Prisma.SortOrder
+  ingresoEsperado?: Prisma.SortOrderInput | Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   gestor?: Prisma.GestorOrderByWithRelationInput
@@ -225,6 +281,8 @@ export type MesWhereUniqueInput = Prisma.AtLeast<{
   fechaInicio?: Prisma.DateTimeFilter<"Mes"> | Date | string
   fechaCierre?: Prisma.DateTimeNullableFilter<"Mes"> | Date | string | null
   cerrado?: Prisma.BoolFilter<"Mes"> | boolean
+  ingresoEsperado?: Prisma.FloatNullableFilter<"Mes"> | number | null
+  ahorroObjetivo?: Prisma.FloatNullableFilter<"Mes"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
   gestor?: Prisma.XOR<Prisma.GestorScalarRelationFilter, Prisma.GestorWhereInput>
@@ -238,11 +296,15 @@ export type MesOrderByWithAggregationInput = {
   fechaInicio?: Prisma.SortOrder
   fechaCierre?: Prisma.SortOrderInput | Prisma.SortOrder
   cerrado?: Prisma.SortOrder
+  ingresoEsperado?: Prisma.SortOrderInput | Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MesCountOrderByAggregateInput
+  _avg?: Prisma.MesAvgOrderByAggregateInput
   _max?: Prisma.MesMaxOrderByAggregateInput
   _min?: Prisma.MesMinOrderByAggregateInput
+  _sum?: Prisma.MesSumOrderByAggregateInput
 }
 
 export type MesScalarWhereWithAggregatesInput = {
@@ -254,6 +316,8 @@ export type MesScalarWhereWithAggregatesInput = {
   fechaInicio?: Prisma.DateTimeWithAggregatesFilter<"Mes"> | Date | string
   fechaCierre?: Prisma.DateTimeNullableWithAggregatesFilter<"Mes"> | Date | string | null
   cerrado?: Prisma.BoolWithAggregatesFilter<"Mes"> | boolean
+  ingresoEsperado?: Prisma.FloatNullableWithAggregatesFilter<"Mes"> | number | null
+  ahorroObjetivo?: Prisma.FloatNullableWithAggregatesFilter<"Mes"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Mes"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Mes"> | Date | string
 }
@@ -263,6 +327,8 @@ export type MesCreateInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   gestor: Prisma.GestorCreateNestedOneWithoutMesesInput
@@ -276,6 +342,8 @@ export type MesUncheckedCreateInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ingresos?: Prisma.IngresoUncheckedCreateNestedManyWithoutMesInput
@@ -287,6 +355,8 @@ export type MesUpdateInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestor?: Prisma.GestorUpdateOneRequiredWithoutMesesNestedInput
@@ -300,6 +370,8 @@ export type MesUncheckedUpdateInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingresos?: Prisma.IngresoUncheckedUpdateManyWithoutMesNestedInput
@@ -312,6 +384,8 @@ export type MesCreateManyInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -321,6 +395,8 @@ export type MesUpdateManyMutationInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -331,6 +407,8 @@ export type MesUncheckedUpdateManyInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -351,8 +429,15 @@ export type MesCountOrderByAggregateInput = {
   fechaInicio?: Prisma.SortOrder
   fechaCierre?: Prisma.SortOrder
   cerrado?: Prisma.SortOrder
+  ingresoEsperado?: Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type MesAvgOrderByAggregateInput = {
+  ingresoEsperado?: Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrder
 }
 
 export type MesMaxOrderByAggregateInput = {
@@ -361,6 +446,8 @@ export type MesMaxOrderByAggregateInput = {
   fechaInicio?: Prisma.SortOrder
   fechaCierre?: Prisma.SortOrder
   cerrado?: Prisma.SortOrder
+  ingresoEsperado?: Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -371,8 +458,15 @@ export type MesMinOrderByAggregateInput = {
   fechaInicio?: Prisma.SortOrder
   fechaCierre?: Prisma.SortOrder
   cerrado?: Prisma.SortOrder
+  ingresoEsperado?: Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type MesSumOrderByAggregateInput = {
+  ingresoEsperado?: Prisma.SortOrder
+  ahorroObjetivo?: Prisma.SortOrder
 }
 
 export type MesScalarRelationFilter = {
@@ -430,6 +524,14 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type MesCreateNestedOneWithoutIngresosInput = {
   create?: Prisma.XOR<Prisma.MesCreateWithoutIngresosInput, Prisma.MesUncheckedCreateWithoutIngresosInput>
   connectOrCreate?: Prisma.MesCreateOrConnectWithoutIngresosInput
@@ -463,6 +565,8 @@ export type MesCreateWithoutGestorInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ingresos?: Prisma.IngresoCreateNestedManyWithoutMesInput
@@ -474,6 +578,8 @@ export type MesUncheckedCreateWithoutGestorInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ingresos?: Prisma.IngresoUncheckedCreateNestedManyWithoutMesInput
@@ -515,6 +621,8 @@ export type MesScalarWhereInput = {
   fechaInicio?: Prisma.DateTimeFilter<"Mes"> | Date | string
   fechaCierre?: Prisma.DateTimeNullableFilter<"Mes"> | Date | string | null
   cerrado?: Prisma.BoolFilter<"Mes"> | boolean
+  ingresoEsperado?: Prisma.FloatNullableFilter<"Mes"> | number | null
+  ahorroObjetivo?: Prisma.FloatNullableFilter<"Mes"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Mes"> | Date | string
 }
@@ -524,6 +632,8 @@ export type MesCreateWithoutIngresosInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   gestor: Prisma.GestorCreateNestedOneWithoutMesesInput
@@ -536,6 +646,8 @@ export type MesUncheckedCreateWithoutIngresosInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   gastos?: Prisma.GastoUncheckedCreateNestedManyWithoutMesInput
@@ -562,6 +674,8 @@ export type MesUpdateWithoutIngresosInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestor?: Prisma.GestorUpdateOneRequiredWithoutMesesNestedInput
@@ -574,6 +688,8 @@ export type MesUncheckedUpdateWithoutIngresosInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gastos?: Prisma.GastoUncheckedUpdateManyWithoutMesNestedInput
@@ -584,6 +700,8 @@ export type MesCreateWithoutGastosInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   gestor: Prisma.GestorCreateNestedOneWithoutMesesInput
@@ -596,6 +714,8 @@ export type MesUncheckedCreateWithoutGastosInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ingresos?: Prisma.IngresoUncheckedCreateNestedManyWithoutMesInput
@@ -622,6 +742,8 @@ export type MesUpdateWithoutGastosInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestor?: Prisma.GestorUpdateOneRequiredWithoutMesesNestedInput
@@ -634,6 +756,8 @@ export type MesUncheckedUpdateWithoutGastosInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingresos?: Prisma.IngresoUncheckedUpdateManyWithoutMesNestedInput
@@ -644,6 +768,8 @@ export type MesCreateManyGestorInput = {
   fechaInicio: Date | string
   fechaCierre?: Date | string | null
   cerrado?: boolean
+  ingresoEsperado?: number | null
+  ahorroObjetivo?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -653,6 +779,8 @@ export type MesUpdateWithoutGestorInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingresos?: Prisma.IngresoUpdateManyWithoutMesNestedInput
@@ -664,6 +792,8 @@ export type MesUncheckedUpdateWithoutGestorInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingresos?: Prisma.IngresoUncheckedUpdateManyWithoutMesNestedInput
@@ -675,6 +805,8 @@ export type MesUncheckedUpdateManyWithoutGestorInput = {
   fechaInicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fechaCierre?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cerrado?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ingresoEsperado?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ahorroObjetivo?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -725,6 +857,8 @@ export type MesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   fechaInicio?: boolean
   fechaCierre?: boolean
   cerrado?: boolean
+  ingresoEsperado?: boolean
+  ahorroObjetivo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
@@ -739,6 +873,8 @@ export type MesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   fechaInicio?: boolean
   fechaCierre?: boolean
   cerrado?: boolean
+  ingresoEsperado?: boolean
+  ahorroObjetivo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
@@ -750,6 +886,8 @@ export type MesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   fechaInicio?: boolean
   fechaCierre?: boolean
   cerrado?: boolean
+  ingresoEsperado?: boolean
+  ahorroObjetivo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
@@ -761,11 +899,13 @@ export type MesSelectScalar = {
   fechaInicio?: boolean
   fechaCierre?: boolean
   cerrado?: boolean
+  ingresoEsperado?: boolean
+  ahorroObjetivo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "gestorId" | "fechaInicio" | "fechaCierre" | "cerrado" | "createdAt" | "updatedAt", ExtArgs["result"]["mes"]>
+export type MesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "gestorId" | "fechaInicio" | "fechaCierre" | "cerrado" | "ingresoEsperado" | "ahorroObjetivo" | "createdAt" | "updatedAt", ExtArgs["result"]["mes"]>
 export type MesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
   ingresos?: boolean | Prisma.Mes$ingresosArgs<ExtArgs>
@@ -792,6 +932,8 @@ export type $MesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     fechaInicio: Date
     fechaCierre: Date | null
     cerrado: boolean
+    ingresoEsperado: number | null
+    ahorroObjetivo: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["mes"]>
@@ -1225,6 +1367,8 @@ export interface MesFieldRefs {
   readonly fechaInicio: Prisma.FieldRef<"Mes", 'DateTime'>
   readonly fechaCierre: Prisma.FieldRef<"Mes", 'DateTime'>
   readonly cerrado: Prisma.FieldRef<"Mes", 'Boolean'>
+  readonly ingresoEsperado: Prisma.FieldRef<"Mes", 'Float'>
+  readonly ahorroObjetivo: Prisma.FieldRef<"Mes", 'Float'>
   readonly createdAt: Prisma.FieldRef<"Mes", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Mes", 'DateTime'>
 }

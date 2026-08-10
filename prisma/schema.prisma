@@ -15,22 +15,33 @@ model Usuario {
   email     String   @unique
   nombre    String
   password  String
+  moneda    String   @default("ARS")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  gestores  UsuarioGestor[]
+
+  gestores           UsuarioGestor[]
+  conexionesWhatsapp ConexionWhatsApp[]
 }
 
 model Gestor {
   id          String   @id @default(cuid())
   nombre      String
   descripcion String?
+  moneda      String   @default("ARS")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  usuarios    UsuarioGestor[]
-  meses       Mes[]
-  gastosFijos GastoFijo[]
+
+  usuarios           UsuarioGestor[]
+  meses              Mes[]
+  gastosFijos        GastoFijo[]
+  categorias         Categoria[]
+  cuentas            Cuenta[]
+  presupuestos       Presupuesto[]
+  objetivos          Objetivo[]
+  recurrentes        Recurrente[]
+  reglas             ReglaClasificacion[]
+  conexionesWhatsapp ConexionWhatsApp[]
+  analisis           AnalisisIA[]
 }
 
 model UsuarioGestor {
@@ -39,50 +50,71 @@ model UsuarioGestor {
   gestorId  String
   rol       String   @default("miembro") // "admin" o "miembro"
   createdAt DateTime @default(now())
-  
-  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  gestor    Gestor  @relation(fields: [gestorId], references: [id], onDelete: Cascade)
-  
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  gestor  Gestor  @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
   @@unique([usuarioId, gestorId])
 }
 
 model Mes {
-  id          String   @id @default(cuid())
-  gestorId    String
-  fechaInicio DateTime
-  fechaCierre DateTime? // null si el mes está abierto
-  cerrado     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  gestor      Gestor   @relation(fields: [gestorId], references: [id], onDelete: Cascade)
-  ingresos    Ingreso[]
-  gastos      Gasto[]
+  id              String    @id @default(cuid())
+  gestorId        String
+  fechaInicio     DateTime
+  fechaCierre     DateTime? // null si el mes está abierto
+  cerrado         Boolean   @default(false)
+  ingresoEsperado Float? // plan mensual (spec §7)
+  ahorroObjetivo  Float?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  gestor   Gestor    @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  ingresos Ingreso[]
+  gastos   Gasto[]
 }
 
 model Ingreso {
   id          String   @id @default(cuid())
   mesId       String
   monto       Float
+  moneda      String   @default("ARS")
   descripcion String
+  categoria   String?
+  categoriaId String?
+  recurrente  Boolean  @default(false)
+  notas       String?
+  source      String   @default("web") // web | whatsapp
   fecha       DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  mes         Mes      @relation(fields: [mesId], references: [id], onDelete: Cascade)
+
+  mes          Mes        @relation(fields: [mesId], references: [id], onDelete: Cascade)
+  categoriaRel Categoria? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
 }
 
 model Gasto {
-  id          String   @id @default(cuid())
-  mesId       String
-  monto       Float
-  descripcion String
-  categoria   String?
-  fecha       DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  mes         Mes      @relation(fields: [mesId], references: [id], onDelete: Cascade)
+  id            String   @id @default(cuid())
+  mesId         String
+  monto         Float
+  moneda        String   @default("ARS")
+  descripcion   String
+  categoria     String? // compatibilidad: nombre libre
+  categoriaId   String?
+  subcategoria  String?
+  clasificacion String? // fijo | variable | discrecional | extraordinario | deuda
+  necesidad     String? // necesario | prescindible | no_seguro
+  recurrente    Boolean  @default(false)
+  metodoPago    String? // efectivo | debito | credito | transferencia | ...
+  cuentaId      String?
+  notas         String?
+  source        String   @default("web") // web | whatsapp
+  fecha         DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  mes          Mes        @relation(fields: [mesId], references: [id], onDelete: Cascade)
+  categoriaRel Categoria? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  cuenta       Cuenta?    @relation(fields: [cuentaId], references: [id], onDelete: SetNull)
 }
 
 model GastoFijo {
@@ -95,5 +127,151 @@ model GastoFijo {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  gestor      Gestor   @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+}
+
+model Categoria {
+  id                   String   @id @default(cuid())
+  gestorId             String
+  nombre               String
+  tipo                 String   @default("gasto") // gasto | ingreso
+  parentId             String?
+  clasificacionDefault String? // fijo | variable | discrecional | extraordinario | deuda
+  icono                String?
+  color                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  gestor   Gestor      @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  parent   Categoria?  @relation("Subcategorias", fields: [parentId], references: [id], onDelete: Cascade)
+  hijas    Categoria[] @relation("Subcategorias")
+  gastos   Gasto[]
+  ingresos Ingreso[]
+
+  @@index([gestorId])
+}
+
+model Cuenta {
+  id        String   @id @default(cuid())
+  gestorId  String
+  nombre    String
+  tipo      String   @default("efectivo") // efectivo | banco | debito | credito | billetera
+  saldo     Float    @default(0)
+  moneda    String   @default("ARS")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gestor Gestor  @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  gastos Gasto[]
+
+  @@index([gestorId])
+}
+
+model Presupuesto {
+  id          String   @id @default(cuid())
+  gestorId    String
+  categoriaId String?
+  categoria   String? // nombre libre para compatibilidad
+  monto       Float
+  periodo     String   @default("mensual") // mensual
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@index([gestorId])
+}
+
+model Objetivo {
+  id            String    @id @default(cuid())
+  gestorId      String
+  nombre        String
+  montoObjetivo Float
+  montoActual   Float     @default(0)
+  fechaObjetivo DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@index([gestorId])
+}
+
+model Recurrente {
+  id           String   @id @default(cuid())
+  gestorId     String
+  tipo         String // gasto | ingreso
+  monto        Float
+  descripcion  String
+  categoria    String?
+  categoriaId  String?
+  frecuencia   String   @default("mensual") // mensual | semanal | quincenal | anual
+  proximaFecha DateTime
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@index([gestorId])
+}
+
+model ReglaClasificacion {
+  id            String   @id @default(cuid())
+  gestorId      String
+  patron        String // keyword normalizada
+  categoria     String?
+  categoriaId   String?
+  clasificacion String?
+  necesidad     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@unique([gestorId, patron])
+}
+
+model ConexionWhatsApp {
+  id          String   @id @default(cuid())
+  usuarioId   String
+  gestorId    String
+  phoneNumber String   @unique
+  provider    String   @default("whatsapp_cloud")
+  externalId  String?
+  activo      Boolean  @default(true)
+  pendiente   String? // JSON de un parse a confirmar (baja confianza / datos faltantes)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  gestor  Gestor  @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([gestorId])
+}
+
+model MensajeWhatsApp {
+  id          String   @id @default(cuid())
+  externalId  String   @unique
+  phoneNumber String
+  procesado   Boolean  @default(false)
+  payload     String? // JSON crudo
+  createdAt   DateTime @default(now())
+
+  @@index([phoneNumber])
+}
+
+model AnalisisIA {
+  id              String   @id @default(cuid())
+  gestorId        String
+  mesId           String?
+  periodo         String
+  analisis        String
+  recomendaciones String?
+  createdAt       DateTime @default(now())
+
+  gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+
+  @@index([gestorId])
 }

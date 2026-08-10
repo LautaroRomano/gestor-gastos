@@ -52,3 +52,48 @@ export type Gasto = Prisma.GastoModel
  * 
  */
 export type GastoFijo = Prisma.GastoFijoModel
+/**
+ * Model Categoria
+ * 
+ */
+export type Categoria = Prisma.CategoriaModel
+/**
+ * Model Cuenta
+ * 
+ */
+export type Cuenta = Prisma.CuentaModel
+/**
+ * Model Presupuesto
+ * 
+ */
+export type Presupuesto = Prisma.PresupuestoModel
+/**
+ * Model Objetivo
+ * 
+ */
+export type Objetivo = Prisma.ObjetivoModel
+/**
+ * Model Recurrente
+ * 
+ */
+export type Recurrente = Prisma.RecurrenteModel
+/**
+ * Model ReglaClasificacion
+ * 
+ */
+export type ReglaClasificacion = Prisma.ReglaClasificacionModel
+/**
+ * Model ConexionWhatsApp
+ * 
+ */
+export type ConexionWhatsApp = Prisma.ConexionWhatsAppModel
+/**
+ * Model MensajeWhatsApp
+ * 
+ */
+export type MensajeWhatsApp = Prisma.MensajeWhatsAppModel
+/**
+ * Model AnalisisIA
+ * 
+ */
+export type AnalisisIA = Prisma.AnalisisIAModel

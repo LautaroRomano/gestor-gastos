@@ -29,6 +29,7 @@ export type UsuarioMinAggregateOutputType = {
   email: string | null
   nombre: string | null
   password: string | null
+  moneda: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type UsuarioMaxAggregateOutputType = {
   email: string | null
   nombre: string | null
   password: string | null
+  moneda: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,7 @@ export type UsuarioCountAggregateOutputType = {
   email: number
   nombre: number
   password: number
+  moneda: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +61,7 @@ export type UsuarioMinAggregateInputType = {
   email?: true
   nombre?: true
   password?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +71,7 @@ export type UsuarioMaxAggregateInputType = {
   email?: true
   nombre?: true
   password?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +81,7 @@ export type UsuarioCountAggregateInputType = {
   email?: true
   nombre?: true
   password?: true
+  moneda?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +164,7 @@ export type UsuarioGroupByOutputType = {
   email: string
   nombre: string
   password: string
+  moneda: string
   createdAt: Date
   updatedAt: Date
   _count: UsuarioCountAggregateOutputType | null
@@ -188,9 +195,11 @@ export type UsuarioWhereInput = {
   email?: Prisma.StringFilter<"Usuario"> | string
   nombre?: Prisma.StringFilter<"Usuario"> | string
   password?: Prisma.StringFilter<"Usuario"> | string
+  moneda?: Prisma.StringFilter<"Usuario"> | string
   createdAt?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   gestores?: Prisma.UsuarioGestorListRelationFilter
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppListRelationFilter
 }
 
 export type UsuarioOrderByWithRelationInput = {
@@ -198,9 +207,11 @@ export type UsuarioOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   gestores?: Prisma.UsuarioGestorOrderByRelationAggregateInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppOrderByRelationAggregateInput
 }
 
 export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
@@ -211,9 +222,11 @@ export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UsuarioWhereInput | Prisma.UsuarioWhereInput[]
   nombre?: Prisma.StringFilter<"Usuario"> | string
   password?: Prisma.StringFilter<"Usuario"> | string
+  moneda?: Prisma.StringFilter<"Usuario"> | string
   createdAt?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Usuario"> | Date | string
   gestores?: Prisma.UsuarioGestorListRelationFilter
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppListRelationFilter
 }, "id" | "email">
 
 export type UsuarioOrderByWithAggregationInput = {
@@ -221,6 +234,7 @@ export type UsuarioOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UsuarioCountOrderByAggregateInput
@@ -236,6 +250,7 @@ export type UsuarioScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
   nombre?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
   password?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
+  moneda?: Prisma.StringWithAggregatesFilter<"Usuario"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Usuario"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Usuario"> | Date | string
 }
@@ -245,9 +260,11 @@ export type UsuarioCreateInput = {
   email: string
   nombre: string
   password: string
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   gestores?: Prisma.UsuarioGestorCreateNestedManyWithoutUsuarioInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateInput = {
@@ -255,9 +272,11 @@ export type UsuarioUncheckedCreateInput = {
   email: string
   nombre: string
   password: string
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   gestores?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutUsuarioInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUpdateInput = {
@@ -265,9 +284,11 @@ export type UsuarioUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestores?: Prisma.UsuarioGestorUpdateManyWithoutUsuarioNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateInput = {
@@ -275,9 +296,11 @@ export type UsuarioUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestores?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutUsuarioNestedInput
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateManyInput = {
@@ -285,6 +308,7 @@ export type UsuarioCreateManyInput = {
   email: string
   nombre: string
   password: string
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -294,6 +318,7 @@ export type UsuarioUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -303,6 +328,7 @@ export type UsuarioUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -312,6 +338,7 @@ export type UsuarioCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -321,6 +348,7 @@ export type UsuarioMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -330,6 +358,7 @@ export type UsuarioMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -361,13 +390,29 @@ export type UsuarioUpdateOneRequiredWithoutGestoresNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UsuarioUpdateToOneWithWhereWithoutGestoresInput, Prisma.UsuarioUpdateWithoutGestoresInput>, Prisma.UsuarioUncheckedUpdateWithoutGestoresInput>
 }
 
+export type UsuarioCreateNestedOneWithoutConexionesWhatsappInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedCreateWithoutConexionesWhatsappInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutConexionesWhatsappInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+}
+
+export type UsuarioUpdateOneRequiredWithoutConexionesWhatsappNestedInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedCreateWithoutConexionesWhatsappInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutConexionesWhatsappInput
+  upsert?: Prisma.UsuarioUpsertWithoutConexionesWhatsappInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsuarioUpdateToOneWithWhereWithoutConexionesWhatsappInput, Prisma.UsuarioUpdateWithoutConexionesWhatsappInput>, Prisma.UsuarioUncheckedUpdateWithoutConexionesWhatsappInput>
+}
+
 export type UsuarioCreateWithoutGestoresInput = {
   id?: string
   email: string
   nombre: string
   password: string
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateWithoutGestoresInput = {
@@ -375,8 +420,10 @@ export type UsuarioUncheckedCreateWithoutGestoresInput = {
   email: string
   nombre: string
   password: string
+  moneda?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutGestoresInput = {
@@ -400,8 +447,10 @@ export type UsuarioUpdateWithoutGestoresInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateWithoutGestoresInput = {
@@ -409,8 +458,70 @@ export type UsuarioUncheckedUpdateWithoutGestoresInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conexionesWhatsapp?: Prisma.ConexionWhatsAppUncheckedUpdateManyWithoutUsuarioNestedInput
+}
+
+export type UsuarioCreateWithoutConexionesWhatsappInput = {
+  id?: string
+  email: string
+  nombre: string
+  password: string
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gestores?: Prisma.UsuarioGestorCreateNestedManyWithoutUsuarioInput
+}
+
+export type UsuarioUncheckedCreateWithoutConexionesWhatsappInput = {
+  id?: string
+  email: string
+  nombre: string
+  password: string
+  moneda?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gestores?: Prisma.UsuarioGestorUncheckedCreateNestedManyWithoutUsuarioInput
+}
+
+export type UsuarioCreateOrConnectWithoutConexionesWhatsappInput = {
+  where: Prisma.UsuarioWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedCreateWithoutConexionesWhatsappInput>
+}
+
+export type UsuarioUpsertWithoutConexionesWhatsappInput = {
+  update: Prisma.XOR<Prisma.UsuarioUpdateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedUpdateWithoutConexionesWhatsappInput>
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedCreateWithoutConexionesWhatsappInput>
+  where?: Prisma.UsuarioWhereInput
+}
+
+export type UsuarioUpdateToOneWithWhereWithoutConexionesWhatsappInput = {
+  where?: Prisma.UsuarioWhereInput
+  data: Prisma.XOR<Prisma.UsuarioUpdateWithoutConexionesWhatsappInput, Prisma.UsuarioUncheckedUpdateWithoutConexionesWhatsappInput>
+}
+
+export type UsuarioUpdateWithoutConexionesWhatsappInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gestores?: Prisma.UsuarioGestorUpdateManyWithoutUsuarioNestedInput
+}
+
+export type UsuarioUncheckedUpdateWithoutConexionesWhatsappInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gestores?: Prisma.UsuarioGestorUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 
@@ -420,10 +531,12 @@ export type UsuarioUncheckedUpdateWithoutGestoresInput = {
 
 export type UsuarioCountOutputType = {
   gestores: number
+  conexionesWhatsapp: number
 }
 
 export type UsuarioCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gestores?: boolean | UsuarioCountOutputTypeCountGestoresArgs
+  conexionesWhatsapp?: boolean | UsuarioCountOutputTypeCountConexionesWhatsappArgs
 }
 
 /**
@@ -443,15 +556,24 @@ export type UsuarioCountOutputTypeCountGestoresArgs<ExtArgs extends runtime.Type
   where?: Prisma.UsuarioGestorWhereInput
 }
 
+/**
+ * UsuarioCountOutputType without action
+ */
+export type UsuarioCountOutputTypeCountConexionesWhatsappArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConexionWhatsAppWhereInput
+}
+
 
 export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
   nombre?: boolean
   password?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   gestores?: boolean | Prisma.Usuario$gestoresArgs<ExtArgs>
+  conexionesWhatsapp?: boolean | Prisma.Usuario$conexionesWhatsappArgs<ExtArgs>
   _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["usuario"]>
 
@@ -460,6 +582,7 @@ export type UsuarioSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   email?: boolean
   nombre?: boolean
   password?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["usuario"]>
@@ -469,6 +592,7 @@ export type UsuarioSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   email?: boolean
   nombre?: boolean
   password?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["usuario"]>
@@ -478,13 +602,15 @@ export type UsuarioSelectScalar = {
   email?: boolean
   nombre?: boolean
   password?: boolean
+  moneda?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "nombre" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["usuario"]>
+export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "nombre" | "password" | "moneda" | "createdAt" | "updatedAt", ExtArgs["result"]["usuario"]>
 export type UsuarioInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gestores?: boolean | Prisma.Usuario$gestoresArgs<ExtArgs>
+  conexionesWhatsapp?: boolean | Prisma.Usuario$conexionesWhatsappArgs<ExtArgs>
   _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UsuarioIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -494,12 +620,14 @@ export type $UsuarioPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Usuario"
   objects: {
     gestores: Prisma.$UsuarioGestorPayload<ExtArgs>[]
+    conexionesWhatsapp: Prisma.$ConexionWhatsAppPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
     nombre: string
     password: string
+    moneda: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["usuario"]>
@@ -897,6 +1025,7 @@ readonly fields: UsuarioFieldRefs;
 export interface Prisma__UsuarioClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   gestores<T extends Prisma.Usuario$gestoresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$gestoresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsuarioGestorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  conexionesWhatsapp<T extends Prisma.Usuario$conexionesWhatsappArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$conexionesWhatsappArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConexionWhatsAppPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -930,6 +1059,7 @@ export interface UsuarioFieldRefs {
   readonly email: Prisma.FieldRef<"Usuario", 'String'>
   readonly nombre: Prisma.FieldRef<"Usuario", 'String'>
   readonly password: Prisma.FieldRef<"Usuario", 'String'>
+  readonly moneda: Prisma.FieldRef<"Usuario", 'String'>
   readonly createdAt: Prisma.FieldRef<"Usuario", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Usuario", 'DateTime'>
 }
@@ -1341,6 +1471,30 @@ export type Usuario$gestoresArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.UsuarioGestorScalarFieldEnum | Prisma.UsuarioGestorScalarFieldEnum[]
+}
+
+/**
+ * Usuario.conexionesWhatsapp
+ */
+export type Usuario$conexionesWhatsappArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConexionWhatsApp
+   */
+  select?: Prisma.ConexionWhatsAppSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConexionWhatsApp
+   */
+  omit?: Prisma.ConexionWhatsAppOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConexionWhatsAppInclude<ExtArgs> | null
+  where?: Prisma.ConexionWhatsAppWhereInput
+  orderBy?: Prisma.ConexionWhatsAppOrderByWithRelationInput | Prisma.ConexionWhatsAppOrderByWithRelationInput[]
+  cursor?: Prisma.ConexionWhatsAppWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConexionWhatsAppScalarFieldEnum | Prisma.ConexionWhatsAppScalarFieldEnum[]
 }
 
 /**
