@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { Plus, Wallet, LogOut, ChevronRight, Users } from 'lucide-react'
 
 import Modal from '../components/Modal'
+import { InstallAppButton } from '../components/InstallAppButton'
 import { Button } from '@/components/ui/button'
 import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
 import { BalanceHero, Money } from '@/components/mobile/money'
@@ -121,13 +122,16 @@ export default function Dashboard() {
         title="Mis gestores"
         subtitle={user ? `Hola, ${user.nombre}` : undefined}
         right={
-          <button
-            onClick={handleLogout}
-            aria-label="Cerrar sesión"
-            className="tap grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-accent"
-          >
-            <LogOut className="size-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <InstallAppButton variant="compact" />
+            <button
+              onClick={handleLogout}
+              aria-label="Cerrar sesión"
+              className="tap grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-accent"
+            >
+              <LogOut className="size-5" />
+            </button>
+          </div>
         }
       />
 

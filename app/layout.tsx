@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { ServiceWorkerRegister } from "./components/ServiceWorkerRegister";
 
 const display = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -19,6 +20,15 @@ const sans = Hanken_Grotesk({
 export const metadata: Metadata = {
   title: "Gestor de Gastos",
   description: "Controlá tus ingresos y gastos con claridad.",
+  applicationName: "Gestor de Gastos",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -47,6 +57,7 @@ export default function RootLayout({
         className={`${display.variable} ${sans.variable} antialiased flex flex-1 flex-col`}
       >
         <Providers>{children}</Providers>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
