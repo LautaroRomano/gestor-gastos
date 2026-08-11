@@ -57,7 +57,16 @@ export const ModelName = {
   Mes: 'Mes',
   Ingreso: 'Ingreso',
   Gasto: 'Gasto',
-  GastoFijo: 'GastoFijo'
+  GastoFijo: 'GastoFijo',
+  Categoria: 'Categoria',
+  Cuenta: 'Cuenta',
+  Presupuesto: 'Presupuesto',
+  Objetivo: 'Objetivo',
+  Recurrente: 'Recurrente',
+  ReglaClasificacion: 'ReglaClasificacion',
+  ConexionWhatsApp: 'ConexionWhatsApp',
+  MensajeWhatsApp: 'MensajeWhatsApp',
+  AnalisisIA: 'AnalisisIA'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -81,6 +90,7 @@ export const UsuarioScalarFieldEnum = {
   email: 'email',
   nombre: 'nombre',
   password: 'password',
+  moneda: 'moneda',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -92,6 +102,7 @@ export const GestorScalarFieldEnum = {
   id: 'id',
   nombre: 'nombre',
   descripcion: 'descripcion',
+  moneda: 'moneda',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -116,6 +127,8 @@ export const MesScalarFieldEnum = {
   fechaInicio: 'fechaInicio',
   fechaCierre: 'fechaCierre',
   cerrado: 'cerrado',
+  ingresoEsperado: 'ingresoEsperado',
+  ahorroObjetivo: 'ahorroObjetivo',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -127,7 +140,13 @@ export const IngresoScalarFieldEnum = {
   id: 'id',
   mesId: 'mesId',
   monto: 'monto',
+  moneda: 'moneda',
   descripcion: 'descripcion',
+  categoria: 'categoria',
+  categoriaId: 'categoriaId',
+  recurrente: 'recurrente',
+  notas: 'notas',
+  source: 'source',
   fecha: 'fecha',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -140,8 +159,18 @@ export const GastoScalarFieldEnum = {
   id: 'id',
   mesId: 'mesId',
   monto: 'monto',
+  moneda: 'moneda',
   descripcion: 'descripcion',
   categoria: 'categoria',
+  categoriaId: 'categoriaId',
+  subcategoria: 'subcategoria',
+  clasificacion: 'clasificacion',
+  necesidad: 'necesidad',
+  recurrente: 'recurrente',
+  metodoPago: 'metodoPago',
+  cuentaId: 'cuentaId',
+  notas: 'notas',
+  source: 'source',
   fecha: 'fecha',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -162,6 +191,138 @@ export const GastoFijoScalarFieldEnum = {
 } as const
 
 export type GastoFijoScalarFieldEnum = (typeof GastoFijoScalarFieldEnum)[keyof typeof GastoFijoScalarFieldEnum]
+
+
+export const CategoriaScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  nombre: 'nombre',
+  tipo: 'tipo',
+  parentId: 'parentId',
+  clasificacionDefault: 'clasificacionDefault',
+  icono: 'icono',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CategoriaScalarFieldEnum = (typeof CategoriaScalarFieldEnum)[keyof typeof CategoriaScalarFieldEnum]
+
+
+export const CuentaScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  nombre: 'nombre',
+  tipo: 'tipo',
+  saldo: 'saldo',
+  moneda: 'moneda',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CuentaScalarFieldEnum = (typeof CuentaScalarFieldEnum)[keyof typeof CuentaScalarFieldEnum]
+
+
+export const PresupuestoScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  categoriaId: 'categoriaId',
+  categoria: 'categoria',
+  monto: 'monto',
+  periodo: 'periodo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PresupuestoScalarFieldEnum = (typeof PresupuestoScalarFieldEnum)[keyof typeof PresupuestoScalarFieldEnum]
+
+
+export const ObjetivoScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  nombre: 'nombre',
+  montoObjetivo: 'montoObjetivo',
+  montoActual: 'montoActual',
+  fechaObjetivo: 'fechaObjetivo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ObjetivoScalarFieldEnum = (typeof ObjetivoScalarFieldEnum)[keyof typeof ObjetivoScalarFieldEnum]
+
+
+export const RecurrenteScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  tipo: 'tipo',
+  monto: 'monto',
+  descripcion: 'descripcion',
+  categoria: 'categoria',
+  categoriaId: 'categoriaId',
+  frecuencia: 'frecuencia',
+  proximaFecha: 'proximaFecha',
+  activo: 'activo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecurrenteScalarFieldEnum = (typeof RecurrenteScalarFieldEnum)[keyof typeof RecurrenteScalarFieldEnum]
+
+
+export const ReglaClasificacionScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  patron: 'patron',
+  categoria: 'categoria',
+  categoriaId: 'categoriaId',
+  clasificacion: 'clasificacion',
+  necesidad: 'necesidad',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReglaClasificacionScalarFieldEnum = (typeof ReglaClasificacionScalarFieldEnum)[keyof typeof ReglaClasificacionScalarFieldEnum]
+
+
+export const ConexionWhatsAppScalarFieldEnum = {
+  id: 'id',
+  usuarioId: 'usuarioId',
+  gestorId: 'gestorId',
+  phoneNumber: 'phoneNumber',
+  provider: 'provider',
+  externalId: 'externalId',
+  activo: 'activo',
+  pendiente: 'pendiente',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConexionWhatsAppScalarFieldEnum = (typeof ConexionWhatsAppScalarFieldEnum)[keyof typeof ConexionWhatsAppScalarFieldEnum]
+
+
+export const MensajeWhatsAppScalarFieldEnum = {
+  id: 'id',
+  externalId: 'externalId',
+  phoneNumber: 'phoneNumber',
+  procesado: 'procesado',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type MensajeWhatsAppScalarFieldEnum = (typeof MensajeWhatsAppScalarFieldEnum)[keyof typeof MensajeWhatsAppScalarFieldEnum]
+
+
+export const AnalisisIAScalarFieldEnum = {
+  id: 'id',
+  gestorId: 'gestorId',
+  mesId: 'mesId',
+  periodo: 'periodo',
+  analisis: 'analisis',
+  recomendaciones: 'recomendaciones',
+  createdAt: 'createdAt'
+} as const
+
+export type AnalisisIAScalarFieldEnum = (typeof AnalisisIAScalarFieldEnum)[keyof typeof AnalisisIAScalarFieldEnum]
 
 
 export const SortOrder = {

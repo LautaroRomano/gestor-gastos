@@ -2,7 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { Loader2, Users } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Screen, AppBar, Content, BottomBar } from '@/components/mobile/shell'
+import { Field, fieldClass } from '@/components/mobile/field'
 
 export default function UnirsePage() {
   const router = useRouter()
@@ -17,10 +21,7 @@ export default function UnirsePage() {
 
     setLoading(true)
     try {
-      const res = await fetch(`/api/gestores/${gestorId}/unirse`, {
-        method: 'POST',
-      })
-
+      const res = await fetch(`/api/gestores/${gestorId}/unirse`, { method: 'POST' })
       if (res.ok) {
         alert('Te has unido al gestor exitosamente')
         router.push(`/gestores/${gestorId}`)
@@ -36,59 +37,50 @@ export default function UnirsePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4"
-      style={{ padding: '10px 15px' }}
-    >
-      <div className="max-w-md mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-2"
-        >
-          <ArrowLeftIcon className="w-4 h-4" />
-          <span>Volver</span>
-        </button>
+    <Screen>
+      <AppBar title="Unirse a un gestor" onBack={() => router.back()} />
 
-        <div className=" flex flex-col dark:bg-gray-800 rounded-xl shadow-md gap-4" style={{ padding: '10px 15px', marginTop: '15px' }}>
-          <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Unirse a un Gestor</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            Ingresa el ID del gestor al que deseas unirte
-          </p>
-
-          <div className="flex flex-col gap-2 mb-4">
-            <label htmlFor="gestorId" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              ID del Gestor
-            </label>
-            <input
-              id="gestorId"
-              type="text"
-              value={gestorId}
-              onChange={(e) => setGestorId(e.target.value)}
-              placeholder="Ingresa el ID del gestor"
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '5px 10px' }}
-            />
+      <Content>
+        <div className="flex flex-col items-center gap-4 rounded-3xl border border-border/70 bg-card px-6 py-8 text-center">
+          <div className="grid size-14 place-items-center rounded-2xl bg-accent text-accent-foreground">
+            <Users className="size-7" />
           </div>
-
-          <button
-            onClick={handleUnirse}
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ padding: '5px 10px' }}
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Uniéndose...</span>
-              </>
-            ) : (
-              'Unirse'
-            )}
-          </button>
+          <div>
+            <h2 className="font-display text-lg font-semibold">Unite con un ID</h2>
+            <p className="mt-1 max-w-[30ch] text-sm text-muted-foreground">
+              Pedile a quien administra el gestor el ID para invitar y pegalo acá.
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+
+        <Field label="ID del gestor">
+          <input
+            type="text"
+            value={gestorId}
+            onChange={(e) => setGestorId(e.target.value)}
+            placeholder="Pegá el ID acá"
+            className={`${fieldClass} font-mono`}
+            autoFocus
+          />
+        </Field>
+      </Content>
+
+      <BottomBar>
+        <Button
+          onClick={handleUnirse}
+          disabled={loading}
+          className="h-12 flex-1 rounded-2xl text-[15px]"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="size-5 animate-spin" />
+              Uniéndose…
+            </>
+          ) : (
+            'Unirse'
+          )}
+        </Button>
+      </BottomBar>
+    </Screen>
   )
 }

@@ -2,10 +2,33 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeftIcon, PlusIcon, CalendarIcon, ClipboardIcon, CheckIcon, ChartBarIcon, CurrencyDollarIcon, WalletIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { motion } from 'framer-motion'
+import {
+  Plus,
+  Calendar,
+  Copy,
+  Check,
+  BarChart3,
+  Repeat,
+  Pencil,
+  Trash2,
+  ChevronRight,
+  Lock,
+  LayoutDashboard,
+  Tags,
+  Wallet,
+  PiggyBank,
+  Target,
+  Sparkles,
+  MessageCircle,
+  Settings,
+} from 'lucide-react'
+
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
-import { ArrowRightIcon } from 'lucide-react'
+import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
+import { BalanceHero, Money } from '@/components/mobile/money'
+import { Field, fieldClass } from '@/components/mobile/field'
 import { formatCurrency } from '@/lib/format-currency'
 
 interface Mes {
@@ -17,20 +40,20 @@ interface Mes {
   gastos: Array<{ monto: number }>
 }
 
-interface Gestor {
-  id: string
-  nombre: string
-  descripcion?: string
-  meses: Mes[]
-  gastosFijos: GastoFijo[]
-}
-
 interface GastoFijo {
   id: string
   monto: number
   descripcion: string
   categoria?: string
   activo: boolean
+}
+
+interface Gestor {
+  id: string
+  nombre: string
+  descripcion?: string
+  meses: Mes[]
+  gastosFijos: GastoFijo[]
 }
 
 export default function GestorPage() {
@@ -106,9 +129,7 @@ export default function GestorPage() {
       const res = await fetch(`/api/gestores/${id}/meses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fechaInicio: fechaInicioISO,
-        }),
+        body: JSON.stringify({ fechaInicio: fechaInicioISO }),
       })
 
       if (res.ok) {
@@ -127,11 +148,9 @@ export default function GestorPage() {
   function calcularTotalIngresos(mes: Mes) {
     return mes.ingresos.reduce((sum, ing) => sum + ing.monto, 0)
   }
-
   function calcularTotalGastos(mes: Mes) {
     return mes.gastos.reduce((sum, gas) => sum + gas.monto, 0)
   }
-
   function calcularBalance(mes: Mes) {
     return calcularTotalIngresos(mes) - calcularTotalGastos(mes)
   }
@@ -149,7 +168,6 @@ export default function GestorPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      // Fallback para navegadores que no soportan clipboard API
       const textArea = document.createElement('textarea')
       textArea.value = id
       textArea.style.position = 'fixed'
@@ -165,10 +183,7 @@ export default function GestorPage() {
 
   function abrirEditarGestor() {
     if (!gestor) return
-    setEditGestorData({
-      nombre: gestor.nombre,
-      descripcion: gestor.descripcion || '',
-    })
+    setEditGestorData({ nombre: gestor.nombre, descripcion: gestor.descripcion || '' })
     setIsEditGestorOpen(true)
   }
 
@@ -200,14 +215,11 @@ export default function GestorPage() {
 
   async function actualizarMes() {
     if (!editingMes) return
-
     try {
       const res = await fetch(`/api/meses/${editingMes.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fechaInicio: new Date(nuevoMes.fechaInicio).toISOString(),
-        }),
+        body: JSON.stringify({ fechaInicio: new Date(nuevoMes.fechaInicio).toISOString() }),
       })
 
       if (res.ok) {
@@ -237,7 +249,7 @@ export default function GestorPage() {
 
       if (res.ok) {
         await loadGestor()
-        onGastoFijoClose()
+        setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
       } else {
         const data = await res.json()
         alert(data.error || 'Error al crear gasto fijo')
@@ -260,7 +272,6 @@ export default function GestorPage() {
 
   async function actualizarGastoFijo() {
     if (!editingGastoFijo) return
-
     try {
       const res = await fetch(`/api/gastos-fijos/${editingGastoFijo.id}`, {
         method: 'PATCH',
@@ -287,12 +298,8 @@ export default function GestorPage() {
 
   async function eliminarGastoFijo(gastoFijoId: string) {
     if (!confirm('¿Estás seguro de eliminar este gasto fijo?')) return
-
     try {
-      const res = await fetch(`/api/gastos-fijos/${gastoFijoId}`, {
-        method: 'DELETE',
-      })
-
+      const res = await fetch(`/api/gastos-fijos/${gastoFijoId}`, { method: 'DELETE' })
       if (res.ok) {
         await loadGestor()
       } else {
@@ -304,585 +311,447 @@ export default function GestorPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <svg className="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-    )
-  }
-
-  if (!gestor) {
-    return null
-  }
+  if (loading) return <ScreenLoader />
+  if (!gestor) return null
 
   const estadisticas = calcularEstadisticasGestor()
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6" style={{ padding: '10px 15px' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
-          <Button
-            onClick={() => router.push('/dashboard')}
-            variant="ghost"
-            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
-            size="lg"
-            style={{ padding: '10px' }}
+    <Screen>
+      <AppBar
+        title={gestor.nombre}
+        subtitle={gestor.descripcion || undefined}
+        onBack={() => router.push('/dashboard')}
+        right={
+          <button
+            onClick={abrirEditarGestor}
+            aria-label="Editar gestor"
+            className="tap grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-accent"
           >
-            <ArrowLeftIcon className="w-4 h-4 text-primary font-bold" />
-          </Button>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {gestor.nombre}
-          </h1>
-        </div>
+            <Pencil className="size-[18px]" />
+          </button>
+        }
+      />
 
-        {/* Card del Gestor */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
+      <Content>
+        <BalanceHero
+          label="Balance del gestor"
+          value={estadisticas.balance}
+          income={estadisticas.ingresos}
+          expense={estadisticas.gastos}
+        />
 
-          <div className="flex items-start justify-between" style={{ marginBottom: '5px' }}>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100" style={{ marginBottom: '5px' }} >{gestor.nombre}</h2>
-              {gestor.descripcion && (
-                <p className="text-sm text-gray-600 dark:text-gray-400" style={{ marginBottom: '5px' }}>
-                  {gestor.descripcion}
-                </p>
-              )}
-            </div>
-            <button
-              onClick={abrirEditarGestor}
-              className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-              title="Editar gestor"
-            >
-              <PencilIcon className="w-5 h-5 text-blue-500" />
-            </button>
+        {/* Compartir ID */}
+        <div className="flex items-center gap-2 rounded-2xl border border-border/70 bg-card p-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              ID para invitar
+            </p>
+            <code className="block truncate font-mono text-xs text-foreground/80">{id}</code>
           </div>
-
-          <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">ID del Gestor:</span>
-            <code className="text-xs font-mono text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 flex-1">
-              {id}
-            </code>
-            <Button
-              variant="ghost"
-              className="text-gray-700 dark:text-gray-300 font-extrabold transition-colors"
-              size="lg"
-              style={{ padding: '10px' }}
-              onClick={copiarIdGestor}
-            >
-              {copied ? (
-                <CheckIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
-              ) : (
-                <ClipboardIcon className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400" />
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Estadísticas Resumidas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2" style={{ padding: '10px 0' }}>
-          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-            style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
-            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(estadisticas.ingresos)}</p>
-          </div>
-
-          <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-            style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
-            <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(estadisticas.gastos)}</p>
-          </div>
-
-          <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
-            style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
-            <ChartBarIcon className="w-6 h-6 opacity-90" />
-            <p className="text-lg font-bold">{formatCurrency(estadisticas.balance)}</p>
-          </div>
-        </div>
-
-        {/* Botones de Acción */}
-        <div className="flex gap-3" style={{ padding: '0 15px' }}>
-          <Button
-            onClick={onOpen}
-            variant="default"
-            className="text-white font-semibold transition-colors flex-1"
-            size="lg"
-            style={{ padding: '10px 20px' }}
+          <button
+            onClick={copiarIdGestor}
+            className="tap inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-accent px-3 text-xs font-semibold text-accent-foreground"
           >
-            <PlusIcon className="w-5 h-5" />
-            <span>Nuevo Mes</span>
-          </Button>
-          <Button
+            {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+            {copied ? 'Copiado' : 'Copiar'}
+          </button>
+        </div>
+
+        {/* Accesos rápidos */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
             onClick={() => setIsGastoFijoOpen(true)}
-            variant="outline"
-            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
-            size="lg"
-            style={{ padding: '10px 20px' }}
+            className="tap flex flex-col items-start gap-2 rounded-2xl border border-border/70 bg-card p-3.5"
           >
-            <WalletIcon className="w-5 h-5" />
-            <span>Gastos fijos</span>
-          </Button>
-          <Button
-            onClick={() => router.push(`/gestores/${id}/estadisticas`)}
-            variant="outline"
-            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
-            size="lg"
-            style={{ padding: '10px 20px' }}
+            <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
+              <Repeat className="size-[18px]" />
+            </span>
+            <span className="text-sm font-semibold">Gastos fijos</span>
+          </button>
+          <button
+            onClick={() => router.push(`/gestores/${id}/dashboard`)}
+            className="tap flex flex-col items-start gap-2 rounded-2xl border border-border/70 bg-card p-3.5"
           >
-            <ChartBarIcon className="w-5 h-5" />
-            <span>Estadísticas</span>
-          </Button>
+            <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
+              <LayoutDashboard className="size-[18px]" />
+            </span>
+            <span className="text-sm font-semibold">Dashboard</span>
+          </button>
         </div>
 
-        {/* Lista de Meses */}
-        <div className="space-y-3 gap-4" style={{ padding: '10px 15px', marginTop: '15px' }}>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
-            Meses ({gestor.meses.length})
-          </h2>
-          {gestor.meses.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center"
-              style={{ padding: '15px' }}>
-              <CalendarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 mb-4">No hay meses registrados</p>
-              <Button
-                onClick={onOpen}
-                variant="default"
-                className="text-white font-semibold transition-colors"
-                size="lg"
-                style={{ padding: '10px 20px' }}
+        {/* Secciones (spec §129) */}
+        <section className="space-y-3">
+          <h2 className="px-1 font-display text-base font-semibold">Secciones</h2>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: <Sparkles className="size-[18px]" />, label: 'Análisis IA', href: 'analisis' },
+              { icon: <PiggyBank className="size-[18px]" />, label: 'Presupuestos', href: 'presupuestos' },
+              { icon: <Tags className="size-[18px]" />, label: 'Categorías', href: 'categorias' },
+              { icon: <Wallet className="size-[18px]" />, label: 'Cuentas', href: 'cuentas' },
+              { icon: <Target className="size-[18px]" />, label: 'Objetivos', href: 'objetivos' },
+              { icon: <Repeat className="size-[18px]" />, label: 'Recurrentes', href: 'recurrentes' },
+              { icon: <MessageCircle className="size-[18px]" />, label: 'WhatsApp', href: 'whatsapp' },
+              { icon: <BarChart3 className="size-[18px]" />, label: 'Estadísticas', href: 'estadisticas' },
+              { icon: <Settings className="size-[18px]" />, label: 'Configuración', href: 'configuracion' },
+            ].map((s) => (
+              <button
+                key={s.href}
+                onClick={() => router.push(`/gestores/${id}/${s.href}`)}
+                className="tap flex flex-col items-center gap-2 rounded-2xl border border-border/70 bg-card p-3 text-center"
               >
-                Crear primer mes
-              </Button>
-            </div>
-          ) : (
-            gestor.meses.map((mes) => {
-              const ingresos = calcularTotalIngresos(mes)
-              const gastos = calcularTotalGastos(mes)
-              const balance = calcularBalance(mes)
+                <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
+                  {s.icon}
+                </span>
+                <span className="text-[11px] font-medium leading-tight">{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
-              return (
-                <div
-                  key={mes.id}
-                  onClick={() => router.push(`/meses/${mes.id}`)}
-                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-2xl transition-all border border-gray-300 dark:border-gray-700'
-                  style={{ margin: '10px 0' }}
-                >
-                  <div
-                    className="flex items-center justify-between"
-                    style={{ padding: '10px' }}
+        {/* Meses */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="font-display text-base font-semibold">Meses</h2>
+            <span className="text-xs text-muted-foreground">{gestor.meses.length}</span>
+          </div>
+
+          {gestor.meses.length === 0 ? (
+            <EmptyState
+              icon={<Calendar className="size-6" />}
+              title="No hay meses todavía"
+              description="Creá un mes para empezar a cargar ingresos y gastos."
+              action={
+                <Button onClick={onOpen} className="h-11 rounded-xl px-5">
+                  Crear primer mes
+                </Button>
+              }
+            />
+          ) : (
+            <div className="space-y-3">
+              {gestor.meses.map((mes, i) => {
+                const balance = calcularBalance(mes)
+                return (
+                  <motion.div
+                    key={mes.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex items-center gap-2 rounded-2xl border border-border/70 bg-card p-3.5"
                   >
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-                        <CalendarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                    <button
+                      onClick={() => router.push(`/meses/${mes.id}`)}
+                      className="tap flex min-w-0 flex-1 items-center gap-3.5 text-left"
+                    >
+                      <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground">
+                        <Calendar className="size-5" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold capitalize">
                           {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
                             month: 'long',
                             year: 'numeric',
                           })}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          {mes.cerrado ? 'Cerrado' : 'Abierto'}
                         </p>
+                        <span
+                          className={`mt-0.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                            mes.cerrado
+                              ? 'bg-muted text-muted-foreground'
+                              : 'bg-income/15 text-income'
+                          }`}
+                        >
+                          {mes.cerrado && <Lock className="size-2.5" />}
+                          {mes.cerrado ? 'Cerrado' : 'Abierto'}
+                        </span>
                       </div>
+                    </button>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <div className="text-right">
+                        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                          Balance
+                        </p>
+                        <Money
+                          value={balance}
+                          className={`text-sm font-bold ${
+                            balance < 0 ? 'text-expense' : 'text-foreground'
+                          }`}
+                        />
+                      </div>
+                      <button
+                        onClick={() => abrirEditarMes(mes)}
+                        aria-label="Editar mes"
+                        className="tap grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
                     </div>
-                    <ArrowRightIcon className="w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
-              )
-            })
+                  </motion.div>
+                )
+              })}
+            </div>
           )}
-        </div>
+        </section>
+      </Content>
 
-        <Modal
-          isOpen={isOpen}
-          onClose={onClose}
-          title="Crear Nuevo Mes"
-          footer={
-            <>
-              <button
-                onClick={onClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={crearMes}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Crear
-              </button>
-            </>
-          }
-        >
-          <div className="flex flex-col" style={{ gap: '8px' }}>
-            <label htmlFor="fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Fecha de Inicio
-            </label>
+      <BottomBar>
+        <Button onClick={onOpen} className="h-12 flex-1 rounded-2xl text-[15px]">
+          <Plus className="size-5" />
+          Nuevo mes
+        </Button>
+      </BottomBar>
+
+      {/* Crear mes */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Nuevo mes"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={crearMes}>
+              Crear
+            </Button>
+          </>
+        }
+      >
+        <div className="pt-1">
+          <Field label="Fecha de inicio" hint="Si lo dejás vacío, usa la fecha de hoy.">
             <input
-              id="fechaInicio"
               type="datetime-local"
               value={nuevoMes.fechaInicio}
               onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
+              className={fieldClass}
             />
-          </div>
-        </Modal>
+          </Field>
+        </div>
+      </Modal>
 
-        <Modal
-          isOpen={isEditGestorOpen}
-          onClose={onEditGestorClose}
-          title="Editar Gestor"
-          footer={
-            <>
-              <button
-                onClick={onEditGestorClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={actualizarGestor}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nombre
-              </label>
-              <input
-                id="edit-nombre"
-                type="text"
-                value={editGestorData.nombre}
-                onChange={(e) => setEditGestorData({ ...editGestorData, nombre: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Descripción
-              </label>
-              <input
-                id="edit-descripcion"
-                type="text"
-                value={editGestorData.descripcion}
-                onChange={(e) => setEditGestorData({ ...editGestorData, descripcion: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-          </div>
-        </Modal>
+      {/* Editar gestor */}
+      <Modal
+        isOpen={isEditGestorOpen}
+        onClose={onEditGestorClose}
+        title="Editar gestor"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onEditGestorClose}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={actualizarGestor}>
+              Guardar
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Nombre">
+            <input
+              type="text"
+              value={editGestorData.nombre}
+              onChange={(e) => setEditGestorData({ ...editGestorData, nombre: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Descripción">
+            <input
+              type="text"
+              value={editGestorData.descripcion}
+              onChange={(e) =>
+                setEditGestorData({ ...editGestorData, descripcion: e.target.value })
+              }
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Modal>
 
-        <Modal
-          isOpen={isGastoFijoOpen}
-          onClose={onGastoFijoClose}
-          title="Gastos Fijos"
-          footer={
-            <>
-              <button
-                onClick={onGastoFijoClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cerrar
-              </button>
-              <button
-                onClick={crearGastoFijo}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Agregar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="gf-monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">Monto</label>
-              <input
-                id="gf-monto"
-                type="number"
-                step="0.01"
-                min="0"
-                value={gastoFijoData.monto}
-                onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="gf-desc" className="text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
-              <input
-                id="gf-desc"
-                type="text"
-                value={gastoFijoData.descripcion}
-                onChange={(e) => setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="gf-cat" className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría (opcional)</label>
-              <input
-                id="gf-cat"
-                type="text"
-                value={gastoFijoData.categoria}
-                onChange={(e) => setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={gastoFijoData.activo}
-                onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
-              />
-              Activo
-            </label>
-
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Listado de gastos fijos</p>
-              {gestor.gastosFijos.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">No hay gastos fijos cargados.</p>
-              ) : (
-                gestor.gastosFijos.map((gastoFijo) => (
-                  <div key={gastoFijo.id} className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-600 p-3">
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-gray-100">
-                        {gastoFijo.descripcion} - {formatCurrency(gastoFijo.monto)}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {gastoFijo.categoria || 'Sin categoría'} • {gastoFijo.activo ? 'Activo' : 'Inactivo'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => abrirEditarGastoFijo(gastoFijo)}
-                        className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                        title="Editar gasto fijo"
-                      >
-                        <PencilIcon className="w-5 h-5 text-blue-500" />
-                      </button>
-                      <button
-                        onClick={() => eliminarGastoFijo(gastoFijo.id)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title="Eliminar gasto fijo"
-                      >
-                        <TrashIcon className="w-5 h-5 text-red-500" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isEditGastoFijoOpen}
-          onClose={onEditGastoFijoClose}
-          title="Editar gasto fijo"
-          footer={
-            <>
-              <button
-                onClick={onEditGastoFijoClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={actualizarGastoFijo}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      {/* Gastos fijos */}
+      <Modal
+        isOpen={isGastoFijoOpen}
+        onClose={onGastoFijoClose}
+        title="Gastos fijos"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onGastoFijoClose}>
+              Cerrar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={crearGastoFijo}>
+              Agregar
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Monto">
             <input
               type="number"
               step="0.01"
               min="0"
               value={gastoFijoData.monto}
               onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
+              placeholder="0"
+              className={fieldClass}
             />
+          </Field>
+          <Field label="Descripción">
             <input
               type="text"
               value={gastoFijoData.descripcion}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
+              onChange={(e) =>
+                setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })
+              }
+              placeholder="Ej. Alquiler"
+              className={fieldClass}
             />
+          </Field>
+          <Field label="Categoría" hint="Opcional">
             <input
               type="text"
               value={gastoFijoData.categoria}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
+              onChange={(e) =>
+                setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })
+              }
+              className={fieldClass}
             />
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={gastoFijoData.activo}
-                onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
-              />
-              Activo
-            </label>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isEditMesOpen}
-          onClose={onEditMesClose}
-          title="Editar Mes"
-          footer={
-            <>
-              <button
-                onClick={onEditMesClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={actualizarMes}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div className="flex flex-col" style={{ gap: '8px' }}>
-            <label htmlFor="edit-fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Fecha de Inicio
-            </label>
+          </Field>
+          <label className="flex items-center gap-3 rounded-xl border border-border bg-background px-3.5 py-3 text-sm font-medium">
             <input
-              id="edit-fechaInicio"
+              type="checkbox"
+              checked={gastoFijoData.activo}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
+              className="size-4 accent-[var(--primary)]"
+            />
+            Activo
+          </label>
+
+          <div className="space-y-2 border-t border-border/70 pt-4">
+            <p className="text-sm font-semibold">Cargados ({gestor.gastosFijos.length})</p>
+            {gestor.gastosFijos.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Todavía no hay gastos fijos.</p>
+            ) : (
+              gestor.gastosFijos.map((gf) => (
+                <div
+                  key={gf.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border/70 bg-background p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">
+                      {gf.descripcion} · {formatCurrency(gf.monto)}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {gf.categoria || 'Sin categoría'} · {gf.activo ? 'Activo' : 'Inactivo'}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      onClick={() => abrirEditarGastoFijo(gf)}
+                      aria-label="Editar"
+                      className="tap grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent"
+                    >
+                      <Pencil className="size-4" />
+                    </button>
+                    <button
+                      onClick={() => eliminarGastoFijo(gf.id)}
+                      aria-label="Eliminar"
+                      className="tap grid size-8 place-items-center rounded-lg text-expense hover:bg-expense/10"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Modal>
+
+      {/* Editar gasto fijo */}
+      <Modal
+        isOpen={isEditGastoFijoOpen}
+        onClose={onEditGastoFijoClose}
+        title="Editar gasto fijo"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onEditGastoFijoClose}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={actualizarGastoFijo}>
+              Guardar
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Monto">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={gastoFijoData.monto}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Descripción">
+            <input
+              type="text"
+              value={gastoFijoData.descripcion}
+              onChange={(e) =>
+                setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })
+              }
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Categoría" hint="Opcional">
+            <input
+              type="text"
+              value={gastoFijoData.categoria}
+              onChange={(e) =>
+                setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })
+              }
+              className={fieldClass}
+            />
+          </Field>
+          <label className="flex items-center gap-3 rounded-xl border border-border bg-background px-3.5 py-3 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={gastoFijoData.activo}
+              onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
+              className="size-4 accent-[var(--primary)]"
+            />
+            Activo
+          </label>
+        </div>
+      </Modal>
+
+      {/* Editar mes */}
+      <Modal
+        isOpen={isEditMesOpen}
+        onClose={onEditMesClose}
+        title="Editar mes"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onEditMesClose}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={actualizarMes}>
+              Guardar
+            </Button>
+          </>
+        }
+      >
+        <div className="pt-1">
+          <Field label="Fecha de inicio">
+            <input
               type="datetime-local"
               value={nuevoMes.fechaInicio}
               onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
+              className={fieldClass}
             />
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isEditGestorOpen}
-          onClose={onEditGestorClose}
-          title="Editar Gestor"
-          footer={
-            <>
-              <button
-                onClick={onEditGestorClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={actualizarGestor}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-nombre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Nombre
-              </label>
-              <input
-                id="edit-nombre"
-                type="text"
-                value={editGestorData.nombre}
-                onChange={(e) => setEditGestorData({ ...editGestorData, nombre: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Descripción
-              </label>
-              <input
-                id="edit-descripcion"
-                type="text"
-                value={editGestorData.descripcion}
-                onChange={(e) => setEditGestorData({ ...editGestorData, descripcion: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isEditMesOpen}
-          onClose={onEditMesClose}
-          title="Editar Mes"
-          footer={
-            <>
-              <button
-                onClick={onEditMesClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={actualizarMes}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div className="flex flex-col" style={{ gap: '8px' }}>
-            <label htmlFor="edit-fechaInicio" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Fecha de Inicio
-            </label>
-            <input
-              id="edit-fechaInicio"
-              type="datetime-local"
-              value={nuevoMes.fechaInicio}
-              onChange={(e) => setNuevoMes({ fechaInicio: e.target.value })}
-              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-              style={{ padding: '10px 15px' }}
-            />
-          </div>
-        </Modal>
-
-      </div>
-    </div>
+          </Field>
+        </div>
+      </Modal>
+    </Screen>
   )
 }

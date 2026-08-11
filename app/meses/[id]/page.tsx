@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeftIcon, PlusIcon, TrashIcon, PencilIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/24/outline'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Plus, Pencil, Trash2, Lock, BarChart3, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
-import { formatCurrency } from '@/lib/format-currency'
+import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
+import { BalanceHero, Money, CategoryBar } from '@/components/mobile/money'
+import { Field, fieldClass } from '@/components/mobile/field'
 
 interface Ingreso {
   id: string
@@ -19,7 +23,26 @@ interface Gasto {
   monto: number
   descripcion: string
   categoria?: string
+  subcategoria?: string
+  clasificacion?: string
+  necesidad?: string
+  metodoPago?: string
+  cuentaId?: string
+  notas?: string
+  recurrente?: boolean
   fecha: string
+}
+
+interface Categoria {
+  id: string
+  nombre: string
+  tipo: string
+  parentId?: string | null
+}
+
+interface Cuenta {
+  id: string
+  nombre: string
 }
 
 interface Mes {
@@ -29,19 +52,23 @@ interface Mes {
   cerrado: boolean
   ingresos: Ingreso[]
   gastos: Gasto[]
-  gestor: {
-    id: string
-    nombre: string
-  }
+  gestor: { id: string; nombre: string }
 }
+
+const CLASIFICACIONES = ['fijo', 'variable', 'discrecional', 'extraordinario', 'deuda']
+const METODOS_PAGO = ['efectivo', 'debito', 'credito', 'transferencia', 'billetera']
+
+type Tab = 'gastos' | 'ingresos' | 'estadisticas'
 
 export default function MesPage() {
   const router = useRouter()
   const params = useParams()
   const id = params.id as string
   const [mes, setMes] = useState<Mes | null>(null)
+  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [cuentas, setCuentas] = useState<Cuenta[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('gastos')
+  const [activeTab, setActiveTab] = useState<Tab>('gastos')
   const [isOpen, setIsOpen] = useState(false)
   const [isCerrarOpen, setIsCerrarOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -54,12 +81,18 @@ export default function MesPage() {
     setIsEditOpen(false)
     setEditingItem(null)
     setEditingType(null)
-    setFormData({ monto: '', descripcion: '', categoria: '', fecha: '' })
+    setFormData({ monto: '', descripcion: '', categoria: '', clasificacion: '', necesidad: '', metodoPago: '', cuentaId: '', notas: '', recurrente: false, fecha: '' })
   }
   const [formData, setFormData] = useState({
     monto: '',
     descripcion: '',
     categoria: '',
+    clasificacion: '',
+    necesidad: '',
+    metodoPago: '',
+    cuentaId: '',
+    notas: '',
+    recurrente: false,
     fecha: '',
   })
   const [fechaCierre, setFechaCierre] = useState('')
@@ -70,20 +103,27 @@ export default function MesPage() {
 
   async function loadMes() {
     try {
-      // Necesitamos obtener el mes desde el gestor
-      // Por ahora, vamos a crear una API para obtener un mes específico
       const res = await fetch(`/api/meses/${id}`)
       if (res.ok) {
         const data = await res.json()
         setMes(data)
         try {
-          // Guardamos el último mes y gestor visitados para futuras sesiones
           localStorage.setItem('lastMesId', data.id)
-          if (data.gestor?.id) {
-            localStorage.setItem('lastGestorId', data.gestor.id)
-          }
+          if (data.gestor?.id) localStorage.setItem('lastGestorId', data.gestor.id)
         } catch (e) {
           console.error('Error guardando el último mes visitado', e)
+        }
+        if (data.gestor?.id) {
+          const gid = data.gestor.id
+          Promise.all([
+            fetch(`/api/gestores/${gid}/categorias`).then((r) => (r.ok ? r.json() : [])),
+            fetch(`/api/gestores/${gid}/cuentas`).then((r) => (r.ok ? r.json() : [])),
+          ])
+            .then(([cats, cts]) => {
+              setCategorias(cats)
+              setCuentas(cts)
+            })
+            .catch(() => {})
         }
       }
     } catch (error) {
@@ -95,7 +135,6 @@ export default function MesPage() {
 
   async function crearIngreso() {
     if (!mes) return
-
     try {
       const res = await fetch('/api/ingresos', {
         method: 'POST',
@@ -107,10 +146,9 @@ export default function MesPage() {
           fecha: formData.fecha || new Date().toISOString(),
         }),
       })
-
       if (res.ok) {
         await loadMes()
-        setFormData({ monto: '', descripcion: '', categoria: '', fecha: '' })
+        setFormData({ monto: '', descripcion: '', categoria: '', clasificacion: '', necesidad: '', metodoPago: '', cuentaId: '', notas: '', recurrente: false, fecha: '' })
         onClose()
       } else {
         const data = await res.json()
@@ -123,7 +161,6 @@ export default function MesPage() {
 
   async function crearGasto() {
     if (!mes) return
-
     try {
       const res = await fetch('/api/gastos', {
         method: 'POST',
@@ -133,13 +170,18 @@ export default function MesPage() {
           monto: parseFloat(formData.monto),
           descripcion: formData.descripcion,
           categoria: formData.categoria || undefined,
+          clasificacion: formData.clasificacion || undefined,
+          necesidad: formData.necesidad || undefined,
+          metodoPago: formData.metodoPago || undefined,
+          cuentaId: formData.cuentaId || undefined,
+          notas: formData.notas || undefined,
+          recurrente: formData.recurrente,
           fecha: formData.fecha || new Date().toISOString(),
         }),
       })
-
       if (res.ok) {
         await loadMes()
-        setFormData({ monto: '', descripcion: '', categoria: '', fecha: '' })
+        setFormData({ monto: '', descripcion: '', categoria: '', clasificacion: '', necesidad: '', metodoPago: '', cuentaId: '', notas: '', recurrente: false, fecha: '' })
         onClose()
       } else {
         const data = await res.json()
@@ -152,15 +194,10 @@ export default function MesPage() {
 
   async function eliminarIngreso(ingresoId: string) {
     if (!confirm('¿Estás seguro de eliminar este ingreso?')) return
-
     try {
-      const res = await fetch(`/api/ingresos/${ingresoId}`, {
-        method: 'DELETE',
-      })
-
-      if (res.ok) {
-        await loadMes()
-      } else {
+      const res = await fetch(`/api/ingresos/${ingresoId}`, { method: 'DELETE' })
+      if (res.ok) await loadMes()
+      else {
         const data = await res.json()
         alert(data.error || 'Error al eliminar ingreso')
       }
@@ -169,17 +206,28 @@ export default function MesPage() {
     }
   }
 
+  async function cambiarNecesidad(gasto: Gasto) {
+    const orden = ['necesario', 'prescindible', 'no_seguro']
+    const idx = orden.indexOf(gasto.necesidad || '')
+    const next = orden[(idx + 1) % orden.length]
+    try {
+      const res = await fetch(`/api/gastos/${gasto.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ necesidad: next }),
+      })
+      if (res.ok) await loadMes()
+    } catch {
+      /* noop */
+    }
+  }
+
   async function eliminarGasto(gastoId: string) {
     if (!confirm('¿Estás seguro de eliminar este gasto?')) return
-
     try {
-      const res = await fetch(`/api/gastos/${gastoId}`, {
-        method: 'DELETE',
-      })
-
-      if (res.ok) {
-        await loadMes()
-      } else {
+      const res = await fetch(`/api/gastos/${gastoId}`, { method: 'DELETE' })
+      if (res.ok) await loadMes()
+      else {
         const data = await res.json()
         alert(data.error || 'Error al eliminar gasto')
       }
@@ -195,6 +243,12 @@ export default function MesPage() {
       monto: ingreso.monto.toString(),
       descripcion: ingreso.descripcion,
       categoria: '',
+      clasificacion: '',
+      necesidad: '',
+      metodoPago: '',
+      cuentaId: '',
+      notas: '',
+      recurrente: false,
       fecha: new Date(ingreso.fecha).toISOString().slice(0, 16),
     })
     setIsEditOpen(true)
@@ -207,6 +261,12 @@ export default function MesPage() {
       monto: gasto.monto.toString(),
       descripcion: gasto.descripcion,
       categoria: gasto.categoria || '',
+      clasificacion: gasto.clasificacion || '',
+      necesidad: gasto.necesidad || '',
+      metodoPago: gasto.metodoPago || '',
+      cuentaId: gasto.cuentaId || '',
+      notas: gasto.notas || '',
+      recurrente: gasto.recurrente || false,
       fecha: new Date(gasto.fecha).toISOString().slice(0, 16),
     })
     setIsEditOpen(true)
@@ -214,7 +274,6 @@ export default function MesPage() {
 
   async function actualizarIngreso() {
     if (!editingItem || editingType !== 'ingreso') return
-
     try {
       const res = await fetch(`/api/ingresos/${editingItem.id}`, {
         method: 'PATCH',
@@ -225,7 +284,6 @@ export default function MesPage() {
           fecha: formData.fecha ? new Date(formData.fecha).toISOString() : undefined,
         }),
       })
-
       if (res.ok) {
         await loadMes()
         onEditClose()
@@ -240,7 +298,6 @@ export default function MesPage() {
 
   async function actualizarGasto() {
     if (!editingItem || editingType !== 'gasto') return
-
     try {
       const res = await fetch(`/api/gastos/${editingItem.id}`, {
         method: 'PATCH',
@@ -249,10 +306,15 @@ export default function MesPage() {
           monto: parseFloat(formData.monto),
           descripcion: formData.descripcion,
           categoria: formData.categoria || undefined,
+          clasificacion: formData.clasificacion || undefined,
+          necesidad: formData.necesidad || undefined,
+          metodoPago: formData.metodoPago || undefined,
+          cuentaId: formData.cuentaId || undefined,
+          notas: formData.notas || undefined,
+          recurrente: formData.recurrente,
           fecha: formData.fecha ? new Date(formData.fecha).toISOString() : undefined,
         }),
       })
-
       if (res.ok) {
         await loadMes()
         onEditClose()
@@ -267,16 +329,12 @@ export default function MesPage() {
 
   async function cerrarMes() {
     if (!mes || !fechaCierre) return
-
     try {
       const res = await fetch(`/api/meses/${mes.id}/cerrar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fechaCierre: new Date(fechaCierre).toISOString(),
-        }),
+        body: JSON.stringify({ fechaCierre: new Date(fechaCierre).toISOString() }),
       })
-
       if (res.ok) {
         await loadMes()
         setIsCerrarOpen(false)
@@ -294,43 +352,30 @@ export default function MesPage() {
     if (!mes) return 0
     return mes.ingresos.reduce((sum, ing) => sum + ing.monto, 0)
   }
-
   function calcularTotalGastos() {
     if (!mes) return 0
     return mes.gastos.reduce((sum, gas) => sum + gas.monto, 0)
   }
-
   function calcularBalance() {
     return calcularTotalIngresos() - calcularTotalGastos()
   }
 
   function calcularGastosPorCategoria() {
     if (!mes) return []
-
-    // Normaliza categorías para agrupar sin importar mayúsculas, tildes, espacios o caracteres especiales
-    const normalizarCategoria = (valor: string) => {
-      return valor
-        .normalize('NFD') // separa letras y tildes
-        .replace(/[\u0300-\u036f]/g, '') // quita tildes
+    const normalizarCategoria = (valor: string) =>
+      valor
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
         .toLowerCase()
-        .replace(/[^a-z0-9]/g, '') // quita espacios y caracteres especiales
-    }
+        .replace(/[^a-z0-9]/g, '')
 
     const categoriaMap = new Map<string, { total: number; label: string }>()
-
     mes.gastos.forEach((gasto) => {
-      const categoriaOriginal = gasto.categoria && gasto.categoria.trim() !== ''
-        ? gasto.categoria
-        : 'Sin categoría'
-
+      const categoriaOriginal =
+        gasto.categoria && gasto.categoria.trim() !== '' ? gasto.categoria : 'Sin categoría'
       const key = normalizarCategoria(categoriaOriginal)
       const existente = categoriaMap.get(key) || { total: 0, label: categoriaOriginal }
-
-      categoriaMap.set(key, {
-        total: existente.total + gasto.monto,
-        // mantenemos el primer label encontrado como texto a mostrar
-        label: existente.label,
-      })
+      categoriaMap.set(key, { total: existente.total + gasto.monto, label: existente.label })
     })
 
     return Array.from(categoriaMap.values())
@@ -338,553 +383,610 @@ export default function MesPage() {
       .sort((a, b) => b.total - a.total)
   }
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <svg className="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-    )
+  function fmtFecha(fecha: string) {
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
-  if (!mes) {
-    return null
-  }
+  if (loading) return <ScreenLoader />
+  if (!mes) return null
 
   const gastosPorCategoria = calcularGastosPorCategoria()
-  const maxGastoCategoria = gastosPorCategoria.length > 0
-    ? Math.max(...gastosPorCategoria.map(g => g.total))
-    : 0
+  const totalGastos = calcularTotalGastos()
+  const maxGastoCategoria =
+    gastosPorCategoria.length > 0 ? Math.max(...gastosPorCategoria.map((g) => g.total)) : 0
 
-  const colores = [
-    'bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-yellow-500',
-    'bg-lime-500', 'bg-green-500', 'bg-emerald-500', 'bg-teal-500',
-    'bg-cyan-500', 'bg-sky-500', 'bg-blue-500', 'bg-indigo-500',
-    'bg-violet-500', 'bg-purple-500', 'bg-fuchsia-500', 'bg-pink-500'
+  const tabs: Array<{ key: Tab; label: string }> = [
+    { key: 'gastos', label: `Gastos` },
+    { key: 'ingresos', label: `Ingresos` },
+    { key: 'estadisticas', label: `Stats` },
+  ]
+
+  const tituloMes = new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
+    month: 'long',
+    year: 'numeric',
+  })
+
+  return (
+    <Screen>
+      <AppBar
+        title={<span className="capitalize">{tituloMes}</span>}
+        subtitle={mes.gestor.nombre}
+        onBack={() => router.push(`/gestores/${mes.gestor.id}`)}
+        right={
+          mes.cerrado ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+              <Lock className="size-3" />
+              Cerrado
+            </span>
+          ) : undefined
+        }
+      />
+
+      <Content>
+        <BalanceHero
+          label={`Balance · ${tituloMes}`}
+          value={calcularBalance()}
+          income={calcularTotalIngresos()}
+          expense={calcularTotalGastos()}
+        />
+
+        {/* Segmented tabs */}
+        <div className="grid grid-cols-3 rounded-2xl border border-border bg-muted/60 p-1">
+          {tabs.map((t) => {
+            const active = activeTab === t.key
+            const count =
+              t.key === 'gastos'
+                ? mes.gastos.length
+                : t.key === 'ingresos'
+                  ? mes.ingresos.length
+                  : undefined
+            return (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className="relative z-10 rounded-xl py-2 text-sm font-semibold transition-colors"
+              >
+                {active && (
+                  <motion.span
+                    layoutId="mes-tab-pill"
+                    transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+                    className="absolute inset-0 -z-10 rounded-xl bg-card shadow-sm"
+                  />
+                )}
+                <span className={active ? 'text-foreground' : 'text-muted-foreground'}>
+                  {t.label}
+                  {count !== undefined && (
+                    <span className="ml-1 text-xs opacity-60">{count}</span>
+                  )}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-3"
+          >
+            {activeTab === 'gastos' &&
+              (mes.gastos.length === 0 ? (
+                <EmptyState
+                  icon={<ArrowDownLeft className="size-6" />}
+                  title="Sin gastos"
+                  description="Todavía no registraste gastos este mes."
+                />
+              ) : (
+                mes.gastos.map((gasto, i) => (
+                  <MovimientoCard
+                    key={gasto.id}
+                    descripcion={gasto.descripcion}
+                    monto={gasto.monto}
+                    fecha={fmtFecha(gasto.fecha)}
+                    categoria={gasto.categoria}
+                    clasificacion={gasto.clasificacion}
+                    necesidad={gasto.necesidad}
+                    recurrente={gasto.recurrente}
+                    variant="expense"
+                    index={i}
+                    editable={!mes.cerrado}
+                    onEdit={() => abrirEditarGasto(gasto)}
+                    onDelete={() => eliminarGasto(gasto.id)}
+                    onToggleNecesidad={!mes.cerrado ? () => cambiarNecesidad(gasto) : undefined}
+                  />
+                ))
+              ))}
+
+            {activeTab === 'ingresos' &&
+              (mes.ingresos.length === 0 ? (
+                <EmptyState
+                  icon={<ArrowUpRight className="size-6" />}
+                  title="Sin ingresos"
+                  description="Todavía no registraste ingresos este mes."
+                />
+              ) : (
+                mes.ingresos.map((ingreso, i) => (
+                  <MovimientoCard
+                    key={ingreso.id}
+                    descripcion={ingreso.descripcion}
+                    monto={ingreso.monto}
+                    fecha={fmtFecha(ingreso.fecha)}
+                    variant="income"
+                    index={i}
+                    editable={!mes.cerrado}
+                    onEdit={() => abrirEditarIngreso(ingreso)}
+                    onDelete={() => eliminarIngreso(ingreso.id)}
+                  />
+                ))
+              ))}
+
+            {activeTab === 'estadisticas' &&
+              (gastosPorCategoria.length === 0 ? (
+                <EmptyState
+                  icon={<BarChart3 className="size-6" />}
+                  title="Sin estadísticas"
+                  description="Cargá algunos gastos para ver el desglose por categoría."
+                />
+              ) : (
+                <div className="space-y-5 rounded-2xl border border-border/70 bg-card p-4">
+                  <h3 className="flex items-center gap-2 font-display text-base font-semibold">
+                    <BarChart3 className="size-5 text-primary" />
+                    Gastos por categoría
+                  </h3>
+                  {gastosPorCategoria.map((item, index) => (
+                    <CategoryBar
+                      key={index}
+                      label={item.categoria}
+                      amount={item.total}
+                      ratio={maxGastoCategoria > 0 ? item.total / maxGastoCategoria : 0}
+                      percent={totalGastos > 0 ? (item.total / totalGastos) * 100 : 0}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ))}
+          </motion.div>
+        </AnimatePresence>
+      </Content>
+
+      {!mes.cerrado && (
+        <BottomBar>
+          {activeTab !== 'estadisticas' && (
+            <Button onClick={onOpen} className="h-12 flex-1 rounded-2xl text-[15px]">
+              <Plus className="size-5" />
+              {activeTab === 'ingresos' ? 'Ingreso' : 'Gasto'}
+            </Button>
+          )}
+          <Button
+            onClick={() => setIsCerrarOpen(true)}
+            variant="outline"
+            className="h-12 flex-1 rounded-2xl text-[15px]"
+          >
+            <Lock className="size-4" />
+            Cerrar mes
+          </Button>
+        </BottomBar>
+      )}
+
+      {/* Agregar movimiento */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={activeTab === 'ingresos' ? 'Agregar ingreso' : 'Agregar gasto'}
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              className="h-11 rounded-xl px-6"
+              onClick={activeTab === 'ingresos' ? crearIngreso : crearGasto}
+            >
+              Agregar
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Monto">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.monto}
+              onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
+              placeholder="0"
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Descripción">
+            <input
+              type="text"
+              value={formData.descripcion}
+              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+          {activeTab === 'gastos' && (
+            <GastoFields
+              formData={formData}
+              setFormData={setFormData}
+              categorias={categorias}
+              cuentas={cuentas}
+            />
+          )}
+          <Field label="Fecha">
+            <input
+              type="datetime-local"
+              value={formData.fecha}
+              onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Modal>
+
+      {/* Cerrar mes */}
+      <Modal
+        isOpen={isCerrarOpen}
+        onClose={() => setIsCerrarOpen(false)}
+        title="Cerrar mes"
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={() => setIsCerrarOpen(false)}>
+              Cancelar
+            </Button>
+            <Button className="h-11 rounded-xl px-6" onClick={cerrarMes}>
+              Cerrar mes
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <p className="text-sm text-muted-foreground">
+            Elegí la fecha de cierre del mes (la fecha de tu próximo cobro).
+          </p>
+          <Field label="Fecha de cierre">
+            <input
+              type="datetime-local"
+              value={fechaCierre}
+              onChange={(e) => setFechaCierre(e.target.value)}
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Modal>
+
+      {/* Editar movimiento */}
+      <Modal
+        isOpen={isEditOpen}
+        onClose={onEditClose}
+        title={editingType === 'ingreso' ? 'Editar ingreso' : 'Editar gasto'}
+        footer={
+          <>
+            <Button variant="ghost" className="h-11 rounded-xl" onClick={onEditClose}>
+              Cancelar
+            </Button>
+            <Button
+              className="h-11 rounded-xl px-6"
+              onClick={editingType === 'ingreso' ? actualizarIngreso : actualizarGasto}
+            >
+              Guardar
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <Field label="Monto">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.monto}
+              onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Descripción">
+            <input
+              type="text"
+              value={formData.descripcion}
+              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+          {editingType === 'gasto' && (
+            <GastoFields
+              formData={formData}
+              setFormData={setFormData}
+              categorias={categorias}
+              cuentas={cuentas}
+            />
+          )}
+          <Field label="Fecha">
+            <input
+              type="datetime-local"
+              value={formData.fecha}
+              onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Modal>
+    </Screen>
+  )
+}
+
+/* Campos extendidos de un gasto (categoría, clasificación, necesario/prescindible, etc.). */
+function GastoFields({
+  formData,
+  setFormData,
+  categorias,
+  cuentas,
+}: {
+  formData: {
+    categoria: string
+    clasificacion: string
+    necesidad: string
+    metodoPago: string
+    cuentaId: string
+    notas: string
+    recurrente: boolean
+  }
+  setFormData: (fn: any) => void
+  categorias: Categoria[]
+  cuentas: Cuenta[]
+}) {
+  const catsGasto = categorias.filter((c) => c.tipo === 'gasto')
+  const set = (patch: Record<string, unknown>) => setFormData((prev: any) => ({ ...prev, ...patch }))
+  const necesidades: { key: string; label: string }[] = [
+    { key: 'necesario', label: 'Necesario' },
+    { key: 'prescindible', label: 'Prescindible' },
+    { key: 'no_seguro', label: 'No estoy seguro' },
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-2xl mx-auto space-y-6" style={{ padding: '10px 15px' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between" style={{ padding: '15px' }}>
-          <Button
-            onClick={() => router.push(`/gestores/${mes.gestor.id}`)}
-            variant="ghost"
-            className="text-gray-700 dark:text-gray-300 font-semibold transition-colors"
-            size="lg"
-            style={{ padding: '10px' }}
-          >
-            <ArrowLeftIcon className="w-4 h-4 text-primary font-bold" />
-          </Button>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
-              month: 'long',
-              year: 'numeric',
-            })}
-          </h1>
-        </div>
+    <>
+      <Field label="Categoría" hint="Si la dejás vacía, se clasifica sola.">
+        <select
+          value={formData.categoria}
+          onChange={(e) => set({ categoria: e.target.value })}
+          className={fieldClass}
+        >
+          <option value="">Automática</option>
+          {catsGasto.map((c) => (
+            <option key={c.id} value={c.nombre}>
+              {c.parentId ? `— ${c.nombre}` : c.nombre}
+            </option>
+          ))}
+        </select>
+      </Field>
 
-        {/* Card de Resumen */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
-          <div className="flex items-center justify-between" style={{ marginBottom: '5px' }}>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100" style={{ marginBottom: '5px' }}>{mes.gestor.nombre}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400" style={{ marginBottom: '5px' }}>
-                {new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            </div>
-            {mes.cerrado && (
-              <span className="px-3 py-1 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full flex items-center gap-1">
-                <LockClosedIcon className="w-4 h-4" />
-                Cerrado
+      <Field label="Tipo de gasto" hint="Opcional">
+        <select
+          value={formData.clasificacion}
+          onChange={(e) => set({ clasificacion: e.target.value })}
+          className={fieldClass}
+        >
+          <option value="">Automático</option>
+          {CLASIFICACIONES.map((c) => (
+            <option key={c} value={c} className="capitalize">
+              {c}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="¿Necesario o prescindible?">
+        <div className="grid grid-cols-3 gap-2">
+          {necesidades.map((n) => {
+            const active = formData.necesidad === n.key
+            return (
+              <button
+                key={n.key}
+                type="button"
+                onClick={() => set({ necesidad: active ? '' : n.key })}
+                className={`tap rounded-xl border px-2 py-2 text-xs font-medium transition ${
+                  active
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-background text-muted-foreground'
+                }`}
+              >
+                {n.label}
+              </button>
+            )
+          })}
+        </div>
+      </Field>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Método de pago">
+          <select
+            value={formData.metodoPago}
+            onChange={(e) => set({ metodoPago: e.target.value })}
+            className={fieldClass}
+          >
+            <option value="">—</option>
+            {METODOS_PAGO.map((m) => (
+              <option key={m} value={m} className="capitalize">
+                {m}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Cuenta">
+          <select
+            value={formData.cuentaId}
+            onChange={(e) => set({ cuentaId: e.target.value })}
+            className={fieldClass}
+          >
+            <option value="">—</option>
+            {cuentas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <label className="flex items-center gap-3 rounded-xl border border-border bg-background px-3.5 py-3 text-sm font-medium">
+        <input
+          type="checkbox"
+          checked={formData.recurrente}
+          onChange={(e) => set({ recurrente: e.target.checked })}
+          className="size-4 accent-[var(--primary)]"
+        />
+        Es un gasto recurrente
+      </label>
+
+      <Field label="Notas" hint="Opcional">
+        <input
+          type="text"
+          value={formData.notas}
+          onChange={(e) => set({ notas: e.target.value })}
+          className={fieldClass}
+        />
+      </Field>
+    </>
+  )
+}
+
+/* Tarjeta de un ingreso o gasto individual. */
+const NECESIDAD_LABEL: Record<string, string> = {
+  necesario: 'Necesario',
+  prescindible: 'Prescindible',
+  no_seguro: 'No estoy seguro',
+}
+
+function MovimientoCard({
+  descripcion,
+  monto,
+  fecha,
+  categoria,
+  clasificacion,
+  necesidad,
+  recurrente,
+  variant,
+  index,
+  editable,
+  onEdit,
+  onDelete,
+  onToggleNecesidad,
+}: {
+  descripcion: string
+  monto: number
+  fecha: string
+  categoria?: string
+  clasificacion?: string
+  necesidad?: string
+  recurrente?: boolean
+  variant: 'income' | 'expense'
+  index: number
+  editable: boolean
+  onEdit: () => void
+  onDelete: () => void
+  onToggleNecesidad?: () => void
+}) {
+  const isIncome = variant === 'income'
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.3), ease: [0.16, 1, 0.3, 1] }}
+      className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5"
+    >
+      <div
+        className={`grid size-10 shrink-0 place-items-center rounded-xl ${
+          isIncome ? 'bg-income/15 text-income' : 'bg-expense/15 text-expense'
+        }`}
+      >
+        {isIncome ? (
+          <ArrowUpRight className="size-5" strokeWidth={2.5} />
+        ) : (
+          <ArrowDownLeft className="size-5" strokeWidth={2.5} />
+        )}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-semibold">{descripcion || 'Sin descripción'}</p>
+        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+          <span>{fecha}</span>
+          {categoria && (
+            <>
+              <span>·</span>
+              <span className="truncate rounded-full bg-accent px-2 py-0.5 font-medium text-accent-foreground">
+                {categoria}
+              </span>
+            </>
+          )}
+          {recurrente && (
+            <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">↻ recurrente</span>
+          )}
+        </div>
+        {!isIncome && (clasificacion || necesidad) && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {clasificacion && (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium capitalize text-muted-foreground">
+                {clasificacion}
               </span>
             )}
-          </div>
-
-          {/* Cards de estadísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2" style={{ padding: '10px 0' }}>
-            <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-              style={{ background: 'linear-gradient(to bottom, #80EF80, #80EF80)', padding: '8px 15px' }}>
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">{formatCurrency(calcularTotalIngresos())}</p>
-            </div>
-            <div className="bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between"
-              style={{ background: 'linear-gradient(to bottom, #FF6B6B, #FF6B6B)', padding: '8px 15px' }}>
-              <CurrencyDollarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">{formatCurrency(calcularTotalGastos())}</p>
-            </div>
-            <div className={`bg-linear-to-br rounded-2xl shadow-xl p-5 text-gray-900 flex items-center justify-between`}
-              style={{ background: 'linear-gradient(to bottom, #64B5F6, #64B5F6)', padding: '8px 15px' }}>
-              <ChartBarIcon className="w-6 h-6 opacity-90" />
-              <p className="text-lg font-bold">{formatCurrency(calcularBalance())}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Botones de Acción */}
-        {!mes.cerrado && (
-          <div className="flex gap-3" style={{ padding: '0 15px', marginTop: '10px' }}>
-            <Button
-              onClick={onOpen}
-              variant="default"
-              className="text-white font-semibold transition-colors flex-1"
-              size="lg"
-              style={{ padding: '10px 20px' }}
-            >
-              <PlusIcon className="w-5 h-5" />
-              <span>Agregar</span>
-            </Button>
-            <Button
-              onClick={() => setIsCerrarOpen(true)}
-              variant="outline"
-              className="text-gray-700 dark:text-gray-300 font-semibold transition-colors flex-1"
-              size="lg"
-              style={{ padding: '10px 20px' }}
-            >
-              Cerrar Mes
-            </Button>
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-2 border border-gray-100 dark:border-gray-700"
-          style={{ padding: '10px 15px', marginTop: '10px' }}>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab('gastos')}
-              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'gastos'
-                ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-            >
-              Gastos ({mes.gastos.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('ingresos')}
-              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'ingresos'
-                ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-            >
-              Ingresos ({mes.ingresos.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('estadisticas')}
-              className={`flex-1 px-4 py-3 font-semibold rounded-xl transition-all ${activeTab === 'estadisticas'
-                ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-            >
-              Estadísticas
-            </button>
-          </div>
-        </div>
-
-        {/* Contenido de Tabs */}
-        {activeTab === 'ingresos' && (
-          <div className="space-y-3" style={{ marginTop: '15px' }}>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
-              Ingresos ({mes.ingresos.length})
-            </h2>
-            {mes.ingresos.length === 0 ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
-                <CurrencyDollarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No hay ingresos registrados</p>
-              </div>
-            ) : (
-              mes.ingresos.map((ingreso) => (
-                <div
-                  key={ingreso.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all"
-                  style={{ padding: '10px 15px', marginBottom: '5px' }}
+            {necesidad &&
+              (onToggleNecesidad ? (
+                <button
+                  type="button"
+                  onClick={onToggleNecesidad}
+                  className={`tap rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                    necesidad === 'prescindible'
+                      ? 'bg-expense/15 text-expense'
+                      : necesidad === 'necesario'
+                        ? 'bg-income/15 text-income'
+                        : 'bg-muted text-muted-foreground'
+                  }`}
                 >
-                  <div className="flex items-center justify-between" >
-                    <div className="flex-1">
-                      <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{ingreso.descripcion}</p>
-                      <div className="">
-                        <p className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(ingreso.monto)}</p>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(ingreso.fecha).toLocaleDateString('es-ES', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {!mes.cerrado && (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              abrirEditarIngreso(ingreso)
-                            }}
-                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                            title="Editar ingreso"
-                          >
-                            <PencilIcon className="w-5 h-5 text-blue-500" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              eliminarIngreso(ingreso.id)
-                            }}
-                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                            title="Eliminar ingreso"
-                          >
-                            <TrashIcon className="w-5 h-5 text-red-500" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+                  {NECESIDAD_LABEL[necesidad] || necesidad}
+                </button>
+              ) : (
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  {NECESIDAD_LABEL[necesidad] || necesidad}
+                </span>
+              ))}
           </div>
         )}
-
-        {activeTab === 'gastos' && (
-          <div className="space-y-3" style={{ marginTop: '15px' }}>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 px-2">
-              Gastos ({mes.gastos.length})
-            </h2>
-            {mes.gastos.length === 0 ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
-                <CurrencyDollarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No hay gastos registrados</p>
-              </div>
-            ) : (
-              mes.gastos.map((gasto) => (
-                <div
-                  key={gasto.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all"
-                  style={{ padding: '10px 15px', marginBottom: '5px' }}
-                >
-                  <div className="flex items-center justify-between" >
-                    <div className="flex-1">
-                      <p className="font-bold text-base text-gray-900 dark:text-gray-100 mb-1">{gasto.descripcion}</p>
-                      <div className="">
-                        <p className="text-lg font-bold text-red-600 dark:text-red-400">{formatCurrency(gasto.monto)}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {new Date(gasto.fecha).toLocaleDateString('es-ES', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                        {gasto.categoria && (
-                          <>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
-                            <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-medium">
-                              {gasto.categoria}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {!mes.cerrado && (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              abrirEditarGasto(gasto)
-                            }}
-                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                            title="Editar gasto"
-                          >
-                            <PencilIcon className="w-5 h-5 text-blue-500" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              eliminarGasto(gasto.id)
-                            }}
-                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                            title="Eliminar gasto"
-                          >
-                            <TrashIcon className="w-5 h-5 text-red-500" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
-        {activeTab === 'estadisticas' && (
-          <div className="space-y-3" style={{ marginTop: '15px' }}>
-            {/* Gastos por Categoría */}
-            {gastosPorCategoria.length > 0 ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700" style={{ padding: '15px' }}>
-                <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <ChartBarIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                  Gastos por Categoría
-                </h3>
-                <div className="space-y-4">
-                  {gastosPorCategoria.map((item, index) => {
-                    const porcentaje = maxGastoCategoria > 0 ? (item.total / maxGastoCategoria) * 100 : 0
-                    const color = colores[index % colores.length]
-
-                    return (
-                      <div key={index} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-gray-900 dark:text-gray-100">
-                            {item.categoria}
-                          </span>
-                          <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                            {formatCurrency(item.total)}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                          <div
-                            className={`h-full ${color} rounded-full transition-all duration-500 ease-out`}
-                            style={{ width: `${porcentaje}%` }}
-                          ></div>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {porcentaje.toFixed(1)}% del total de gastos
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-12 text-center border border-gray-100 dark:border-gray-700">
-                <ChartBarIcon className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No hay estadísticas disponibles</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        <Modal
-          isOpen={isOpen}
-          onClose={onClose}
-          title={activeTab === 'ingresos' ? 'Agregar Ingreso' : 'Agregar Gasto'}
-          footer={
-            <>
-              <button
-                onClick={onClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={activeTab === 'ingresos' ? crearIngreso : crearGasto}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Agregar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Monto
-              </label>
-              <input
-                id="monto"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.monto}
-                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Descripción
-              </label>
-              <input
-                id="descripcion"
-                type="text"
-                value={formData.descripcion}
-                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            {activeTab === 'gastos' && (
-              <div className="flex flex-col" style={{ gap: '8px' }}>
-                <label htmlFor="categoria" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Categoría (opcional)
-                </label>
-                <input
-                  id="categoria"
-                  type="text"
-                  value={formData.categoria}
-                  onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
-                  className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                  style={{ padding: '10px 15px' }}
-                />
-              </div>
-            )}
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="fecha" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Fecha
-              </label>
-              <input
-                id="fecha"
-                type="datetime-local"
-                value={formData.fecha}
-                onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isCerrarOpen}
-          onClose={() => setIsCerrarOpen(false)}
-          title="Cerrar Mes"
-          footer={
-            <>
-              <button
-                onClick={() => setIsCerrarOpen(false)}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={cerrarMes}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Cerrar Mes
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Selecciona la fecha de cierre del mes (fecha de tu próximo cobro)
-            </p>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="fechaCierre" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Fecha de Cierre
-              </label>
-              <input
-                id="fechaCierre"
-                type="datetime-local"
-                value={fechaCierre}
-                onChange={(e) => setFechaCierre(e.target.value)}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={isEditOpen}
-          onClose={onEditClose}
-          title={editingType === 'ingreso' ? 'Editar Ingreso' : 'Editar Gasto'}
-          footer={
-            <>
-              <button
-                onClick={onEditClose}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px' }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={editingType === 'ingreso' ? actualizarIngreso : actualizarGasto}
-                className="hover:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-                style={{ padding: '10px 20px', backgroundColor: '#4F46E5' }}
-              >
-                Guardar
-              </button>
-            </>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-monto" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Monto
-              </label>
-              <input
-                id="edit-monto"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.monto}
-                onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-descripcion" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Descripción
-              </label>
-              <input
-                id="edit-descripcion"
-                type="text"
-                value={formData.descripcion}
-                onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-            {editingType === 'gasto' && (
-              <div className="flex flex-col" style={{ gap: '8px' }}>
-                <label htmlFor="edit-categoria" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Categoría (opcional)
-                </label>
-                <input
-                  id="edit-categoria"
-                  type="text"
-                  value={formData.categoria}
-                  onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
-                  className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                  style={{ padding: '10px 15px' }}
-                />
-              </div>
-            )}
-            <div className="flex flex-col" style={{ gap: '8px' }}>
-              <label htmlFor="edit-fecha" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Fecha
-              </label>
-              <input
-                id="edit-fecha"
-                type="datetime-local"
-                value={formData.fecha}
-                onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
-                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors"
-                style={{ padding: '10px 15px' }}
-              />
-            </div>
-          </div>
-        </Modal>
       </div>
-    </div>
+
+      <Money
+        value={monto}
+        className={`shrink-0 text-base font-bold ${isIncome ? 'text-income' : 'text-expense'}`}
+      />
+
+      {editable && (
+        <div className="flex shrink-0 flex-col gap-1">
+          <button
+            onClick={onEdit}
+            aria-label="Editar"
+            className="tap grid size-7 place-items-center rounded-lg text-muted-foreground hover:bg-accent"
+          >
+            <Pencil className="size-3.5" />
+          </button>
+          <button
+            onClick={onDelete}
+            aria-label="Eliminar"
+            className="tap grid size-7 place-items-center rounded-lg text-expense hover:bg-expense/10"
+          >
+            <Trash2 className="size-3.5" />
+          </button>
+        </div>
+      )}
+    </motion.div>
   )
 }

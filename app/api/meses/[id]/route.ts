@@ -5,6 +5,8 @@ import { z } from 'zod'
 
 const updateMesSchema = z.object({
   fechaInicio: z.string().datetime().optional(),
+  ingresoEsperado: z.number().min(0).finite().nullish(),
+  ahorroObjetivo: z.number().min(0).finite().nullish(),
 })
 
 export async function PATCH(
@@ -55,6 +57,8 @@ export async function PATCH(
       where: { id },
       data: {
         fechaInicio: data.fechaInicio ? new Date(data.fechaInicio) : undefined,
+        ingresoEsperado: data.ingresoEsperado === undefined ? undefined : data.ingresoEsperado,
+        ahorroObjetivo: data.ahorroObjetivo === undefined ? undefined : data.ahorroObjetivo,
       },
     })
 

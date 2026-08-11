@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
+import { seedCategorias } from '@/lib/seed-categorias'
 import { z } from 'zod'
 
 const gestorSchema = z.object({
@@ -90,6 +91,9 @@ export async function POST(request: NextRequest) {
         },
       },
     })
+
+    // Sembrar categorías por defecto (spec §63-81)
+    await seedCategorias(gestor.id)
 
     return NextResponse.json(gestor, { status: 201 })
   } catch (error) {

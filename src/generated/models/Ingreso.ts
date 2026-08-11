@@ -38,7 +38,13 @@ export type IngresoMinAggregateOutputType = {
   id: string | null
   mesId: string | null
   monto: number | null
+  moneda: string | null
   descripcion: string | null
+  categoria: string | null
+  categoriaId: string | null
+  recurrente: boolean | null
+  notas: string | null
+  source: string | null
   fecha: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -48,7 +54,13 @@ export type IngresoMaxAggregateOutputType = {
   id: string | null
   mesId: string | null
   monto: number | null
+  moneda: string | null
   descripcion: string | null
+  categoria: string | null
+  categoriaId: string | null
+  recurrente: boolean | null
+  notas: string | null
+  source: string | null
   fecha: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -58,7 +70,13 @@ export type IngresoCountAggregateOutputType = {
   id: number
   mesId: number
   monto: number
+  moneda: number
   descripcion: number
+  categoria: number
+  categoriaId: number
+  recurrente: number
+  notas: number
+  source: number
   fecha: number
   createdAt: number
   updatedAt: number
@@ -78,7 +96,13 @@ export type IngresoMinAggregateInputType = {
   id?: true
   mesId?: true
   monto?: true
+  moneda?: true
   descripcion?: true
+  categoria?: true
+  categoriaId?: true
+  recurrente?: true
+  notas?: true
+  source?: true
   fecha?: true
   createdAt?: true
   updatedAt?: true
@@ -88,7 +112,13 @@ export type IngresoMaxAggregateInputType = {
   id?: true
   mesId?: true
   monto?: true
+  moneda?: true
   descripcion?: true
+  categoria?: true
+  categoriaId?: true
+  recurrente?: true
+  notas?: true
+  source?: true
   fecha?: true
   createdAt?: true
   updatedAt?: true
@@ -98,7 +128,13 @@ export type IngresoCountAggregateInputType = {
   id?: true
   mesId?: true
   monto?: true
+  moneda?: true
   descripcion?: true
+  categoria?: true
+  categoriaId?: true
+  recurrente?: true
+  notas?: true
+  source?: true
   fecha?: true
   createdAt?: true
   updatedAt?: true
@@ -195,7 +231,13 @@ export type IngresoGroupByOutputType = {
   id: string
   mesId: string
   monto: number
+  moneda: string
   descripcion: string
+  categoria: string | null
+  categoriaId: string | null
+  recurrente: boolean
+  notas: string | null
+  source: string
   fecha: Date
   createdAt: Date
   updatedAt: Date
@@ -228,22 +270,36 @@ export type IngresoWhereInput = {
   id?: Prisma.StringFilter<"Ingreso"> | string
   mesId?: Prisma.StringFilter<"Ingreso"> | string
   monto?: Prisma.FloatFilter<"Ingreso"> | number
+  moneda?: Prisma.StringFilter<"Ingreso"> | string
   descripcion?: Prisma.StringFilter<"Ingreso"> | string
+  categoria?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  categoriaId?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  recurrente?: Prisma.BoolFilter<"Ingreso"> | boolean
+  notas?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  source?: Prisma.StringFilter<"Ingreso"> | string
   fecha?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   mes?: Prisma.XOR<Prisma.MesScalarRelationFilter, Prisma.MesWhereInput>
+  categoriaRel?: Prisma.XOR<Prisma.CategoriaNullableScalarRelationFilter, Prisma.CategoriaWhereInput> | null
 }
 
 export type IngresoOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   mesId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  categoria?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoriaId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrente?: Prisma.SortOrder
+  notas?: Prisma.SortOrderInput | Prisma.SortOrder
+  source?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   mes?: Prisma.MesOrderByWithRelationInput
+  categoriaRel?: Prisma.CategoriaOrderByWithRelationInput
 }
 
 export type IngresoWhereUniqueInput = Prisma.AtLeast<{
@@ -253,18 +309,31 @@ export type IngresoWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.IngresoWhereInput | Prisma.IngresoWhereInput[]
   mesId?: Prisma.StringFilter<"Ingreso"> | string
   monto?: Prisma.FloatFilter<"Ingreso"> | number
+  moneda?: Prisma.StringFilter<"Ingreso"> | string
   descripcion?: Prisma.StringFilter<"Ingreso"> | string
+  categoria?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  categoriaId?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  recurrente?: Prisma.BoolFilter<"Ingreso"> | boolean
+  notas?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  source?: Prisma.StringFilter<"Ingreso"> | string
   fecha?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   mes?: Prisma.XOR<Prisma.MesScalarRelationFilter, Prisma.MesWhereInput>
+  categoriaRel?: Prisma.XOR<Prisma.CategoriaNullableScalarRelationFilter, Prisma.CategoriaWhereInput> | null
 }, "id">
 
 export type IngresoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   mesId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  categoria?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoriaId?: Prisma.SortOrderInput | Prisma.SortOrder
+  recurrente?: Prisma.SortOrder
+  notas?: Prisma.SortOrderInput | Prisma.SortOrder
+  source?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -282,7 +351,13 @@ export type IngresoScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Ingreso"> | string
   mesId?: Prisma.StringWithAggregatesFilter<"Ingreso"> | string
   monto?: Prisma.FloatWithAggregatesFilter<"Ingreso"> | number
+  moneda?: Prisma.StringWithAggregatesFilter<"Ingreso"> | string
   descripcion?: Prisma.StringWithAggregatesFilter<"Ingreso"> | string
+  categoria?: Prisma.StringNullableWithAggregatesFilter<"Ingreso"> | string | null
+  categoriaId?: Prisma.StringNullableWithAggregatesFilter<"Ingreso"> | string | null
+  recurrente?: Prisma.BoolWithAggregatesFilter<"Ingreso"> | boolean
+  notas?: Prisma.StringNullableWithAggregatesFilter<"Ingreso"> | string | null
+  source?: Prisma.StringWithAggregatesFilter<"Ingreso"> | string
   fecha?: Prisma.DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Ingreso"> | Date | string
@@ -291,18 +366,30 @@ export type IngresoScalarWhereWithAggregatesInput = {
 export type IngresoCreateInput = {
   id?: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   mes: Prisma.MesCreateNestedOneWithoutIngresosInput
+  categoriaRel?: Prisma.CategoriaCreateNestedOneWithoutIngresosInput
 }
 
 export type IngresoUncheckedCreateInput = {
   id?: string
   mesId: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  categoriaId?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -311,18 +398,30 @@ export type IngresoUncheckedCreateInput = {
 export type IngresoUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mes?: Prisma.MesUpdateOneRequiredWithoutIngresosNestedInput
+  categoriaRel?: Prisma.CategoriaUpdateOneWithoutIngresosNestedInput
 }
 
 export type IngresoUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mesId?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoriaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -332,7 +431,13 @@ export type IngresoCreateManyInput = {
   id?: string
   mesId: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  categoriaId?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -341,7 +446,12 @@ export type IngresoCreateManyInput = {
 export type IngresoUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -351,7 +461,13 @@ export type IngresoUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mesId?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoriaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,7 +487,13 @@ export type IngresoCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mesId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  categoria?: Prisma.SortOrder
+  categoriaId?: Prisma.SortOrder
+  recurrente?: Prisma.SortOrder
+  notas?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -385,7 +507,13 @@ export type IngresoMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mesId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  categoria?: Prisma.SortOrder
+  categoriaId?: Prisma.SortOrder
+  recurrente?: Prisma.SortOrder
+  notas?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -395,7 +523,13 @@ export type IngresoMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mesId?: Prisma.SortOrder
   monto?: Prisma.SortOrder
+  moneda?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  categoria?: Prisma.SortOrder
+  categoriaId?: Prisma.SortOrder
+  recurrente?: Prisma.SortOrder
+  notas?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fecha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -455,19 +589,73 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type IngresoCreateNestedManyWithoutCategoriaRelInput = {
+  create?: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput> | Prisma.IngresoCreateWithoutCategoriaRelInput[] | Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput[]
+  connectOrCreate?: Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput | Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput[]
+  createMany?: Prisma.IngresoCreateManyCategoriaRelInputEnvelope
+  connect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+}
+
+export type IngresoUncheckedCreateNestedManyWithoutCategoriaRelInput = {
+  create?: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput> | Prisma.IngresoCreateWithoutCategoriaRelInput[] | Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput[]
+  connectOrCreate?: Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput | Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput[]
+  createMany?: Prisma.IngresoCreateManyCategoriaRelInputEnvelope
+  connect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+}
+
+export type IngresoUpdateManyWithoutCategoriaRelNestedInput = {
+  create?: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput> | Prisma.IngresoCreateWithoutCategoriaRelInput[] | Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput[]
+  connectOrCreate?: Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput | Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput[]
+  upsert?: Prisma.IngresoUpsertWithWhereUniqueWithoutCategoriaRelInput | Prisma.IngresoUpsertWithWhereUniqueWithoutCategoriaRelInput[]
+  createMany?: Prisma.IngresoCreateManyCategoriaRelInputEnvelope
+  set?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  disconnect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  delete?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  connect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  update?: Prisma.IngresoUpdateWithWhereUniqueWithoutCategoriaRelInput | Prisma.IngresoUpdateWithWhereUniqueWithoutCategoriaRelInput[]
+  updateMany?: Prisma.IngresoUpdateManyWithWhereWithoutCategoriaRelInput | Prisma.IngresoUpdateManyWithWhereWithoutCategoriaRelInput[]
+  deleteMany?: Prisma.IngresoScalarWhereInput | Prisma.IngresoScalarWhereInput[]
+}
+
+export type IngresoUncheckedUpdateManyWithoutCategoriaRelNestedInput = {
+  create?: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput> | Prisma.IngresoCreateWithoutCategoriaRelInput[] | Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput[]
+  connectOrCreate?: Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput | Prisma.IngresoCreateOrConnectWithoutCategoriaRelInput[]
+  upsert?: Prisma.IngresoUpsertWithWhereUniqueWithoutCategoriaRelInput | Prisma.IngresoUpsertWithWhereUniqueWithoutCategoriaRelInput[]
+  createMany?: Prisma.IngresoCreateManyCategoriaRelInputEnvelope
+  set?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  disconnect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  delete?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  connect?: Prisma.IngresoWhereUniqueInput | Prisma.IngresoWhereUniqueInput[]
+  update?: Prisma.IngresoUpdateWithWhereUniqueWithoutCategoriaRelInput | Prisma.IngresoUpdateWithWhereUniqueWithoutCategoriaRelInput[]
+  updateMany?: Prisma.IngresoUpdateManyWithWhereWithoutCategoriaRelInput | Prisma.IngresoUpdateManyWithWhereWithoutCategoriaRelInput[]
+  deleteMany?: Prisma.IngresoScalarWhereInput | Prisma.IngresoScalarWhereInput[]
+}
+
 export type IngresoCreateWithoutMesInput = {
   id?: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  categoriaRel?: Prisma.CategoriaCreateNestedOneWithoutIngresosInput
 }
 
 export type IngresoUncheckedCreateWithoutMesInput = {
   id?: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  categoriaId?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -506,16 +694,84 @@ export type IngresoScalarWhereInput = {
   id?: Prisma.StringFilter<"Ingreso"> | string
   mesId?: Prisma.StringFilter<"Ingreso"> | string
   monto?: Prisma.FloatFilter<"Ingreso"> | number
+  moneda?: Prisma.StringFilter<"Ingreso"> | string
   descripcion?: Prisma.StringFilter<"Ingreso"> | string
+  categoria?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  categoriaId?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  recurrente?: Prisma.BoolFilter<"Ingreso"> | boolean
+  notas?: Prisma.StringNullableFilter<"Ingreso"> | string | null
+  source?: Prisma.StringFilter<"Ingreso"> | string
   fecha?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Ingreso"> | Date | string
 }
 
+export type IngresoCreateWithoutCategoriaRelInput = {
+  id?: string
+  monto: number
+  moneda?: string
+  descripcion: string
+  categoria?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
+  fecha?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  mes: Prisma.MesCreateNestedOneWithoutIngresosInput
+}
+
+export type IngresoUncheckedCreateWithoutCategoriaRelInput = {
+  id?: string
+  mesId: string
+  monto: number
+  moneda?: string
+  descripcion: string
+  categoria?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
+  fecha?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type IngresoCreateOrConnectWithoutCategoriaRelInput = {
+  where: Prisma.IngresoWhereUniqueInput
+  create: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput>
+}
+
+export type IngresoCreateManyCategoriaRelInputEnvelope = {
+  data: Prisma.IngresoCreateManyCategoriaRelInput | Prisma.IngresoCreateManyCategoriaRelInput[]
+  skipDuplicates?: boolean
+}
+
+export type IngresoUpsertWithWhereUniqueWithoutCategoriaRelInput = {
+  where: Prisma.IngresoWhereUniqueInput
+  update: Prisma.XOR<Prisma.IngresoUpdateWithoutCategoriaRelInput, Prisma.IngresoUncheckedUpdateWithoutCategoriaRelInput>
+  create: Prisma.XOR<Prisma.IngresoCreateWithoutCategoriaRelInput, Prisma.IngresoUncheckedCreateWithoutCategoriaRelInput>
+}
+
+export type IngresoUpdateWithWhereUniqueWithoutCategoriaRelInput = {
+  where: Prisma.IngresoWhereUniqueInput
+  data: Prisma.XOR<Prisma.IngresoUpdateWithoutCategoriaRelInput, Prisma.IngresoUncheckedUpdateWithoutCategoriaRelInput>
+}
+
+export type IngresoUpdateManyWithWhereWithoutCategoriaRelInput = {
+  where: Prisma.IngresoScalarWhereInput
+  data: Prisma.XOR<Prisma.IngresoUpdateManyMutationInput, Prisma.IngresoUncheckedUpdateManyWithoutCategoriaRelInput>
+}
+
 export type IngresoCreateManyMesInput = {
   id?: string
   monto: number
+  moneda?: string
   descripcion: string
+  categoria?: string | null
+  categoriaId?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
   fecha?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -524,16 +780,28 @@ export type IngresoCreateManyMesInput = {
 export type IngresoUpdateWithoutMesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  categoriaRel?: Prisma.CategoriaUpdateOneWithoutIngresosNestedInput
 }
 
 export type IngresoUncheckedUpdateWithoutMesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoriaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -542,7 +810,73 @@ export type IngresoUncheckedUpdateWithoutMesInput = {
 export type IngresoUncheckedUpdateManyWithoutMesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoriaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type IngresoCreateManyCategoriaRelInput = {
+  id?: string
+  mesId: string
+  monto: number
+  moneda?: string
+  descripcion: string
+  categoria?: string | null
+  recurrente?: boolean
+  notas?: string | null
+  source?: string
+  fecha?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type IngresoUpdateWithoutCategoriaRelInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mes?: Prisma.MesUpdateOneRequiredWithoutIngresosNestedInput
+}
+
+export type IngresoUncheckedUpdateWithoutCategoriaRelInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mesId?: Prisma.StringFieldUpdateOperationsInput | string
+  monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type IngresoUncheckedUpdateManyWithoutCategoriaRelInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mesId?: Prisma.StringFieldUpdateOperationsInput | string
+  monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  moneda?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recurrente?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notas?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -554,66 +888,103 @@ export type IngresoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   mesId?: boolean
   monto?: boolean
+  moneda?: boolean
   descripcion?: boolean
+  categoria?: boolean
+  categoriaId?: boolean
+  recurrente?: boolean
+  notas?: boolean
+  source?: boolean
   fecha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }, ExtArgs["result"]["ingreso"]>
 
 export type IngresoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   mesId?: boolean
   monto?: boolean
+  moneda?: boolean
   descripcion?: boolean
+  categoria?: boolean
+  categoriaId?: boolean
+  recurrente?: boolean
+  notas?: boolean
+  source?: boolean
   fecha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }, ExtArgs["result"]["ingreso"]>
 
 export type IngresoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   mesId?: boolean
   monto?: boolean
+  moneda?: boolean
   descripcion?: boolean
+  categoria?: boolean
+  categoriaId?: boolean
+  recurrente?: boolean
+  notas?: boolean
+  source?: boolean
   fecha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }, ExtArgs["result"]["ingreso"]>
 
 export type IngresoSelectScalar = {
   id?: boolean
   mesId?: boolean
   monto?: boolean
+  moneda?: boolean
   descripcion?: boolean
+  categoria?: boolean
+  categoriaId?: boolean
+  recurrente?: boolean
+  notas?: boolean
+  source?: boolean
   fecha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type IngresoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mesId" | "monto" | "descripcion" | "fecha" | "createdAt" | "updatedAt", ExtArgs["result"]["ingreso"]>
+export type IngresoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mesId" | "monto" | "moneda" | "descripcion" | "categoria" | "categoriaId" | "recurrente" | "notas" | "source" | "fecha" | "createdAt" | "updatedAt", ExtArgs["result"]["ingreso"]>
 export type IngresoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }
 export type IngresoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }
 export type IngresoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mes?: boolean | Prisma.MesDefaultArgs<ExtArgs>
+  categoriaRel?: boolean | Prisma.Ingreso$categoriaRelArgs<ExtArgs>
 }
 
 export type $IngresoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Ingreso"
   objects: {
     mes: Prisma.$MesPayload<ExtArgs>
+    categoriaRel: Prisma.$CategoriaPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     mesId: string
     monto: number
+    moneda: string
     descripcion: string
+    categoria: string | null
+    categoriaId: string | null
+    recurrente: boolean
+    notas: string | null
+    source: string
     fecha: Date
     createdAt: Date
     updatedAt: Date
@@ -1012,6 +1383,7 @@ readonly fields: IngresoFieldRefs;
 export interface Prisma__IngresoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   mes<T extends Prisma.MesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MesDefaultArgs<ExtArgs>>): Prisma.Prisma__MesClient<runtime.Types.Result.GetResult<Prisma.$MesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  categoriaRel<T extends Prisma.Ingreso$categoriaRelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Ingreso$categoriaRelArgs<ExtArgs>>): Prisma.Prisma__CategoriaClient<runtime.Types.Result.GetResult<Prisma.$CategoriaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1044,7 +1416,13 @@ export interface IngresoFieldRefs {
   readonly id: Prisma.FieldRef<"Ingreso", 'String'>
   readonly mesId: Prisma.FieldRef<"Ingreso", 'String'>
   readonly monto: Prisma.FieldRef<"Ingreso", 'Float'>
+  readonly moneda: Prisma.FieldRef<"Ingreso", 'String'>
   readonly descripcion: Prisma.FieldRef<"Ingreso", 'String'>
+  readonly categoria: Prisma.FieldRef<"Ingreso", 'String'>
+  readonly categoriaId: Prisma.FieldRef<"Ingreso", 'String'>
+  readonly recurrente: Prisma.FieldRef<"Ingreso", 'Boolean'>
+  readonly notas: Prisma.FieldRef<"Ingreso", 'String'>
+  readonly source: Prisma.FieldRef<"Ingreso", 'String'>
   readonly fecha: Prisma.FieldRef<"Ingreso", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Ingreso", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Ingreso", 'DateTime'>
@@ -1441,6 +1819,25 @@ export type IngresoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Ingresos to delete.
    */
   limit?: number
+}
+
+/**
+ * Ingreso.categoriaRel
+ */
+export type Ingreso$categoriaRelArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Categoria
+   */
+  select?: Prisma.CategoriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Categoria
+   */
+  omit?: Prisma.CategoriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoriaInclude<ExtArgs> | null
+  where?: Prisma.CategoriaWhereInput
 }
 
 /**

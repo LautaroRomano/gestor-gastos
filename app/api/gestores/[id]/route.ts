@@ -6,6 +6,7 @@ import { z } from 'zod'
 const updateGestorSchema = z.object({
   nombre: z.string().min(1).optional(),
   descripcion: z.string().optional(),
+  moneda: z.string().min(1).max(8).optional(),
 })
 
 export async function PATCH(
