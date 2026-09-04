@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
+import { generarFijosDelMes } from '@/lib/finance/fijos'
 import { z } from 'zod'
 
 const mesSchema = z.object({
@@ -86,13 +87,6 @@ export async function POST(
     const fechaInicioMes = new Date(fechaInicio)
 
     const mes = await prisma.$transaction(async (tx) => {
-      const gastosFijos = await tx.gastoFijo.findMany({
-        where: {
-          gestorId: id,
-          activo: true,
-        },
-      })
-
       const nuevoMes = await tx.mes.create({
         data: {
           gestorId: id,
@@ -101,17 +95,7 @@ export async function POST(
         },
       })
 
-      if (gastosFijos.length > 0) {
-        await tx.gasto.createMany({
-          data: gastosFijos.map((gastoFijo) => ({
-            mesId: nuevoMes.id,
-            monto: gastoFijo.monto,
-            descripcion: gastoFijo.descripcion,
-            categoria: gastoFijo.categoria,
-            fecha: fechaInicioMes,
-          })),
-        })
-      }
+      await generarFijosDelMes(tx, id, nuevoMes.id, fechaInicioMes)
 
       return tx.mes.findUniqueOrThrow({
         where: { id: nuevoMes.id },

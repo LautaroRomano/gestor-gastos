@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Plus, Pencil, Trash2, Lock, BarChart3, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { Plus, Pencil, Trash2, Lock, BarChart3, ArrowUpRight, ArrowDownLeft, Repeat, RefreshCw } from 'lucide-react'
 
 import Modal from '../../components/Modal'
 import { Button } from '@/components/ui/button'
 import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
 import { BalanceHero, Money, CategoryBar } from '@/components/mobile/money'
 import { Field, fieldClass } from '@/components/mobile/field'
+import { Switch } from '@/components/ui/switch'
+import { formatCurrency } from '@/lib/format-currency'
 
 interface Ingreso {
   id: string
@@ -30,6 +32,8 @@ interface Gasto {
   cuentaId?: string
   notas?: string
   recurrente?: boolean
+  pagado?: boolean
+  gastoFijoId?: string | null
   fecha: string
 }
 
@@ -58,7 +62,7 @@ interface Mes {
 const CLASIFICACIONES = ['fijo', 'variable', 'discrecional', 'extraordinario', 'deuda']
 const METODOS_PAGO = ['efectivo', 'debito', 'credito', 'transferencia', 'billetera']
 
-type Tab = 'gastos' | 'ingresos' | 'estadisticas'
+type Tab = 'gastos' | 'fijos' | 'ingresos' | 'estadisticas'
 
 export default function MesPage() {
   const router = useRouter()
@@ -327,6 +331,45 @@ export default function MesPage() {
     }
   }
 
+  /** Marca un gasto como pagado o impago. Optimista: revierte si el server falla. */
+  async function togglePagado(gasto: Gasto, pagado: boolean) {
+    if (!mes) return
+    const previo = mes
+    setMes({ ...mes, gastos: mes.gastos.map((g) => (g.id === gasto.id ? { ...g, pagado } : g)) })
+    try {
+      const res = await fetch(`/api/gastos/${gasto.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pagado }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        setMes(previo)
+        alert(data.error || 'No se pudo actualizar el pago')
+      }
+    } catch {
+      setMes(previo)
+      alert('No se pudo actualizar el pago')
+    }
+  }
+
+  /** Trae al mes los fijos que falten según las plantillas activas del gestor. */
+  async function generarFijos() {
+    if (!mes) return
+    try {
+      const res = await fetch(`/api/meses/${mes.id}/generar-fijos`, { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        if (data.creados === 0) alert('No hay fijos nuevos para agregar.')
+        await loadMes()
+      } else {
+        alert(data.error || 'Error al generar los fijos')
+      }
+    } catch {
+      alert('Error al generar los fijos')
+    }
+  }
+
   async function cerrarMes() {
     if (!mes || !fechaCierre) return
     try {
@@ -352,9 +395,18 @@ export default function MesPage() {
     if (!mes) return 0
     return mes.ingresos.reduce((sum, ing) => sum + ing.monto, 0)
   }
-  function calcularTotalGastos() {
+  /** Todo lo cargado en el mes, pagado o no. Es lo que el mes te va a costar. */
+  function calcularTotalComprometido() {
     if (!mes) return 0
     return mes.gastos.reduce((sum, gas) => sum + gas.monto, 0)
+  }
+  /** Solo lo efectivamente pagado. Los fijos generados nacen impagos. */
+  function calcularTotalGastos() {
+    if (!mes) return 0
+    return mes.gastos.reduce((sum, gas) => (gas.pagado === false ? sum : sum + gas.monto), 0)
+  }
+  function calcularTotalPendiente() {
+    return calcularTotalComprometido() - calcularTotalGastos()
   }
   function calcularBalance() {
     return calcularTotalIngresos() - calcularTotalGastos()
@@ -397,13 +449,17 @@ export default function MesPage() {
 
   const gastosPorCategoria = calcularGastosPorCategoria()
   const totalGastos = calcularTotalGastos()
+  const totalPendiente = calcularTotalPendiente()
+  const fijos = mes.gastos.filter((g) => g.gastoFijoId)
+  const fijosImpagos = fijos.filter((g) => g.pagado === false).length
   const maxGastoCategoria =
     gastosPorCategoria.length > 0 ? Math.max(...gastosPorCategoria.map((g) => g.total)) : 0
 
   const tabs: Array<{ key: Tab; label: string }> = [
-    { key: 'gastos', label: `Gastos` },
-    { key: 'ingresos', label: `Ingresos` },
-    { key: 'estadisticas', label: `Stats` },
+    { key: 'gastos', label: 'Gastos' },
+    { key: 'fijos', label: 'Fijos' },
+    { key: 'ingresos', label: 'Ingresos' },
+    { key: 'estadisticas', label: 'Stats' },
   ]
 
   const tituloMes = new Date(mes.fechaInicio).toLocaleDateString('es-ES', {
@@ -435,16 +491,40 @@ export default function MesPage() {
           expense={calcularTotalGastos()}
         />
 
+        {totalPendiente > 0 && (
+          <button
+            onClick={() => setActiveTab('fijos')}
+            className="tap flex w-full items-center gap-3 rounded-2xl border border-dashed border-expense/40 bg-expense/5 p-3.5 text-left"
+          >
+            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-expense/15 text-expense">
+              <Repeat className="size-[18px]" strokeWidth={2.5} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold">Pendiente de pago</p>
+              <p className="text-xs text-muted-foreground">
+                {fijosImpagos > 0
+                  ? `${fijosImpagos} ${fijosImpagos === 1 ? 'fijo impago' : 'fijos impagos'}`
+                  : 'Gastos sin marcar como pagados'}
+                {' · comprometido '}
+                {formatCurrency(calcularTotalComprometido())}
+              </p>
+            </div>
+            <Money value={totalPendiente} className="shrink-0 text-base font-bold text-expense" />
+          </button>
+        )}
+
         {/* Segmented tabs */}
-        <div className="grid grid-cols-3 rounded-2xl border border-border bg-muted/60 p-1">
+        <div className="grid grid-cols-4 rounded-2xl border border-border bg-muted/60 p-1">
           {tabs.map((t) => {
             const active = activeTab === t.key
             const count =
               t.key === 'gastos'
                 ? mes.gastos.length
-                : t.key === 'ingresos'
-                  ? mes.ingresos.length
-                  : undefined
+                : t.key === 'fijos'
+                  ? fijos.length
+                  : t.key === 'ingresos'
+                    ? mes.ingresos.length
+                    : undefined
             return (
               <button
                 key={t.key}
@@ -496,6 +576,7 @@ export default function MesPage() {
                     clasificacion={gasto.clasificacion}
                     necesidad={gasto.necesidad}
                     recurrente={gasto.recurrente}
+                    pagado={gasto.pagado}
                     variant="expense"
                     index={i}
                     editable={!mes.cerrado}
@@ -505,6 +586,63 @@ export default function MesPage() {
                   />
                 ))
               ))}
+
+            {activeTab === 'fijos' && (
+              <>
+                {fijos.length > 0 && (
+                  <div className="flex items-center justify-between rounded-2xl border border-border/70 bg-card px-3.5 py-3">
+                    <div>
+                      <p className="text-sm font-semibold">
+                        {fijos.length - fijosImpagos} de {fijos.length} pagados
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Falta pagar {formatCurrency(totalPendiente)}
+                      </p>
+                    </div>
+                    {!mes.cerrado && (
+                      <button
+                        onClick={generarFijos}
+                        className="tap inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-xs font-semibold"
+                      >
+                        <RefreshCw className="size-3.5" />
+                        Sincronizar
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {fijos.length === 0 ? (
+                  <EmptyState
+                    icon={<Repeat className="size-6" />}
+                    title="Sin gastos fijos este mes"
+                    description={
+                      mes.cerrado
+                        ? 'Este mes está cerrado.'
+                        : 'Generá los fijos a partir de las plantillas del gestor, o cargalas primero desde Gastos fijos.'
+                    }
+                    action={
+                      !mes.cerrado ? (
+                        <Button onClick={generarFijos} className="h-11 rounded-xl">
+                          <RefreshCw className="size-4" />
+                          Generar fijos del mes
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                ) : (
+                  fijos.map((gasto, i) => (
+                    <FijoCard
+                      key={gasto.id}
+                      gasto={gasto}
+                      index={i}
+                      editable={!mes.cerrado}
+                      onToggle={(v) => togglePagado(gasto, v)}
+                      onEdit={() => abrirEditarGasto(gasto)}
+                    />
+                  ))
+                )}
+              </>
+            )}
 
             {activeTab === 'ingresos' &&
               (mes.ingresos.length === 0 ? (
@@ -868,6 +1006,65 @@ const NECESIDAD_LABEL: Record<string, string> = {
   no_seguro: 'No estoy seguro',
 }
 
+/* Fila de gasto fijo del mes, con el switch de pagado. */
+function FijoCard({
+  gasto,
+  index,
+  editable,
+  onToggle,
+  onEdit,
+}: {
+  gasto: Gasto
+  index: number
+  editable: boolean
+  onToggle: (value: boolean) => void
+  onEdit: () => void
+}) {
+  const pagado = gasto.pagado !== false
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.3), ease: [0.16, 1, 0.3, 1] }}
+      className={`flex items-center gap-3 rounded-2xl border p-3.5 transition-colors ${
+        pagado ? 'border-income/30 bg-income/5' : 'border-border/70 bg-card'
+      }`}
+    >
+      <button
+        onClick={onEdit}
+        disabled={!editable}
+        className="min-w-0 flex-1 text-left disabled:cursor-default"
+      >
+        <p className={`truncate font-semibold ${pagado ? 'text-muted-foreground line-through' : ''}`}>
+          {gasto.descripcion}
+        </p>
+        <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+          {gasto.categoria && (
+            <span className="truncate rounded-full bg-accent px-2 py-0.5 font-medium text-accent-foreground">
+              {gasto.categoria}
+            </span>
+          )}
+          <span className={pagado ? 'text-income' : 'text-expense'}>
+            {pagado ? 'Pagado' : 'Impago'}
+          </span>
+        </div>
+      </button>
+
+      <Money
+        value={gasto.monto}
+        className={`shrink-0 text-base font-bold ${pagado ? 'text-muted-foreground' : 'text-expense'}`}
+      />
+
+      <Switch
+        checked={pagado}
+        disabled={!editable}
+        onCheckedChange={onToggle}
+        label={`Marcar ${gasto.descripcion} como ${pagado ? 'impago' : 'pagado'}`}
+      />
+    </motion.div>
+  )
+}
+
 function MovimientoCard({
   descripcion,
   monto,
@@ -876,6 +1073,7 @@ function MovimientoCard({
   clasificacion,
   necesidad,
   recurrente,
+  pagado,
   variant,
   index,
   editable,
@@ -890,6 +1088,7 @@ function MovimientoCard({
   clasificacion?: string
   necesidad?: string
   recurrente?: boolean
+  pagado?: boolean
   variant: 'income' | 'expense'
   index: number
   editable: boolean
@@ -931,6 +1130,9 @@ function MovimientoCard({
           )}
           {recurrente && (
             <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-muted-foreground">↻ recurrente</span>
+          )}
+          {pagado === false && (
+            <span className="rounded-full bg-expense/15 px-2 py-0.5 font-semibold text-expense">impago</span>
           )}
         </div>
         {!isIncome && (clasificacion || necesidad) && (

@@ -18,6 +18,7 @@ const updateGastoSchema = z.object({
   metodoPago: z.string().nullish(),
   cuentaId: z.string().nullish(),
   notas: z.string().nullish(),
+  pagado: z.boolean().optional(),
   fecha: z.string().optional(),
 })
 
@@ -79,6 +80,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         metodoPago: data.metodoPago ?? undefined,
         cuentaId: data.cuentaId ?? undefined,
         notas: data.notas ?? undefined,
+        pagado: data.pagado,
         fecha: data.fecha ? parseFecha(data.fecha) : undefined,
       },
     })

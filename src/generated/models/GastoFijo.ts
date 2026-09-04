@@ -241,6 +241,7 @@ export type GastoFijoWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"GastoFijo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GastoFijo"> | Date | string
   gestor?: Prisma.XOR<Prisma.GestorScalarRelationFilter, Prisma.GestorWhereInput>
+  gastos?: Prisma.GastoListRelationFilter
 }
 
 export type GastoFijoOrderByWithRelationInput = {
@@ -253,6 +254,7 @@ export type GastoFijoOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   gestor?: Prisma.GestorOrderByWithRelationInput
+  gastos?: Prisma.GastoOrderByRelationAggregateInput
 }
 
 export type GastoFijoWhereUniqueInput = Prisma.AtLeast<{
@@ -268,6 +270,7 @@ export type GastoFijoWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"GastoFijo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GastoFijo"> | Date | string
   gestor?: Prisma.XOR<Prisma.GestorScalarRelationFilter, Prisma.GestorWhereInput>
+  gastos?: Prisma.GastoListRelationFilter
 }, "id">
 
 export type GastoFijoOrderByWithAggregationInput = {
@@ -309,6 +312,7 @@ export type GastoFijoCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   gestor: Prisma.GestorCreateNestedOneWithoutGastosFijosInput
+  gastos?: Prisma.GastoCreateNestedManyWithoutGastoFijoInput
 }
 
 export type GastoFijoUncheckedCreateInput = {
@@ -320,6 +324,7 @@ export type GastoFijoUncheckedCreateInput = {
   activo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  gastos?: Prisma.GastoUncheckedCreateNestedManyWithoutGastoFijoInput
 }
 
 export type GastoFijoUpdateInput = {
@@ -331,6 +336,7 @@ export type GastoFijoUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gestor?: Prisma.GestorUpdateOneRequiredWithoutGastosFijosNestedInput
+  gastos?: Prisma.GastoUpdateManyWithoutGastoFijoNestedInput
 }
 
 export type GastoFijoUncheckedUpdateInput = {
@@ -342,6 +348,7 @@ export type GastoFijoUncheckedUpdateInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gastos?: Prisma.GastoUncheckedUpdateManyWithoutGastoFijoNestedInput
 }
 
 export type GastoFijoCreateManyInput = {
@@ -384,6 +391,11 @@ export type GastoFijoListRelationFilter = {
 
 export type GastoFijoOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type GastoFijoNullableScalarRelationFilter = {
+  is?: Prisma.GastoFijoWhereInput | null
+  isNot?: Prisma.GastoFijoWhereInput | null
 }
 
 export type GastoFijoCountOrderByAggregateInput = {
@@ -469,6 +481,22 @@ export type GastoFijoUncheckedUpdateManyWithoutGestorNestedInput = {
   deleteMany?: Prisma.GastoFijoScalarWhereInput | Prisma.GastoFijoScalarWhereInput[]
 }
 
+export type GastoFijoCreateNestedOneWithoutGastosInput = {
+  create?: Prisma.XOR<Prisma.GastoFijoCreateWithoutGastosInput, Prisma.GastoFijoUncheckedCreateWithoutGastosInput>
+  connectOrCreate?: Prisma.GastoFijoCreateOrConnectWithoutGastosInput
+  connect?: Prisma.GastoFijoWhereUniqueInput
+}
+
+export type GastoFijoUpdateOneWithoutGastosNestedInput = {
+  create?: Prisma.XOR<Prisma.GastoFijoCreateWithoutGastosInput, Prisma.GastoFijoUncheckedCreateWithoutGastosInput>
+  connectOrCreate?: Prisma.GastoFijoCreateOrConnectWithoutGastosInput
+  upsert?: Prisma.GastoFijoUpsertWithoutGastosInput
+  disconnect?: Prisma.GastoFijoWhereInput | boolean
+  delete?: Prisma.GastoFijoWhereInput | boolean
+  connect?: Prisma.GastoFijoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GastoFijoUpdateToOneWithWhereWithoutGastosInput, Prisma.GastoFijoUpdateWithoutGastosInput>, Prisma.GastoFijoUncheckedUpdateWithoutGastosInput>
+}
+
 export type GastoFijoCreateWithoutGestorInput = {
   id?: string
   monto: number
@@ -477,6 +505,7 @@ export type GastoFijoCreateWithoutGestorInput = {
   activo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  gastos?: Prisma.GastoCreateNestedManyWithoutGastoFijoInput
 }
 
 export type GastoFijoUncheckedCreateWithoutGestorInput = {
@@ -487,6 +516,7 @@ export type GastoFijoUncheckedCreateWithoutGestorInput = {
   activo?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  gastos?: Prisma.GastoUncheckedCreateNestedManyWithoutGastoFijoInput
 }
 
 export type GastoFijoCreateOrConnectWithoutGestorInput = {
@@ -529,6 +559,66 @@ export type GastoFijoScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"GastoFijo"> | Date | string
 }
 
+export type GastoFijoCreateWithoutGastosInput = {
+  id?: string
+  monto: number
+  descripcion: string
+  categoria?: string | null
+  activo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  gestor: Prisma.GestorCreateNestedOneWithoutGastosFijosInput
+}
+
+export type GastoFijoUncheckedCreateWithoutGastosInput = {
+  id?: string
+  gestorId: string
+  monto: number
+  descripcion: string
+  categoria?: string | null
+  activo?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type GastoFijoCreateOrConnectWithoutGastosInput = {
+  where: Prisma.GastoFijoWhereUniqueInput
+  create: Prisma.XOR<Prisma.GastoFijoCreateWithoutGastosInput, Prisma.GastoFijoUncheckedCreateWithoutGastosInput>
+}
+
+export type GastoFijoUpsertWithoutGastosInput = {
+  update: Prisma.XOR<Prisma.GastoFijoUpdateWithoutGastosInput, Prisma.GastoFijoUncheckedUpdateWithoutGastosInput>
+  create: Prisma.XOR<Prisma.GastoFijoCreateWithoutGastosInput, Prisma.GastoFijoUncheckedCreateWithoutGastosInput>
+  where?: Prisma.GastoFijoWhereInput
+}
+
+export type GastoFijoUpdateToOneWithWhereWithoutGastosInput = {
+  where?: Prisma.GastoFijoWhereInput
+  data: Prisma.XOR<Prisma.GastoFijoUpdateWithoutGastosInput, Prisma.GastoFijoUncheckedUpdateWithoutGastosInput>
+}
+
+export type GastoFijoUpdateWithoutGastosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gestor?: Prisma.GestorUpdateOneRequiredWithoutGastosFijosNestedInput
+}
+
+export type GastoFijoUncheckedUpdateWithoutGastosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  gestorId?: Prisma.StringFieldUpdateOperationsInput | string
+  monto?: Prisma.FloatFieldUpdateOperationsInput | number
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type GastoFijoCreateManyGestorInput = {
   id?: string
   monto: number
@@ -547,6 +637,7 @@ export type GastoFijoUpdateWithoutGestorInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gastos?: Prisma.GastoUpdateManyWithoutGastoFijoNestedInput
 }
 
 export type GastoFijoUncheckedUpdateWithoutGestorInput = {
@@ -557,6 +648,7 @@ export type GastoFijoUncheckedUpdateWithoutGestorInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  gastos?: Prisma.GastoUncheckedUpdateManyWithoutGastoFijoNestedInput
 }
 
 export type GastoFijoUncheckedUpdateManyWithoutGestorInput = {
@@ -570,6 +662,35 @@ export type GastoFijoUncheckedUpdateManyWithoutGestorInput = {
 }
 
 
+/**
+ * Count Type GastoFijoCountOutputType
+ */
+
+export type GastoFijoCountOutputType = {
+  gastos: number
+}
+
+export type GastoFijoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  gastos?: boolean | GastoFijoCountOutputTypeCountGastosArgs
+}
+
+/**
+ * GastoFijoCountOutputType without action
+ */
+export type GastoFijoCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GastoFijoCountOutputType
+   */
+  select?: Prisma.GastoFijoCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * GastoFijoCountOutputType without action
+ */
+export type GastoFijoCountOutputTypeCountGastosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GastoWhereInput
+}
+
 
 export type GastoFijoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -581,6 +702,8 @@ export type GastoFijoSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
   updatedAt?: boolean
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
+  gastos?: boolean | Prisma.GastoFijo$gastosArgs<ExtArgs>
+  _count?: boolean | Prisma.GastoFijoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["gastoFijo"]>
 
 export type GastoFijoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -621,6 +744,8 @@ export type GastoFijoSelectScalar = {
 export type GastoFijoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "gestorId" | "monto" | "descripcion" | "categoria" | "activo" | "createdAt" | "updatedAt", ExtArgs["result"]["gastoFijo"]>
 export type GastoFijoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
+  gastos?: boolean | Prisma.GastoFijo$gastosArgs<ExtArgs>
+  _count?: boolean | Prisma.GastoFijoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GastoFijoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gestor?: boolean | Prisma.GestorDefaultArgs<ExtArgs>
@@ -633,6 +758,7 @@ export type $GastoFijoPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "GastoFijo"
   objects: {
     gestor: Prisma.$GestorPayload<ExtArgs>
+    gastos: Prisma.$GastoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1038,6 +1164,7 @@ readonly fields: GastoFijoFieldRefs;
 export interface Prisma__GastoFijoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   gestor<T extends Prisma.GestorDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GestorDefaultArgs<ExtArgs>>): Prisma.Prisma__GestorClient<runtime.Types.Result.GetResult<Prisma.$GestorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  gastos<T extends Prisma.GastoFijo$gastosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GastoFijo$gastosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GastoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1468,6 +1595,30 @@ export type GastoFijoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many GastoFijos to delete.
    */
   limit?: number
+}
+
+/**
+ * GastoFijo.gastos
+ */
+export type GastoFijo$gastosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Gasto
+   */
+  select?: Prisma.GastoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Gasto
+   */
+  omit?: Prisma.GastoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GastoInclude<ExtArgs> | null
+  where?: Prisma.GastoWhereInput
+  orderBy?: Prisma.GastoOrderByWithRelationInput | Prisma.GastoOrderByWithRelationInput[]
+  cursor?: Prisma.GastoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GastoScalarFieldEnum | Prisma.GastoScalarFieldEnum[]
 }
 
 /**

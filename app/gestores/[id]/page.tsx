@@ -11,8 +11,6 @@ import {
   BarChart3,
   Repeat,
   Pencil,
-  Trash2,
-  ChevronRight,
   Lock,
   LayoutDashboard,
   Tags,
@@ -29,7 +27,6 @@ import { Button } from '@/components/ui/button'
 import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
 import { BalanceHero, Money } from '@/components/mobile/money'
 import { Field, fieldClass } from '@/components/mobile/field'
-import { formatCurrency } from '@/lib/format-currency'
 
 interface Mes {
   id: string
@@ -65,18 +62,9 @@ export default function GestorPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [isEditGestorOpen, setIsEditGestorOpen] = useState(false)
   const [isEditMesOpen, setIsEditMesOpen] = useState(false)
-  const [isGastoFijoOpen, setIsGastoFijoOpen] = useState(false)
-  const [isEditGastoFijoOpen, setIsEditGastoFijoOpen] = useState(false)
   const [editingMes, setEditingMes] = useState<Mes | null>(null)
-  const [editingGastoFijo, setEditingGastoFijo] = useState<GastoFijo | null>(null)
   const [nuevoMes, setNuevoMes] = useState({ fechaInicio: '' })
   const [editGestorData, setEditGestorData] = useState({ nombre: '', descripcion: '' })
-  const [gastoFijoData, setGastoFijoData] = useState({
-    monto: '',
-    descripcion: '',
-    categoria: '',
-    activo: true,
-  })
   const [copied, setCopied] = useState(false)
 
   const onOpen = () => setIsOpen(true)
@@ -90,16 +78,6 @@ export default function GestorPage() {
     setEditingMes(null)
     setNuevoMes({ fechaInicio: '' })
   }
-  const onGastoFijoClose = () => {
-    setIsGastoFijoOpen(false)
-    setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
-  }
-  const onEditGastoFijoClose = () => {
-    setIsEditGastoFijoOpen(false)
-    setEditingGastoFijo(null)
-    setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
-  }
-
   useEffect(() => {
     loadGestor()
   }, [id])
@@ -234,83 +212,6 @@ export default function GestorPage() {
     }
   }
 
-  async function crearGastoFijo() {
-    try {
-      const res = await fetch(`/api/gestores/${id}/gastos-fijos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          monto: parseFloat(gastoFijoData.monto),
-          descripcion: gastoFijoData.descripcion,
-          categoria: gastoFijoData.categoria || undefined,
-          activo: gastoFijoData.activo,
-        }),
-      })
-
-      if (res.ok) {
-        await loadGestor()
-        setGastoFijoData({ monto: '', descripcion: '', categoria: '', activo: true })
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Error al crear gasto fijo')
-      }
-    } catch (error) {
-      alert('Error al crear gasto fijo')
-    }
-  }
-
-  function abrirEditarGastoFijo(gastoFijo: GastoFijo) {
-    setEditingGastoFijo(gastoFijo)
-    setGastoFijoData({
-      monto: gastoFijo.monto.toString(),
-      descripcion: gastoFijo.descripcion,
-      categoria: gastoFijo.categoria || '',
-      activo: gastoFijo.activo,
-    })
-    setIsEditGastoFijoOpen(true)
-  }
-
-  async function actualizarGastoFijo() {
-    if (!editingGastoFijo) return
-    try {
-      const res = await fetch(`/api/gastos-fijos/${editingGastoFijo.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          monto: parseFloat(gastoFijoData.monto),
-          descripcion: gastoFijoData.descripcion,
-          categoria: gastoFijoData.categoria || undefined,
-          activo: gastoFijoData.activo,
-        }),
-      })
-
-      if (res.ok) {
-        await loadGestor()
-        onEditGastoFijoClose()
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Error al actualizar gasto fijo')
-      }
-    } catch (error) {
-      alert('Error al actualizar gasto fijo')
-    }
-  }
-
-  async function eliminarGastoFijo(gastoFijoId: string) {
-    if (!confirm('¿Estás seguro de eliminar este gasto fijo?')) return
-    try {
-      const res = await fetch(`/api/gastos-fijos/${gastoFijoId}`, { method: 'DELETE' })
-      if (res.ok) {
-        await loadGestor()
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Error al eliminar gasto fijo')
-      }
-    } catch (error) {
-      alert('Error al eliminar gasto fijo')
-    }
-  }
-
   if (loading) return <ScreenLoader />
   if (!gestor) return null
 
@@ -361,7 +262,7 @@ export default function GestorPage() {
         {/* Accesos rápidos */}
         <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={() => setIsGastoFijoOpen(true)}
+            onClick={() => router.push(`/gestores/${id}/gastos-fijos`)}
             className="tap flex flex-col items-start gap-2 rounded-2xl border border-border/70 bg-card p-3.5"
           >
             <span className="grid size-9 place-items-center rounded-xl bg-accent text-accent-foreground">
@@ -563,165 +464,6 @@ export default function GestorPage() {
               className={fieldClass}
             />
           </Field>
-        </div>
-      </Modal>
-
-      {/* Gastos fijos */}
-      <Modal
-        isOpen={isGastoFijoOpen}
-        onClose={onGastoFijoClose}
-        title="Gastos fijos"
-        footer={
-          <>
-            <Button variant="ghost" className="h-11 rounded-xl" onClick={onGastoFijoClose}>
-              Cerrar
-            </Button>
-            <Button className="h-11 rounded-xl px-6" onClick={crearGastoFijo}>
-              Agregar
-            </Button>
-          </>
-        }
-      >
-        <div className="flex flex-col gap-4 pt-1">
-          <Field label="Monto">
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={gastoFijoData.monto}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
-              placeholder="0"
-              className={fieldClass}
-            />
-          </Field>
-          <Field label="Descripción">
-            <input
-              type="text"
-              value={gastoFijoData.descripcion}
-              onChange={(e) =>
-                setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })
-              }
-              placeholder="Ej. Alquiler"
-              className={fieldClass}
-            />
-          </Field>
-          <Field label="Categoría" hint="Opcional">
-            <input
-              type="text"
-              value={gastoFijoData.categoria}
-              onChange={(e) =>
-                setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })
-              }
-              className={fieldClass}
-            />
-          </Field>
-          <label className="flex items-center gap-3 rounded-xl border border-border bg-background px-3.5 py-3 text-sm font-medium">
-            <input
-              type="checkbox"
-              checked={gastoFijoData.activo}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
-              className="size-4 accent-[var(--primary)]"
-            />
-            Activo
-          </label>
-
-          <div className="space-y-2 border-t border-border/70 pt-4">
-            <p className="text-sm font-semibold">Cargados ({gestor.gastosFijos.length})</p>
-            {gestor.gastosFijos.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Todavía no hay gastos fijos.</p>
-            ) : (
-              gestor.gastosFijos.map((gf) => (
-                <div
-                  key={gf.id}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-border/70 bg-background p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">
-                      {gf.descripcion} · {formatCurrency(gf.monto)}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {gf.categoria || 'Sin categoría'} · {gf.activo ? 'Activo' : 'Inactivo'}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      onClick={() => abrirEditarGastoFijo(gf)}
-                      aria-label="Editar"
-                      className="tap grid size-8 place-items-center rounded-lg text-muted-foreground hover:bg-accent"
-                    >
-                      <Pencil className="size-4" />
-                    </button>
-                    <button
-                      onClick={() => eliminarGastoFijo(gf.id)}
-                      aria-label="Eliminar"
-                      className="tap grid size-8 place-items-center rounded-lg text-expense hover:bg-expense/10"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </Modal>
-
-      {/* Editar gasto fijo */}
-      <Modal
-        isOpen={isEditGastoFijoOpen}
-        onClose={onEditGastoFijoClose}
-        title="Editar gasto fijo"
-        footer={
-          <>
-            <Button variant="ghost" className="h-11 rounded-xl" onClick={onEditGastoFijoClose}>
-              Cancelar
-            </Button>
-            <Button className="h-11 rounded-xl px-6" onClick={actualizarGastoFijo}>
-              Guardar
-            </Button>
-          </>
-        }
-      >
-        <div className="flex flex-col gap-4 pt-1">
-          <Field label="Monto">
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={gastoFijoData.monto}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, monto: e.target.value })}
-              className={fieldClass}
-            />
-          </Field>
-          <Field label="Descripción">
-            <input
-              type="text"
-              value={gastoFijoData.descripcion}
-              onChange={(e) =>
-                setGastoFijoData({ ...gastoFijoData, descripcion: e.target.value })
-              }
-              className={fieldClass}
-            />
-          </Field>
-          <Field label="Categoría" hint="Opcional">
-            <input
-              type="text"
-              value={gastoFijoData.categoria}
-              onChange={(e) =>
-                setGastoFijoData({ ...gastoFijoData, categoria: e.target.value })
-              }
-              className={fieldClass}
-            />
-          </Field>
-          <label className="flex items-center gap-3 rounded-xl border border-border bg-background px-3.5 py-3 text-sm font-medium">
-            <input
-              type="checkbox"
-              checked={gastoFijoData.activo}
-              onChange={(e) => setGastoFijoData({ ...gastoFijoData, activo: e.target.checked })}
-              className="size-4 accent-[var(--primary)]"
-            />
-            Activo
-          </label>
         </div>
       </Modal>
 

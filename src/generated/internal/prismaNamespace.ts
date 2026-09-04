@@ -1728,6 +1728,8 @@ export const GastoScalarFieldEnum = {
   cuentaId: 'cuentaId',
   notas: 'notas',
   source: 'source',
+  pagado: 'pagado',
+  gastoFijoId: 'gastoFijoId',
   fecha: 'fecha',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

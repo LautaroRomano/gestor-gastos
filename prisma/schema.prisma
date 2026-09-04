@@ -108,6 +108,8 @@ model Gasto {
   cuentaId      String?
   notas         String?
   source        String   @default("web") // web | whatsapp
+  pagado        Boolean  @default(true) // los fijos generados nacen impagos
+  gastoFijoId   String? // si proviene de una plantilla GastoFijo
   fecha         DateTime @default(now())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -115,6 +117,10 @@ model Gasto {
   mes          Mes        @relation(fields: [mesId], references: [id], onDelete: Cascade)
   categoriaRel Categoria? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
   cuenta       Cuenta?    @relation(fields: [cuentaId], references: [id], onDelete: SetNull)
+  gastoFijo    GastoFijo? @relation(fields: [gastoFijoId], references: [id], onDelete: SetNull)
+
+  @@index([mesId])
+  @@unique([mesId, gastoFijoId])
 }
 
 model GastoFijo {
@@ -128,6 +134,7 @@ model GastoFijo {
   updatedAt   DateTime @updatedAt
 
   gestor Gestor @relation(fields: [gestorId], references: [id], onDelete: Cascade)
+  gastos Gasto[]
 }
 
 model Categoria {
