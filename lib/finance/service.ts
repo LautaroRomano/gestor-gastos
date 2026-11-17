@@ -3,6 +3,7 @@
 import { prisma } from '../prisma'
 import { computeMetrics, type MesInput, type MovGasto, type Metrics } from './metrics'
 import { gastosPrescindibles, anomalias, recomendacionAhorro, type Anomalia } from './insights'
+import { categoriaCanonica } from './categorias'
 
 export interface AnalisisMes {
   mesId: string
@@ -23,7 +24,7 @@ function mapGasto(g: {
   return {
     monto: g.monto,
     fecha: g.fecha,
-    categoria: g.categoria,
+    categoria: categoriaCanonica(g.categoria) ?? g.categoria,
     clasificacion: g.clasificacion,
     necesidad: g.necesidad,
     descripcion: g.descripcion,

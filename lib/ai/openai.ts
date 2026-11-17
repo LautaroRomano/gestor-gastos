@@ -2,6 +2,7 @@
 // Principio de la spec (§4, §172): la IA EXPLICA los números calculados por el
 // backend, nunca los inventa. Guardas anti prompt-injection (spec §16).
 import OpenAI from 'openai'
+import { NOMBRES_CATEGORIAS_GASTO } from '../finance/categorias'
 import type { Metrics } from '../finance/metrics'
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini'
@@ -98,6 +99,7 @@ export async function parseMensaje(texto: string, hoyISO: string): Promise<Parse
     `query_savings, query_budget, query_goals, help.\n` +
     `Campos: intent, type ("expense"|"income"), amount (number), currency, date (YYYY-MM-DD), ` +
     `description, category, subcategory, expenseType (fijo|variable|discrecional|extraordinario|deuda), ` +
+    `Para gastos, category tiene que ser EXACTAMENTE una de: ${NOMBRES_CATEGORIAS_GASTO.join(' | ')}. ` +
     `confidence (0..1), missing (array de campos faltantes para poder registrar), query (texto de la consulta si es query_*).\n` +
     `Si el mensaje es una pregunta, usá el intent query_* correspondiente. Si faltan datos para un alta, listalos en "missing".`
 

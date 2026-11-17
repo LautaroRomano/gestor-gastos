@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
 import { BalanceHero, Money, CategoryBar } from '@/components/mobile/money'
 import { Field, fieldClass } from '@/components/mobile/field'
+import { CategoriaPicker } from '@/components/mobile/categoria-picker'
+import { categoriaCanonica } from '@/lib/finance/categorias'
 import { Switch } from '@/components/ui/switch'
 import { formatCurrency } from '@/lib/format-currency'
 
@@ -37,13 +39,6 @@ interface Gasto {
   fecha: string
 }
 
-interface Categoria {
-  id: string
-  nombre: string
-  tipo: string
-  parentId?: string | null
-}
-
 interface Cuenta {
   id: string
   nombre: string
@@ -69,7 +64,7 @@ export default function MesPage() {
   const params = useParams()
   const id = params.id as string
   const [mes, setMes] = useState<Mes | null>(null)
-  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [conTope, setConTope] = useState<string[]>([])
   const [cuentas, setCuentas] = useState<Cuenta[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('gastos')
@@ -120,11 +115,15 @@ export default function MesPage() {
         if (data.gestor?.id) {
           const gid = data.gestor.id
           Promise.all([
-            fetch(`/api/gestores/${gid}/categorias`).then((r) => (r.ok ? r.json() : [])),
+            fetch(`/api/gestores/${gid}/presupuestos`).then((r) => (r.ok ? r.json() : [])),
             fetch(`/api/gestores/${gid}/cuentas`).then((r) => (r.ok ? r.json() : [])),
           ])
-            .then(([cats, cts]) => {
-              setCategorias(cats)
+            .then(([pres, cts]) => {
+              setConTope(
+                (pres as { categoria: string | null }[])
+                  .map((p) => categoriaCanonica(p.categoria))
+                  .filter((c): c is string => !!c),
+              )
               setCuentas(cts)
             })
             .catch(() => {})
@@ -424,7 +423,9 @@ export default function MesPage() {
     const categoriaMap = new Map<string, { total: number; label: string }>()
     mes.gastos.forEach((gasto) => {
       const categoriaOriginal =
-        gasto.categoria && gasto.categoria.trim() !== '' ? gasto.categoria : 'Sin categoría'
+        gasto.categoria && gasto.categoria.trim() !== ''
+          ? categoriaCanonica(gasto.categoria) ?? gasto.categoria
+          : 'Sin categoría'
       const key = normalizarCategoria(categoriaOriginal)
       const existente = categoriaMap.get(key) || { total: 0, label: categoriaOriginal }
       categoriaMap.set(key, { total: existente.total + gasto.monto, label: existente.label })
@@ -758,7 +759,7 @@ export default function MesPage() {
             <GastoFields
               formData={formData}
               setFormData={setFormData}
-              categorias={categorias}
+              conTope={conTope}
               cuentas={cuentas}
             />
           )}
@@ -846,7 +847,7 @@ export default function MesPage() {
             <GastoFields
               formData={formData}
               setFormData={setFormData}
-              categorias={categorias}
+              conTope={conTope}
               cuentas={cuentas}
             />
           )}
@@ -868,7 +869,7 @@ export default function MesPage() {
 function GastoFields({
   formData,
   setFormData,
-  categorias,
+  conTope,
   cuentas,
 }: {
   formData: {
@@ -881,10 +882,9 @@ function GastoFields({
     recurrente: boolean
   }
   setFormData: (fn: any) => void
-  categorias: Categoria[]
+  conTope: string[]
   cuentas: Cuenta[]
 }) {
-  const catsGasto = categorias.filter((c) => c.tipo === 'gasto')
   const set = (patch: Record<string, unknown>) => setFormData((prev: any) => ({ ...prev, ...patch }))
   const necesidades: { key: string; label: string }[] = [
     { key: 'necesario', label: 'Necesario' },
@@ -894,19 +894,13 @@ function GastoFields({
 
   return (
     <>
-      <Field label="Categoría" hint="Si la dejás vacía, se clasifica sola.">
-        <select
+      <Field label="Categoría" hint="Si no elegís, se clasifica sola según la descripción.">
+        <CategoriaPicker
           value={formData.categoria}
-          onChange={(e) => set({ categoria: e.target.value })}
-          className={fieldClass}
-        >
-          <option value="">Automática</option>
-          {catsGasto.map((c) => (
-            <option key={c.id} value={c.nombre}>
-              {c.parentId ? `— ${c.nombre}` : c.nombre}
-            </option>
-          ))}
-        </select>
+          onChange={(categoria) => set({ categoria })}
+          allowAuto
+          conTope={conTope}
+        />
       </Field>
 
       <Field label="Tipo de gasto" hint="Opcional">

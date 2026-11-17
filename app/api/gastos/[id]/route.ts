@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
 import { montoSchema, parseFecha, handleError, ApiError } from '@/lib/api'
-import { normalizar } from '@/lib/finance/classify'
+import { normalizar, resolverCategoriaGasto } from '@/lib/finance/classify'
 import { z } from 'zod'
 
 const updateGastoSchema = z.object({
@@ -71,7 +71,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         monto: data.monto,
         descripcion: data.descripcion,
         moneda: data.moneda,
-        categoria: data.categoria ?? undefined,
+        categoria: data.categoria ? resolverCategoriaGasto(data.categoria, data.descripcion ?? gasto.descripcion) : undefined,
         categoriaId: data.categoriaId ?? undefined,
         subcategoria: data.subcategoria ?? undefined,
         clasificacion: data.clasificacion ?? undefined,

@@ -2,6 +2,7 @@
 // del gestor. Cada gasto generado queda ligado a su plantilla por gastoFijoId y
 // nace impago; el usuario lo marca como pagado desde la pantalla del mes.
 import type { Prisma } from '../../src/generated/client'
+import { resolverCategoriaGasto } from './classify'
 
 /** Cliente de Prisma o transacción: ambos sirven. */
 type Db = Prisma.TransactionClient
@@ -29,7 +30,7 @@ export async function generarFijosDelMes(
       gastoFijoId: p.id,
       monto: p.monto,
       descripcion: p.descripcion,
-      categoria: p.categoria,
+      categoria: resolverCategoriaGasto(p.categoria, p.descripcion),
       clasificacion: 'fijo',
       pagado: false,
       fecha,

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/get-user'
 import { prisma } from '@/lib/prisma'
 import { montoSchema, parseFecha, handleError, ApiError } from '@/lib/api'
-import { clasificarGasto } from '@/lib/finance/classify'
+import { clasificarGasto, resolverCategoriaGasto } from '@/lib/finance/classify'
 import { z } from 'zod'
 
 const gastoSchema = z.object({
@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
       clasificacion = clasificacion || auto.clasificacion
       necesidad = necesidad || auto.necesidad
     }
+    categoria = resolverCategoriaGasto(categoria, body.descripcion)
 
     const gasto = await prisma.gasto.create({
       data: {

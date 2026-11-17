@@ -13,7 +13,6 @@ import {
   Pencil,
   Lock,
   LayoutDashboard,
-  Tags,
   Wallet,
   PiggyBank,
   Target,
@@ -287,8 +286,7 @@ export default function GestorPage() {
           <div className="grid grid-cols-3 gap-3">
             {[
               { icon: <Sparkles className="size-[18px]" />, label: 'Análisis IA', href: 'analisis' },
-              { icon: <PiggyBank className="size-[18px]" />, label: 'Presupuestos', href: 'presupuestos' },
-              { icon: <Tags className="size-[18px]" />, label: 'Categorías', href: 'categorias' },
+              { icon: <PiggyBank className="size-[18px]" />, label: 'Topes', href: 'presupuestos' },
               { icon: <Wallet className="size-[18px]" />, label: 'Cuentas', href: 'cuentas' },
               { icon: <Target className="size-[18px]" />, label: 'Objetivos', href: 'objetivos' },
               { icon: <Repeat className="size-[18px]" />, label: 'Recurrentes', href: 'recurrentes' },

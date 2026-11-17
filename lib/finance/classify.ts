@@ -2,6 +2,8 @@
 // Puro y sin dependencias: primero aplica reglas aprendidas del gestor,
 // luego heurística por palabras clave.
 
+import { CATEGORIAS_GASTO, categoriaCanonica } from './categorias'
+
 export type Clasificacion =
   | 'fijo'
   | 'variable'
@@ -32,51 +34,60 @@ interface Entrada {
   clasificacion: Clasificacion
 }
 
-// Mapa keyword -> categoría/clasificación (spec §72-94).
+// Mapa keyword -> categoría/clasificación. Usa SOLO las categorías de
+// ./categorias. El orden importa: gana la primera coincidencia (por eso
+// "mercado libre" va antes que "mercado" y "gaseosa" antes que "gas").
 const MAPA: Entrada[] = [
+  // Préstamos y deudas
+  { keywords: ['prestamo', 'préstamo', 'preste', 'presté', 'le debo', 'deuda'], categoria: 'Préstamos y deudas', subcategoria: 'Préstamos', clasificacion: 'deuda' },
+  { keywords: ['tarjeta', 'visa', 'mastercard', 'amex', 'resumen'], categoria: 'Préstamos y deudas', subcategoria: 'Tarjeta', clasificacion: 'deuda' },
+  { keywords: ['comision', 'comisión', 'interes', 'interés', 'mantenimiento de cuenta'], categoria: 'Préstamos y deudas', subcategoria: 'Comisiones', clasificacion: 'deuda' },
+
+  // Compras (antes que Supermercado por "mercado libre")
+  { keywords: ['mercado libre', 'mercadolibre', 'shein', 'temu', 'amazon'], categoria: 'Compras', subcategoria: 'Online', clasificacion: 'discrecional' },
+  { keywords: ['ropa', 'zapatilla', 'zapato', 'remera', 'pantalon', 'pantalón', 'campera', 'vestido', 'botines'], categoria: 'Compras', subcategoria: 'Ropa', clasificacion: 'discrecional' },
+  { keywords: ['electronic', 'electrónic', 'notebook', 'auricular', 'monitor', 'teclado', 'mouse', 'tablet', ' pc '], categoria: 'Compras', subcategoria: 'Electrónica', clasificacion: 'discrecional' },
+  { keywords: ['mueble', 'escritorio', 'silla', 'deco', 'pintura', 'ferreteria', 'ferretería', 'bazar'], categoria: 'Compras', subcategoria: 'Hogar', clasificacion: 'discrecional' },
+  { keywords: ['accesorio', 'reloj', 'lente', 'perfume'], categoria: 'Compras', subcategoria: 'Accesorios', clasificacion: 'discrecional' },
+
   // Vivienda
   { keywords: ['alquiler'], categoria: 'Vivienda', subcategoria: 'Alquiler', clasificacion: 'fijo' },
   { keywords: ['expensa'], categoria: 'Vivienda', subcategoria: 'Expensas', clasificacion: 'fijo' },
-  { keywords: ['internet', 'wifi', 'fibra'], categoria: 'Vivienda', subcategoria: 'Internet', clasificacion: 'fijo' },
-  { keywords: ['telefon', 'celular', 'movil', 'línea', 'linea'], categoria: 'Vivienda', subcategoria: 'Telefonía', clasificacion: 'fijo' },
-  { keywords: ['edet', 'luz', 'electricidad', 'gas', 'agua', 'servicio'], categoria: 'Vivienda', subcategoria: 'Servicios', clasificacion: 'variable' },
-  { keywords: ['mantenimiento', 'plomero', 'electricista'], categoria: 'Vivienda', subcategoria: 'Mantenimiento', clasificacion: 'variable' },
+  { keywords: ['plomero', 'electricista', 'gasista', 'arreglo casa', 'arreglo de la casa'], categoria: 'Vivienda', subcategoria: 'Mantenimiento', clasificacion: 'variable' },
 
-  // Transporte
-  { keywords: ['nafta', 'combustible', 'gasolina', 'ypf', 'shell'], categoria: 'Transporte', subcategoria: 'Nafta', clasificacion: 'variable' },
-  { keywords: ['uber', 'cabify', 'didi', 'taxi', 'remis'], categoria: 'Transporte', subcategoria: 'Uber', clasificacion: 'variable' },
-  { keywords: ['colectivo', 'sube', 'subte', 'tren', 'transporte publico', 'transporte público', 'boleto'], categoria: 'Transporte', subcategoria: 'Transporte público', clasificacion: 'variable' },
-  { keywords: ['reparacion', 'reparación', 'repuesto', 'taller', 'mecanico', 'mecánico'], categoria: 'Transporte', subcategoria: 'Reparaciones', clasificacion: 'extraordinario' },
-  { keywords: ['seguro'], categoria: 'Transporte', subcategoria: 'Seguro', clasificacion: 'fijo' },
-  { keywords: ['patente', 'vtv', 'peaje'], categoria: 'Transporte', subcategoria: 'Patente', clasificacion: 'fijo' },
+  // Salidas y comida afuera (antes que Servicios por "gaseosa", que contiene "gas")
+  { keywords: ['delivery', 'pedidosya', 'rappi', 'mcdonald', 'burger', 'pizza', 'empanada', 'hamburguesa', 'sandwich', 'sanguche', 'lomito'], categoria: 'Salidas y comida afuera', subcategoria: 'Comida afuera', clasificacion: 'discrecional' },
+  { keywords: ['restaurant', 'resto', 'parrilla', 'cerveza', 'birra', 'vino', 'fernet', 'trago'], categoria: 'Salidas y comida afuera', subcategoria: 'Bares y restaurantes', clasificacion: 'discrecional' },
+  { keywords: ['helado', 'grido', 'cafe', 'café', 'kiosco', 'kiosko', 'gaseosa', 'coca', 'golosina', 'alfajor', 'facturas', 'papas'], categoria: 'Salidas y comida afuera', subcategoria: 'Kiosco y café', clasificacion: 'discrecional' },
 
-  // Alimentación
-  { keywords: ['super', 'supermercado', 'almacen', 'almacén', 'verduleria', 'verdulería', 'carniceria', 'carnicería', 'mercado'], categoria: 'Alimentación', subcategoria: 'Supermercado', clasificacion: 'variable' },
-  { keywords: ['restaurant', 'restaurante', 'resto', 'cena', 'almuerzo', 'parrilla', 'bar'], categoria: 'Alimentación', subcategoria: 'Restaurante', clasificacion: 'discrecional' },
-  { keywords: ['delivery', 'pedidosya', 'rappi', 'pedido', 'mcdonald', 'burger', 'pizza'], categoria: 'Alimentación', subcategoria: 'Delivery', clasificacion: 'discrecional' },
-  { keywords: ['cafe', 'café', 'kiosco', 'kiosko', 'panaderia', 'panadería', 'comida'], categoria: 'Alimentación', subcategoria: 'Comida', clasificacion: 'variable' },
+  // Servicios
+  { keywords: ['internet', 'wifi', 'fibra'], categoria: 'Servicios', subcategoria: 'Internet', clasificacion: 'fijo' },
+  { keywords: ['abono', 'telefon', 'celular', 'movil', 'móvil', 'movistar'], categoria: 'Servicios', subcategoria: 'Telefonía', clasificacion: 'fijo' },
+  { keywords: ['edet', 'luz', 'electricidad', ' gas ', 'agua', 'purificador'], categoria: 'Servicios', subcategoria: 'Luz, gas y agua', clasificacion: 'fijo' },
+  { keywords: ['netflix', 'spotify', 'disney', 'hbo', 'flow', 'youtube', 'suscripcion', 'suscripción', 'membresia', 'membresía'], categoria: 'Servicios', subcategoria: 'Suscripciones', clasificacion: 'discrecional' },
 
-  // Compras
-  { keywords: ['ropa', 'zapatilla', 'zapato', 'remera', 'pantalon', 'pantalón', 'campera', 'vestido'], categoria: 'Compras', subcategoria: 'Ropa', clasificacion: 'discrecional' },
-  { keywords: ['electronic', 'electrónic', 'celu', 'notebook', 'tv', 'auricular', 'monitor', 'teclado'], categoria: 'Compras', subcategoria: 'Electrónica', clasificacion: 'discrecional' },
-  { keywords: ['hogar', 'mueble', 'deco', 'pintura', 'ferreteria', 'ferretería'], categoria: 'Compras', subcategoria: 'Hogar', clasificacion: 'discrecional' },
-  { keywords: ['accesorio', 'reloj', 'lente', 'perfume'], categoria: 'Compras', subcategoria: 'Accesorios', clasificacion: 'discrecional' },
+  // Salud
+  { keywords: ['prepaga', 'sancor', 'osde', 'obra social', 'farmacia', 'medico', 'médico', 'dentista', 'remedio', 'psicolog'], categoria: 'Salud', clasificacion: 'fijo' },
 
-  // Familia
-  { keywords: ['mama', 'mamá', 'papa', 'papá', 'hermano', 'hermana', 'familia', 'ayuda familiar', 'abuela', 'abuelo'], categoria: 'Familia', clasificacion: 'variable' },
+  // Auto y transporte
+  { keywords: ['nafta', 'combustible', 'gasolina', 'ypf', 'shell', 'axion'], categoria: 'Auto y transporte', subcategoria: 'Nafta', clasificacion: 'variable' },
+  { keywords: ['uber', 'cabify', 'didi', 'taxi', 'remis'], categoria: 'Auto y transporte', subcategoria: 'Uber', clasificacion: 'variable' },
+  { keywords: ['colectivo', 'sube', 'subte', 'tren', 'boleto'], categoria: 'Auto y transporte', subcategoria: 'Transporte público', clasificacion: 'variable' },
+  { keywords: ['cochera', 'estacionamiento', 'seguro', 'patente', 'vtv', 'peaje'], categoria: 'Auto y transporte', subcategoria: 'Auto', clasificacion: 'fijo' },
+  { keywords: [' auto ', 'taller', 'mecanico', 'mecánico', 'repuesto', 'gomeria', 'gomería'], categoria: 'Auto y transporte', subcategoria: 'Arreglos', clasificacion: 'extraordinario' },
 
-  // Finanzas / deuda
-  { keywords: ['tarjeta', 'visa', 'mastercard', 'amex'], categoria: 'Finanzas', subcategoria: 'Tarjeta', clasificacion: 'deuda' },
-  { keywords: ['prestamo', 'préstamo', 'cuota', 'deuda'], categoria: 'Finanzas', subcategoria: 'Préstamos', clasificacion: 'deuda' },
-  { keywords: ['comision', 'comisión', 'interes', 'interés', 'mantenimiento de cuenta'], categoria: 'Finanzas', subcategoria: 'Comisiones', clasificacion: 'deuda' },
+  // Salidas (después de transporte: "uber cancha" es Uber)
+  { keywords: ['cine', 'teatro', 'recital', 'evento', 'entrada', 'boliche', 'salida', 'futbol', 'fútbol', 'cancha', 'pelota', 'padel', 'pádel', 'juego', 'steam', 'playstation'], categoria: 'Salidas y comida afuera', subcategoria: 'Salidas', clasificacion: 'discrecional' },
 
-  // Entretenimiento
-  { keywords: ['netflix', 'spotify', 'disney', 'hbo', 'suscripcion', 'suscripción', 'membresia', 'membresía'], categoria: 'Entretenimiento', subcategoria: 'Suscripciones', clasificacion: 'discrecional' },
-  { keywords: ['juego', 'gaming', 'steam', 'playstation', 'xbox'], categoria: 'Entretenimiento', subcategoria: 'Juegos', clasificacion: 'discrecional' },
-  { keywords: ['cine', 'teatro', 'recital', 'evento', 'entrada', 'boliche', 'salida'], categoria: 'Entretenimiento', subcategoria: 'Salidas', clasificacion: 'discrecional' },
+  // Supermercado
+  { keywords: [' super', 'almacen', 'almacén', 'verduleria', 'verdulería', 'carniceria', 'carnicería', 'mercado', 'pollo', ' pan ', 'carne', 'comida', 'chino'], categoria: 'Supermercado', clasificacion: 'variable' },
 
-  // Trabajo
-  { keywords: ['herramienta', 'software', 'licencia', 'equipamiento', 'curso', 'capacitacion', 'capacitación'], categoria: 'Trabajo', clasificacion: 'variable' },
+  // Familia y regalos
+  { keywords: ['regalo', 'mama', 'mamá', 'papa', 'papá', 'hermano', 'hermana', 'familia', 'abuela', 'abuelo'], categoria: 'Familia y regalos', clasificacion: 'variable' },
+
+  // Otros, con subcategoría útil
+  { keywords: ['cigarr', 'ciarr', 'puchos', 'tabaco'], categoria: 'Otros', subcategoria: 'Cigarrillos', clasificacion: 'variable' },
+  { keywords: ['viaje', 'pasaje', 'hotel', 'hostel'], categoria: 'Otros', subcategoria: 'Viajes', clasificacion: 'extraordinario' },
 ]
 
 // Palabras clave de ingresos (spec §63-70).
@@ -97,6 +108,13 @@ export function normalizar(texto: string): string {
     .trim()
 }
 
+/** Normaliza un keyword conservando los espacios de borde que marcan palabra completa. */
+function prepararKeyword(k: string): string {
+  const inicio = k.startsWith(' ') ? ' ' : ''
+  const fin = k.endsWith(' ') ? ' ' : ''
+  return inicio + normalizar(k).replace(/[^a-z0-9]+/g, ' ').trim() + fin
+}
+
 function necesidadPorClasificacion(clasificacion: Clasificacion): Necesidad {
   if (clasificacion === 'discrecional') return 'no_seguro'
   if (clasificacion === 'extraordinario') return 'no_seguro'
@@ -115,16 +133,19 @@ export function clasificarGasto(descripcion: string, reglas: Regla[] = []): Resu
     if (regla.patron && desc.includes(normalizar(regla.patron))) {
       const clasif = (regla.clasificacion as Clasificacion) || 'variable'
       return {
-        categoria: regla.categoria || 'Otros',
+        categoria: categoriaCanonica(regla.categoria) || 'Otros',
         clasificacion: clasif,
         necesidad: (regla.necesidad as Necesidad) || necesidadPorClasificacion(clasif),
       }
     }
   }
 
-  // 2) Heurística por keyword
+  // 2) Heurística por keyword. La descripción se compara con los signos
+  // pasados a espacios y espacios en los bordes: un keyword con espacio
+  // (' gas ') exige palabra completa y no matchea "gastos".
+  const descPalabras = ` ${desc.replace(/[^a-z0-9]+/g, ' ').trim()} `
   for (const entrada of MAPA) {
-    if (entrada.keywords.some((k) => desc.includes(normalizar(k)))) {
+    if (entrada.keywords.some((k) => descPalabras.includes(prepararKeyword(k)))) {
       return {
         categoria: entrada.categoria,
         subcategoria: entrada.subcategoria,
@@ -148,18 +169,9 @@ export function clasificarIngreso(descripcion: string): { categoria: string } {
   return { categoria: 'Otros' }
 }
 
-// Categorías por defecto para sembrar al crear un gestor (spec §63-81).
-export const CATEGORIAS_GASTO_DEFAULT: { nombre: string; clasificacion: Clasificacion; sub: string[] }[] = [
-  { nombre: 'Vivienda', clasificacion: 'fijo', sub: ['Alquiler', 'Expensas', 'Servicios', 'Internet', 'Telefonía', 'Mantenimiento'] },
-  { nombre: 'Transporte', clasificacion: 'variable', sub: ['Nafta', 'Uber', 'Transporte público', 'Reparaciones', 'Seguro', 'Patente'] },
-  { nombre: 'Alimentación', clasificacion: 'variable', sub: ['Supermercado', 'Restaurante', 'Delivery', 'Comida', 'Salidas'] },
-  { nombre: 'Compras', clasificacion: 'discrecional', sub: ['Ropa', 'Electrónica', 'Hogar', 'Accesorios'] },
-  { nombre: 'Familia', clasificacion: 'variable', sub: ['Mamá', 'Papá', 'Hermanos', 'Ayuda familiar'] },
-  { nombre: 'Finanzas', clasificacion: 'deuda', sub: ['Tarjeta', 'Préstamos', 'Deudas', 'Comisiones'] },
-  { nombre: 'Entretenimiento', clasificacion: 'discrecional', sub: ['Salidas', 'Juegos', 'Suscripciones', 'Eventos'] },
-  { nombre: 'Trabajo', clasificacion: 'variable', sub: ['Herramientas', 'Software', 'Equipamiento'] },
-  { nombre: 'Otros', clasificacion: 'variable', sub: [] },
-]
+// Categorías por defecto para sembrar al crear un gestor: la lista corta y plana.
+export const CATEGORIAS_GASTO_DEFAULT: { nombre: string; clasificacion: Clasificacion; sub: string[] }[] =
+  CATEGORIAS_GASTO.map((c) => ({ nombre: c.nombre, clasificacion: c.clasificacion, sub: [] }))
 
 export const CATEGORIAS_INGRESO_DEFAULT = [
   'Sueldo',
@@ -170,3 +182,16 @@ export const CATEGORIAS_INGRESO_DEFAULT = [
   'Transferencias',
   'Otros',
 ]
+
+/**
+ * Lleva cualquier categoría que llegue (formulario, WhatsApp, IA, nombres
+ * viejos) a una de la lista corta. Si no se reconoce, se clasifica por la
+ * descripción.
+ */
+export function resolverCategoriaGasto(
+  categoria: string | null | undefined,
+  descripcion: string,
+  reglas: Regla[] = [],
+): string {
+  return categoriaCanonica(categoria) ?? clasificarGasto(descripcion, reglas).categoria
+}

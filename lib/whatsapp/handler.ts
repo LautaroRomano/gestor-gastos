@@ -2,7 +2,7 @@
 // aplica la intención (alta o consulta) sobre datos reales del usuario (spec §10-13).
 import { prisma } from '../prisma'
 import { formatCurrency } from '../format-currency'
-import { clasificarGasto } from '../finance/classify'
+import { clasificarGasto, resolverCategoriaGasto } from '../finance/classify'
 import { getMesActivo, analizarMes, buildMesInput } from '../finance/service'
 import { computeMetrics } from '../finance/metrics'
 import { aiDisponible, parseMensaje, responderConsulta, type ParseResultado } from '../ai/openai'
@@ -69,7 +69,7 @@ async function registrarDesdeParse(conexion: Conexion, p: ParseResultado): Promi
   // gasto
   const reglas = await prisma.reglaClasificacion.findMany({ where: { gestorId: conexion.gestorId } })
   const auto = clasificarGasto(p.description || '', reglas)
-  const categoria = p.category || auto.categoria
+  const categoria = resolverCategoriaGasto(p.category, p.description || '', reglas)
   const clasificacion = (p.expenseType as string) || auto.clasificacion
   await prisma.gasto.create({
     data: {

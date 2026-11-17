@@ -10,6 +10,8 @@ import { Switch } from '@/components/ui/switch'
 import { Screen, AppBar, Content, BottomBar, ScreenLoader, EmptyState } from '@/components/mobile/shell'
 import { Field, fieldClass } from '@/components/mobile/field'
 import { Money } from '@/components/mobile/money'
+import { CategoriaPicker } from '@/components/mobile/categoria-picker'
+import { categoriaCanonica } from '@/lib/finance/categorias'
 import { formatCurrency } from '@/lib/format-currency'
 
 interface GastoFijo {
@@ -20,20 +22,12 @@ interface GastoFijo {
   activo: boolean
 }
 
-interface Categoria {
-  id: string
-  nombre: string
-  tipo: string
-  parentId?: string | null
-}
-
 const emptyForm = { monto: '', descripcion: '', categoria: '', activo: true }
 
 export default function GastosFijosPage() {
   const router = useRouter()
   const { id } = useParams() as { id: string }
   const [fijos, setFijos] = useState<GastoFijo[]>([])
-  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const [editing, setEditing] = useState<GastoFijo | null>(null)
@@ -45,12 +39,8 @@ export default function GastosFijosPage() {
 
   async function load() {
     try {
-      const [f, c] = await Promise.all([
-        fetch(`/api/gestores/${id}/gastos-fijos`).then((r) => (r.ok ? r.json() : [])),
-        fetch(`/api/gestores/${id}/categorias`).then((r) => (r.ok ? r.json() : [])),
-      ])
+      const f = await fetch(`/api/gestores/${id}/gastos-fijos`).then((r) => (r.ok ? r.json() : []))
       setFijos(f)
-      setCategorias(c)
     } finally {
       setLoading(false)
     }
@@ -128,7 +118,6 @@ export default function GastosFijosPage() {
 
   const activos = fijos.filter((f) => f.activo)
   const totalActivos = activos.reduce((s, f) => s + f.monto, 0)
-  const catsGasto = categorias.filter((c) => c.tipo === 'gasto')
 
   return (
     <Screen>
@@ -251,19 +240,12 @@ export default function GastosFijosPage() {
               className={fieldClass}
             />
           </Field>
-          <Field label="Categoría" hint="Opcional">
-            <select
-              value={form.categoria}
-              onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-              className={fieldClass}
-            >
-              <option value="">— Sin categoría —</option>
-              {catsGasto.map((c) => (
-                <option key={c.id} value={c.nombre}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+          <Field label="Categoría">
+            <CategoriaPicker
+              value={categoriaCanonica(form.categoria) ?? ''}
+              onChange={(categoria) => setForm({ ...form, categoria })}
+              allowAuto
+            />
           </Field>
           <div className="flex items-center justify-between rounded-xl border border-border/70 p-3.5">
             <div>
